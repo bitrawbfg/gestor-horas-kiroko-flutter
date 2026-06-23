@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/views/home_page.dart';
+import 'package:gestor_horas/presentation/views/home_page.dart';
 
 void main() {
   runApp(const MyApp());

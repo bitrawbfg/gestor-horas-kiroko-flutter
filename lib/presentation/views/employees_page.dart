@@ -38,14 +38,19 @@ class _EmployeesPageState extends State<EmployeesPage> {
               Row(
                 spacing: 20,
                 children: [
-                  SearchBar(
-                    leading: Icon(Icons.search),
-                    hintText: 'Buscar empleados...',
+                  Expanded(
+                    child: SearchBar(
+                      leading: Icon(Icons.search),
+                      hintText: 'Buscar empleados...',
+                    ),
                   ),
-                  DropdownButton(
-                    hint: Text('Selecciona un rol'),
-                    items: [],
-                    onChanged: null,
+                  Expanded(
+                    child: DropdownButton(
+                      isExpanded: true,
+                      hint: Text('Selecciona un rol'),
+                      items: [],
+                      onChanged: null,
+                    ),
                   ),
                 ],
               ),

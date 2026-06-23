@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
-import 'package:gestor_horas/views/employees_page.dart';
+
+import 'employees_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
