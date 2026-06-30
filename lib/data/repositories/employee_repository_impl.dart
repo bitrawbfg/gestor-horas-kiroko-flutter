@@ -40,9 +40,11 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   }
 
   @override
-  Future<List<EmployeeModel>> getEmployees() {
-    // TODO: implement getEmployees
-    throw UnimplementedError();
+  Future<List<EmployeeModel>> getEmployees() async {
+    final database = await _databaseHelper.database;
+    final List<Map<String, dynamic>> employees = await database.query(EMPLOYEES_TABLE);
+
+    return employees.map((employee) => EmployeeModel.fromMap(employee)).toList();
   }
 
   @override
