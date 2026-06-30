@@ -9,7 +9,6 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   static const String EMPLOYEES_TABLE = 'employees';
 
-
   @override
   Future<void> insertEmployee(EmployeeModel employee) async {
     final database = await _databaseHelper.database;
@@ -21,14 +20,23 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   Future<void> updateEmployee(EmployeeModel employee) async {
     final database = await _databaseHelper.database;
 
-    await database.update(EMPLOYEES_TABLE, employee.toJson());
+    await database.update(
+      EMPLOYEES_TABLE,
+      employee.toJson(),
+      where: 'id = ?',
+      whereArgs: [employee.id],
+    );
   }
 
   @override
   Future<void> deleteEmployee(EmployeeModel employee) async {
     final database = await _databaseHelper.database;
 
-    await database.delete(EMPLOYEES_TABLE, where: 'id = ${employee.id}');
+    await database.delete(
+      EMPLOYEES_TABLE,
+      where: 'id = ?',
+      whereArgs: [employee.id],
+    );
   }
 
   @override
@@ -40,17 +48,27 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   }
 
   @override
-  Future<List<EmployeeModel>> getEmployees() {
-    // TODO: implement getEmployees
-    throw UnimplementedError();
+  Future<List<EmployeeModel>> getEmployees() async {
+    final database = await _databaseHelper.database;
+    final List<Map<String, dynamic>> employees = await database.query(
+      EMPLOYEES_TABLE,
+    );
+
+    return List.generate(employees.length, (employee) {
+      return EmployeeModel.fromMap(employees[employee]);
+    });
   }
 
   @override
   Future<List<EmployeeModel>> getEmployeesByName(String name) async {
     // TODO: implement getEmployeesByName
     final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> employees = await database.query(EMPLOYEES_TABLE);
+    final List<Map<String, dynamic>> employees = await database.query(
+      EMPLOYEES_TABLE,
+    );
 
-    return employees.map((employee) => EmployeeModel.fromMap(employee)).toList();
+    return employees
+        .map((employee) => EmployeeModel.fromMap(employee))
+        .toList();
   }
 }

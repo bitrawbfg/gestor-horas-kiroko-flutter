@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._init();
@@ -9,7 +10,6 @@ class DatabaseHelper {
 
   factory DatabaseHelper() => _instance;
 
-
   Future<Database> get database async {
     if (_database != null) return _database!;
 
@@ -18,12 +18,17 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDB(String fileName) async {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await databaseFactory.openDatabase(
+      path,
+      options: OpenDatabaseOptions(version: 1, onCreate: _createDB),
+    );
   }
-
 
   Future _createDB(Database db, int version) async {
     await db.execute('''

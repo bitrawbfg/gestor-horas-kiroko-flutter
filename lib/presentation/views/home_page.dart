@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
+import 'package:gestor_horas/data/models/employee_model.dart';
+import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 import 'employees_page.dart';
 
@@ -59,6 +62,31 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Expanded(child: _widgetOptions[_selectedIndex]),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          EmployeeModel employee = EmployeeModel(name: 'Nepe');
+
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: ElevatedButton(
+
+                  onPressed: () {
+                    Provider.of<EmployeeViewModel>(
+                      context,
+                      listen: false,
+                    ).addEmployee(employee.name);
+                    Navigator.pop(context);
+                  },
+                  child: Text('Añadir nuevo empleado'),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
