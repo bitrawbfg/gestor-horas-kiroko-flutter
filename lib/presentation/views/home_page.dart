@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
-import 'package:gestor_horas/data/models/employee_model.dart';
-import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
-import 'package:provider/provider.dart';
 
 import 'employees_page.dart';
 
@@ -17,8 +14,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const EmployeesPage(),
     const Text('Prueba 2'),
+    const EmployeesPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -31,7 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue[50],
+        backgroundColor: Colors.orangeAccent[100],
         title: const Text('Kiroko'),
         leading: const Icon(Icons.house_rounded, size: 40),
         actions: [ElevatedButton(onPressed: () {}, child: Icon(Icons.person))],
@@ -62,31 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Expanded(child: _widgetOptions[_selectedIndex]),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          EmployeeModel employee = EmployeeModel(name: 'Nepe');
-
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                content: ElevatedButton(
-
-                  onPressed: () {
-                    Provider.of<EmployeeViewModel>(
-                      context,
-                      listen: false,
-                    ).addEmployee(employee.name);
-                    Navigator.pop(context);
-                  },
-                  child: Text('Añadir nuevo empleado'),
-                ),
-              );
-            },
-          );
-        },
       ),
     );
   }
