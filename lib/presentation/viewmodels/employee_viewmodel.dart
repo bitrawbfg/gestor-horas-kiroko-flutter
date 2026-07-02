@@ -9,9 +9,19 @@ class EmployeeViewModel extends ChangeNotifier {
 
   List<EmployeeModel> get employees => _employees;
 
-  Future<void> loadEmployees() async {
-    _employees = await _employeesRepository.getEmployees();
+  Future<void> loadEmployees({List<EmployeeModel>? employees}) async {
+    if (employees == null) {
+      _employees = await _employeesRepository.getEmployees();
+    } else {
+      _employees = employees;
+    }
+
     notifyListeners();
+  }
+
+  Future<void> getEmployeesByName(String name) async {
+    List<EmployeeModel> employees = await _employeesRepository.getEmployeesByName(name);
+    await loadEmployees(employees: employees);
   }
 
   Future<void> addEmployee(String name) async {

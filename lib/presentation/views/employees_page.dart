@@ -73,6 +73,8 @@ class _EmployeesPageState extends State<EmployeesPage> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController searchBarController = TextEditingController();
+
     return Consumer<EmployeeViewModel>(
       builder: (context, viewModel, child) {
         return Padding(
@@ -86,6 +88,10 @@ class _EmployeesPageState extends State<EmployeesPage> {
                     child: SearchBar(
                       leading: Icon(Icons.search),
                       hintText: 'Buscar empleados...',
+                      controller: searchBarController,
+                      onChanged: (search) async {
+                        await viewModel.getEmployeesByName(search);
+                      },
                     ),
                   ),
                   ElevatedButton(
@@ -107,26 +113,38 @@ class _EmployeesPageState extends State<EmployeesPage> {
                 child: SizedBox(height: 10, child: Divider()),
               ),
               viewModel.employees.isEmpty
-                  ? Expanded(
-                      child: Column(
-                        spacing: 20,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Añade un nuevo empleado'),
-                          ElevatedButton(
-                            onPressed: () {
-                              _showForm(context);
-                            },
-                            style: ButtonStyle(
-                              fixedSize: WidgetStateProperty.all<Size>(
-                                Size(200, 60),
-                              ),
+                  ? searchBarController.text.isEmpty
+                        ? Expanded(
+                            child: Column(
+                              spacing: 20,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Añade un nuevo empleado'),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _showForm(context);
+                                  },
+                                  style: ButtonStyle(
+                                    fixedSize: WidgetStateProperty.all<Size>(
+                                      Size(200, 60),
+                                    ),
+                                  ),
+                                  child: Text('Añadir'),
+                                ),
+                              ],
                             ),
-                            child: Text('Añadir'),
-                          ),
-                        ],
-                      ),
-                    )
+                          )
+                        : Expanded(
+                            child: Column(
+                              spacing: 20,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'No se han encontrado empleados con el nombre "${searchBarController.text}"',
+                                ),
+                              ],
+                            ),
+                          )
                   : Expanded(
                       child: ListView.builder(
                         itemCount: viewModel.employees.length,
