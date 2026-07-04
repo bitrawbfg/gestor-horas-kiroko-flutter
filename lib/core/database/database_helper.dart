@@ -32,10 +32,19 @@ class DatabaseHelper {
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE employees (
+    CREATE TABLE IF NOT EXISTS employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       name TEXT NOT NULL
-    )
+    );
+    
+    CREATE TABLE IF NOT EXISTS employee_time_tracking (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      employee_id INTEGER NOT NULL,
+      start_time DATETIME,
+      finish_time DATETIME,
+      registered_date DATE,
+      FOREIGN KEY(employee_id) REFERENCES employees(id)
+    );
     ''');
   }
 
