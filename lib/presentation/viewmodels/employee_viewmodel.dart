@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/data/models/employee_model.dart';
+import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/repositories/employee_repository_impl.dart';
 
 class EmployeeViewModel extends ChangeNotifier {

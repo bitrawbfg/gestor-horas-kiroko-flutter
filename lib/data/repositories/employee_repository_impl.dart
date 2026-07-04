@@ -1,5 +1,5 @@
 import 'package:gestor_horas/core/database/database_helper.dart';
-import 'package:gestor_horas/data/models/employee_model.dart';
+import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/domain/repositories/employee_repository.dart';
 
 class EmployeeRepositoryImpl implements EmployeeRepository {

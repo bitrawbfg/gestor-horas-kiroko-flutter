@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/data/models/employee_model.dart';
+import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
 import 'package:provider/provider.dart';
 
