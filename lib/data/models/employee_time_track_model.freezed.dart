@@ -24,9 +24,9 @@ EmployeeTimeTrackModel _$EmployeeTimeTrackModelFromJson(
 /// @nodoc
 mixin _$EmployeeTimeTrackModel {
   int? get id => throw _privateConstructorUsedError;
-  int get employeeId => throw _privateConstructorUsedError;
-  DateTime? get startTime => throw _privateConstructorUsedError;
-  DateTime? get finishTime => throw _privateConstructorUsedError;
+  int get employee_id => throw _privateConstructorUsedError;
+  DateTime? get start_time => throw _privateConstructorUsedError;
+  DateTime? get finish_time => throw _privateConstructorUsedError;
 
   /// Serializes this EmployeeTimeTrackModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,9 +47,9 @@ abstract class $EmployeeTimeTrackModelCopyWith<$Res> {
   @useResult
   $Res call({
     int? id,
-    int employeeId,
-    DateTime? startTime,
-    DateTime? finishTime,
+    int employee_id,
+    DateTime? start_time,
+    DateTime? finish_time,
   });
 }
 
@@ -72,9 +72,9 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
   @override
   $Res call({
     Object? id = freezed,
-    Object? employeeId = null,
-    Object? startTime = freezed,
-    Object? finishTime = freezed,
+    Object? employee_id = null,
+    Object? start_time = freezed,
+    Object? finish_time = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -82,17 +82,17 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as int?,
-            employeeId: null == employeeId
-                ? _value.employeeId
-                : employeeId // ignore: cast_nullable_to_non_nullable
+            employee_id: null == employee_id
+                ? _value.employee_id
+                : employee_id // ignore: cast_nullable_to_non_nullable
                       as int,
-            startTime: freezed == startTime
-                ? _value.startTime
-                : startTime // ignore: cast_nullable_to_non_nullable
+            start_time: freezed == start_time
+                ? _value.start_time
+                : start_time // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            finishTime: freezed == finishTime
-                ? _value.finishTime
-                : finishTime // ignore: cast_nullable_to_non_nullable
+            finish_time: freezed == finish_time
+                ? _value.finish_time
+                : finish_time // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
           )
           as $Val,
@@ -111,9 +111,9 @@ abstract class _$$EmployeeTimeTrackModelImplCopyWith<$Res>
   @useResult
   $Res call({
     int? id,
-    int employeeId,
-    DateTime? startTime,
-    DateTime? finishTime,
+    int employee_id,
+    DateTime? start_time,
+    DateTime? finish_time,
   });
 }
 
@@ -133,9 +133,9 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
-    Object? employeeId = null,
-    Object? startTime = freezed,
-    Object? finishTime = freezed,
+    Object? employee_id = null,
+    Object? start_time = freezed,
+    Object? finish_time = freezed,
   }) {
     return _then(
       _$EmployeeTimeTrackModelImpl(
@@ -143,17 +143,17 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as int?,
-        employeeId: null == employeeId
-            ? _value.employeeId
-            : employeeId // ignore: cast_nullable_to_non_nullable
+        employee_id: null == employee_id
+            ? _value.employee_id
+            : employee_id // ignore: cast_nullable_to_non_nullable
                   as int,
-        startTime: freezed == startTime
-            ? _value.startTime
-            : startTime // ignore: cast_nullable_to_non_nullable
+        start_time: freezed == start_time
+            ? _value.start_time
+            : start_time // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        finishTime: freezed == finishTime
-            ? _value.finishTime
-            : finishTime // ignore: cast_nullable_to_non_nullable
+        finish_time: freezed == finish_time
+            ? _value.finish_time
+            : finish_time // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
       ),
     );
@@ -165,9 +165,9 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
 class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
   const _$EmployeeTimeTrackModelImpl({
     this.id,
-    required this.employeeId,
-    required this.startTime,
-    this.finishTime,
+    required this.employee_id,
+    this.start_time,
+    this.finish_time,
   });
 
   factory _$EmployeeTimeTrackModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -176,15 +176,15 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
   @override
   final int? id;
   @override
-  final int employeeId;
+  final int employee_id;
   @override
-  final DateTime? startTime;
+  final DateTime? start_time;
   @override
-  final DateTime? finishTime;
+  final DateTime? finish_time;
 
   @override
   String toString() {
-    return 'EmployeeTimeTrackModel(id: $id, employeeId: $employeeId, startTime: $startTime, finishTime: $finishTime)';
+    return 'EmployeeTimeTrackModel(id: $id, employee_id: $employee_id, start_time: $start_time, finish_time: $finish_time)';
   }
 
   @override
@@ -193,18 +193,18 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
         (other.runtimeType == runtimeType &&
             other is _$EmployeeTimeTrackModelImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.employeeId, employeeId) ||
-                other.employeeId == employeeId) &&
-            (identical(other.startTime, startTime) ||
-                other.startTime == startTime) &&
-            (identical(other.finishTime, finishTime) ||
-                other.finishTime == finishTime));
+            (identical(other.employee_id, employee_id) ||
+                other.employee_id == employee_id) &&
+            (identical(other.start_time, start_time) ||
+                other.start_time == start_time) &&
+            (identical(other.finish_time, finish_time) ||
+                other.finish_time == finish_time));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, employeeId, startTime, finishTime);
+      Object.hash(runtimeType, id, employee_id, start_time, finish_time);
 
   /// Create a copy of EmployeeTimeTrackModel
   /// with the given fields replaced by the non-null parameter values.
@@ -227,9 +227,9 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
 abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
   const factory _EmployeeTimeTrackModel({
     final int? id,
-    required final int employeeId,
-    required final DateTime? startTime,
-    final DateTime? finishTime,
+    required final int employee_id,
+    final DateTime? start_time,
+    final DateTime? finish_time,
   }) = _$EmployeeTimeTrackModelImpl;
 
   factory _EmployeeTimeTrackModel.fromJson(Map<String, dynamic> json) =
@@ -238,11 +238,11 @@ abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
   @override
   int? get id;
   @override
-  int get employeeId;
+  int get employee_id;
   @override
-  DateTime? get startTime;
+  DateTime? get start_time;
   @override
-  DateTime? get finishTime;
+  DateTime? get finish_time;
 
   /// Create a copy of EmployeeTimeTrackModel
   /// with the given fields replaced by the non-null parameter values.

@@ -10,20 +10,20 @@ _$EmployeeTimeTrackModelImpl _$$EmployeeTimeTrackModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$EmployeeTimeTrackModelImpl(
   id: (json['id'] as num?)?.toInt(),
-  employeeId: (json['employeeId'] as num).toInt(),
-  startTime: json['startTime'] == null
+  employee_id: (json['employee_id'] as num).toInt(),
+  start_time: json['start_time'] == null
       ? null
-      : DateTime.parse(json['startTime'] as String),
-  finishTime: json['finishTime'] == null
+      : DateTime.parse(json['start_time'] as String),
+  finish_time: json['finish_time'] == null
       ? null
-      : DateTime.parse(json['finishTime'] as String),
+      : DateTime.parse(json['finish_time'] as String),
 );
 
 Map<String, dynamic> _$$EmployeeTimeTrackModelImplToJson(
   _$EmployeeTimeTrackModelImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
-  'employeeId': instance.employeeId,
-  'startTime': instance.startTime?.toIso8601String(),
-  'finishTime': instance.finishTime?.toIso8601String(),
+  'employee_id': instance.employee_id,
+  'start_time': instance.start_time?.toIso8601String(),
+  'finish_time': instance.finish_time?.toIso8601String(),
 };

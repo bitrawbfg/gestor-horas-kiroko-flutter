@@ -1,16 +1,23 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:gestor_horas/data/models/employee_time_track_model.dart';
 
 part 'employee_model.freezed.dart';
-part 'employee_model.g.dart';
 
+part 'employee_model.g.dart';
 
 // Tutorial para crear modelos con @freezed
 // https://medium.com/@CodeCraftMobile/flutter-clean-architecture-implement-local-storage-with-sqlite-freezed-using-sqflite-and-bloc-68b967c604fc
 @freezed
 class EmployeeModel with _$EmployeeModel {
-  const factory EmployeeModel({int? id, required String name}) = _EmployeeModel;
+  const factory EmployeeModel({
+    int? id,
+    required String name,
+    @JsonKey(includeToJson: false, includeFromJson: false)
+    EmployeeTimeTrackModel? timeTrack,
+  }) = _EmployeeModel;
 
-  factory EmployeeModel.fromJson(Map<String, dynamic> json) => _$EmployeeModelFromJson(json);
+  factory EmployeeModel.fromJson(Map<String, dynamic> json) =>
+      _$EmployeeModelFromJson(json);
 
   /*Map<String, dynamic> toJson() {
     return {
@@ -20,6 +27,6 @@ class EmployeeModel with _$EmployeeModel {
   }*/
 
   factory EmployeeModel.fromMap(Map<String, dynamic> map) {
-    return EmployeeModel(id: map['id'], name: map['name'],);
+    return EmployeeModel(id: map['id'], name: map['name']);
   }
 }

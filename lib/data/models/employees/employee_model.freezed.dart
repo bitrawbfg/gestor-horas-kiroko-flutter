@@ -23,6 +23,8 @@ EmployeeModel _$EmployeeModelFromJson(Map<String, dynamic> json) {
 mixin _$EmployeeModel {
   int? get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  EmployeeTimeTrackModel? get timeTrack => throw _privateConstructorUsedError;
 
   /// Serializes this EmployeeModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +43,14 @@ abstract class $EmployeeModelCopyWith<$Res> {
     $Res Function(EmployeeModel) then,
   ) = _$EmployeeModelCopyWithImpl<$Res, EmployeeModel>;
   @useResult
-  $Res call({int? id, String name});
+  $Res call({
+    int? id,
+    String name,
+    @JsonKey(includeToJson: false, includeFromJson: false)
+    EmployeeTimeTrackModel? timeTrack,
+  });
+
+  $EmployeeTimeTrackModelCopyWith<$Res>? get timeTrack;
 }
 
 /// @nodoc
@@ -58,7 +67,11 @@ class _$EmployeeModelCopyWithImpl<$Res, $Val extends EmployeeModel>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = freezed, Object? name = null}) {
+  $Res call({
+    Object? id = freezed,
+    Object? name = null,
+    Object? timeTrack = freezed,
+  }) {
     return _then(
       _value.copyWith(
             id: freezed == id
@@ -69,9 +82,27 @@ class _$EmployeeModelCopyWithImpl<$Res, $Val extends EmployeeModel>
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String,
+            timeTrack: freezed == timeTrack
+                ? _value.timeTrack
+                : timeTrack // ignore: cast_nullable_to_non_nullable
+                      as EmployeeTimeTrackModel?,
           )
           as $Val,
     );
+  }
+
+  /// Create a copy of EmployeeModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $EmployeeTimeTrackModelCopyWith<$Res>? get timeTrack {
+    if (_value.timeTrack == null) {
+      return null;
+    }
+
+    return $EmployeeTimeTrackModelCopyWith<$Res>(_value.timeTrack!, (value) {
+      return _then(_value.copyWith(timeTrack: value) as $Val);
+    });
   }
 }
 
@@ -84,7 +115,15 @@ abstract class _$$EmployeeModelImplCopyWith<$Res>
   ) = __$$EmployeeModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int? id, String name});
+  $Res call({
+    int? id,
+    String name,
+    @JsonKey(includeToJson: false, includeFromJson: false)
+    EmployeeTimeTrackModel? timeTrack,
+  });
+
+  @override
+  $EmployeeTimeTrackModelCopyWith<$Res>? get timeTrack;
 }
 
 /// @nodoc
@@ -100,7 +139,11 @@ class __$$EmployeeModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = freezed, Object? name = null}) {
+  $Res call({
+    Object? id = freezed,
+    Object? name = null,
+    Object? timeTrack = freezed,
+  }) {
     return _then(
       _$EmployeeModelImpl(
         id: freezed == id
@@ -111,6 +154,10 @@ class __$$EmployeeModelImplCopyWithImpl<$Res>
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
+        timeTrack: freezed == timeTrack
+            ? _value.timeTrack
+            : timeTrack // ignore: cast_nullable_to_non_nullable
+                  as EmployeeTimeTrackModel?,
       ),
     );
   }
@@ -119,7 +166,11 @@ class __$$EmployeeModelImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$EmployeeModelImpl implements _EmployeeModel {
-  const _$EmployeeModelImpl({this.id, required this.name});
+  const _$EmployeeModelImpl({
+    this.id,
+    required this.name,
+    @JsonKey(includeToJson: false, includeFromJson: false) this.timeTrack,
+  });
 
   factory _$EmployeeModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$EmployeeModelImplFromJson(json);
@@ -128,10 +179,13 @@ class _$EmployeeModelImpl implements _EmployeeModel {
   final int? id;
   @override
   final String name;
+  @override
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  final EmployeeTimeTrackModel? timeTrack;
 
   @override
   String toString() {
-    return 'EmployeeModel(id: $id, name: $name)';
+    return 'EmployeeModel(id: $id, name: $name, timeTrack: $timeTrack)';
   }
 
   @override
@@ -140,12 +194,14 @@ class _$EmployeeModelImpl implements _EmployeeModel {
         (other.runtimeType == runtimeType &&
             other is _$EmployeeModelImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.timeTrack, timeTrack) ||
+                other.timeTrack == timeTrack));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name);
+  int get hashCode => Object.hash(runtimeType, id, name, timeTrack);
 
   /// Create a copy of EmployeeModel
   /// with the given fields replaced by the non-null parameter values.
@@ -162,8 +218,12 @@ class _$EmployeeModelImpl implements _EmployeeModel {
 }
 
 abstract class _EmployeeModel implements EmployeeModel {
-  const factory _EmployeeModel({final int? id, required final String name}) =
-      _$EmployeeModelImpl;
+  const factory _EmployeeModel({
+    final int? id,
+    required final String name,
+    @JsonKey(includeToJson: false, includeFromJson: false)
+    final EmployeeTimeTrackModel? timeTrack,
+  }) = _$EmployeeModelImpl;
 
   factory _EmployeeModel.fromJson(Map<String, dynamic> json) =
       _$EmployeeModelImpl.fromJson;
@@ -172,6 +232,9 @@ abstract class _EmployeeModel implements EmployeeModel {
   int? get id;
   @override
   String get name;
+  @override
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  EmployeeTimeTrackModel? get timeTrack;
 
   /// Create a copy of EmployeeModel
   /// with the given fields replaced by the non-null parameter values.

@@ -8,7 +8,7 @@ part 'employee_time_track_model.g.dart';
 // https://medium.com/@CodeCraftMobile/flutter-clean-architecture-implement-local-storage-with-sqlite-freezed-using-sqflite-and-bloc-68b967c604fc
 @freezed
 class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
-  const factory EmployeeTimeTrackModel({int? id, required int employeeId, required DateTime? startTime, DateTime? finishTime}) = _EmployeeTimeTrackModel;
+  const factory EmployeeTimeTrackModel({int? id, required int employee_id, DateTime? start_time, DateTime? finish_time}) = _EmployeeTimeTrackModel;
 
   factory EmployeeTimeTrackModel.fromJson(Map<String, dynamic> json) => _$EmployeeTimeTrackModelFromJson(json);
 
@@ -20,6 +20,6 @@ class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
   }*/
 
   factory EmployeeTimeTrackModel.fromMap(Map<String, dynamic> map) {
-    return EmployeeTimeTrackModel(id: map['id'], employeeId: map['employee_id'], startTime: map['start_time'], finishTime: map['finish_time']);
+    return EmployeeTimeTrackModel(id: map['id'], employee_id: map['employee_id'], start_time: map['start_time'], finish_time: map['finish_time']);
   }
 }
