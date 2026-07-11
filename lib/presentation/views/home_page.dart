@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
+import 'package:gestor_horas/presentation/views/time_track_page.dart';
 
 import 'employees_page.dart';
 
@@ -14,7 +15,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const Text('Prueba 2'),
+    const TimeTrackPage(),
     const EmployeesPage(),
   ];
 

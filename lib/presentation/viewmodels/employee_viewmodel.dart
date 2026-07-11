@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gestor_horas/data/models/employee_time_track_model.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/repositories/employee_repository_impl.dart';
+import 'package:gestor_horas/data/repositories/employee_time_tracking_repository_impl.dart';
 
 class EmployeeViewModel extends ChangeNotifier {
   final EmployeeRepositoryImpl _employeesRepository = EmployeeRepositoryImpl();
+  final EmployeeTimeTrackingRepositoryImpl _timeTrackRepository = EmployeeTimeTrackingRepositoryImpl();
 
   List<EmployeeModel> _employees = [];
 
@@ -15,6 +18,15 @@ class EmployeeViewModel extends ChangeNotifier {
     } else {
       _employees = employees;
     }
+
+    notifyListeners();
+  }
+  
+  Future<void> assignTimeTrackToEmployee(int employeeId, EmployeeTimeTrackModel timeTrack) async {
+    int employeeToReplace = _employees.indexOf(_employees.firstWhere((employee) => employee.id == employeeId));
+
+    EmployeeModel employeeModel = _employees.firstWhere((employee) => employee.id == employeeId).copyWith(timeTrack: timeTrack);
+    _employees[employeeToReplace] = employeeModel;
 
     notifyListeners();
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestor_horas/presentation/viewmodels/employee_time_track_viewmodel.dart';
 import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
 import 'package:gestor_horas/presentation/views/home_page.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,9 @@ void main() {
       providers: [
         ChangeNotifierProvider(
           create: (_) => EmployeeViewModel()..loadEmployees(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => EmployeeTimeTrackViewmodel(),
         ),
       ],
       child: const MyApp(),

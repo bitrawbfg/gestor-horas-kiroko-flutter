@@ -9,10 +9,11 @@ class EmployeeTimeTrackingRepositoryImpl implements EmployeeTimeTrackingReposito
   static const String EMPLOYEE_TIME_TRACKING_TABLE = 'employee_time_tracking';
 
   @override
-  Future<void> insertEmployeeTimeTrack(EmployeeTimeTrackModel employee) async {
+  Future<int> insertEmployeeTimeTrack(EmployeeTimeTrackModel employee) async {
     final database = await _databaseHelper.database;
 
-    await database.insert(EMPLOYEE_TIME_TRACKING_TABLE, employee.toJson());
+    int id = await database.insert(EMPLOYEE_TIME_TRACKING_TABLE, employee.toJson());
+    return id;
   }
 
   @override
