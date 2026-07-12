@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/data/models/employee_time_track_model.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/presentation/viewmodels/employee_time_track_viewmodel.dart';
 import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
@@ -54,17 +53,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                         foregroundColor: Colors.blue,
                       ),
                       onPressed: () async {
-                        EmployeeTimeTrackModel? returnEmployee =
-                            await employeeTimeTrackViewModel.addTimeStart(
-                              dropdownEmployee,
-                            );
-
-                        if (returnEmployee != null) {
-                          EmployeeModel employee = dropdownEmployee.copyWith(
-                            timeTrack: returnEmployee,
-                          );
-                          dropdownEmployee = employee;
-                        }
+                        await employeeViewModel.addTimeStart(dropdownEmployee);
                       },
                       child: Icon(Icons.play_arrow),
                     ),
@@ -74,11 +63,18 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                         foregroundColor: Colors.red,
                       ),
                       onPressed: () async {
-                        if (dropdownEmployee.timeTrack != null || dropdownEmployee.timeTrack?.start_time != null) {
-                          await employeeTimeTrackViewModel.addTimeFinish(dropdownEmployee);
+                        if (dropdownEmployee.timeTrack != null ||
+                            dropdownEmployee.timeTrack?.start_time != null) {
+                          await employeeViewModel.addTimeFinish(
+                            dropdownEmployee,
+                          );
                         }
                       },
-                      child: Icon(dropdownEmployee.timeTrack?.start_time != null ? Icons.eleven_mp : Icons.stop_circle),
+                      child: Icon(
+                        dropdownEmployee.timeTrack?.start_time != null
+                            ? Icons.eleven_mp
+                            : Icons.stop_circle,
+                      ),
                     ),
                   ],
                 ),

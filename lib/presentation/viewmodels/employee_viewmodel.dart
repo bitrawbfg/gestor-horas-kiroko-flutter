@@ -50,4 +50,29 @@ class EmployeeViewModel extends ChangeNotifier {
     await _employeesRepository.deleteEmployee(employee);
     await loadEmployees();
   }
+
+  Future<void> addTimeStart(EmployeeModel employee) async {
+    if (employee.timeTrack == null) {
+      EmployeeTimeTrackModel employeeTimeTrack = EmployeeTimeTrackModel(
+        employee_id: employee.id!,
+        start_time: DateTime.now(),
+      );
+
+      int idTimeTrack = await _timeTrackRepository.insertEmployeeTimeTrack(employeeTimeTrack);
+      int idIndexEmployee = _employees.indexOf(employee);
+      _employees[idIndexEmployee] = employee.copyWith(timeTrack: employeeTimeTrack.copyWith(id: idTimeTrack));
+
+      notifyListeners();
+    }
+  }
+
+  Future<void> addTimeFinish(EmployeeModel employee) async {
+    EmployeeTimeTrackModel employeeTimeTrack = employee.timeTrack!.copyWith(finish_time: DateTime.now());
+
+    await _timeTrackRepository.updateEmployeeTimeTrack(employeeTimeTrack);
+    int idIndexEmployee = _employees.indexOf(employee);
+    _employees[idIndexEmployee] = employee.copyWith(timeTrack: null);
+
+    notifyListeners();
+  }
 }
