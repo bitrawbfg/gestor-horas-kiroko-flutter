@@ -16,18 +16,18 @@ class TimeTrackPage extends StatefulWidget {
 typedef MenuEntry = DropdownMenuEntry<EmployeeModel>;
 
 class _TimeTrackPageState extends State<TimeTrackPage> {
+  int? selectedEmployeeId;
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<EmployeeViewModel, EmployeeTimeTrackViewmodel>(
       builder: (context, employeeViewModel, employeeTimeTrackViewModel, child) {
         List<EmployeeModel> employees = employeeViewModel.employees;
-        List<MenuEntry> menuEntries = UnmodifiableListView(
-          employees.map<MenuEntry>(
-            (EmployeeModel employee) =>
-                MenuEntry(value: employee, label: employee.name),
-          ),
-        );
-        EmployeeModel dropdownEmployee = employees.first;
+
+        if (selectedEmployeeId == null && employees.isNotEmpty) {
+          selectedEmployeeId = employees.first.id;
+        }
+        final selectedEmployee = employees.where((employee) => employee.id == selectedEmployeeId).firstOrNull;
 
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -35,47 +35,57 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                DropdownMenu(
-                  dropdownMenuEntries: menuEntries,
-                  initialSelection: employees.first,
-                  onSelected: (EmployeeModel? employee) {
+                DropdownButton<EmployeeModel>(
+                  onChanged: (EmployeeModel? value) {
                     setState(() {
-                      dropdownEmployee = employee!;
+                      selectedEmployeeId = value!.id;
                     });
                   },
+                  value: selectedEmployee,
+                  items: employees.map<DropdownMenuItem<EmployeeModel>>((
+                    EmployeeModel employee,
+                  ) => DropdownMenuItem(
+                      value: employee,
+                      child: Row(
+                        children: [
+                          Text(employee.name),
+
+                        ],
+                      ),
+                    )).toList(),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(80, 80),
-                        foregroundColor: Colors.blue,
-                      ),
-                      onPressed: () async {
-                        await employeeViewModel.addTimeStart(dropdownEmployee);
-                      },
-                      child: Icon(Icons.play_arrow),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(80, 80),
-                        foregroundColor: Colors.red,
-                      ),
-                      onPressed: () async {
-                        if (dropdownEmployee.timeTrack != null ||
-                            dropdownEmployee.timeTrack?.start_time != null) {
-                          await employeeViewModel.addTimeFinish(
-                            dropdownEmployee,
-                          );
-                        }
-                      },
-                      child: Icon(
-                        dropdownEmployee.timeTrack?.start_time != null
-                            ? Icons.eleven_mp
-                            : Icons.stop_circle,
-                      ),
-                    ),
+                    selectedEmployee?.timeTrack?.start_time == null
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(80, 80),
+                              foregroundColor: Colors.blue,
+                            ),
+                            onPressed: () async {
+                              await employeeViewModel.addTimeStart(
+                                selectedEmployee!,
+                              );
+                            },
+                            child: Icon(Icons.play_arrow),
+                          )
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(80, 80),
+                              foregroundColor: Colors.red,
+                            ),
+                            onPressed: () async {
+                              if (selectedEmployee?.timeTrack != null ||
+                                  selectedEmployee?.timeTrack?.start_time !=
+                                      null) {
+                                await employeeViewModel.addTimeFinish(
+                                  selectedEmployee!,
+                                );
+                              }
+                            },
+                            child: Icon(Icons.stop_circle),
+                          ),
                   ],
                 ),
               ],
