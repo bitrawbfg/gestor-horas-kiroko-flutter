@@ -13,7 +13,7 @@ class EmployeeModel with _$EmployeeModel {
     int? id,
     required String name,
     @JsonKey(includeToJson: false, includeFromJson: false)
-    EmployeeTimeTrackModel? timeTrack,
+    EmployeeTimeTrackModel? currentTimeTrack,
   }) = _EmployeeModel;
 
   factory EmployeeModel.fromJson(Map<String, dynamic> json) =>

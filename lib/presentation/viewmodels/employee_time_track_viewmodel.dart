@@ -8,7 +8,7 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
       EmployeeTimeTrackingRepositoryImpl();
 
   Future<EmployeeTimeTrackModel?> addTimeStart(EmployeeModel employee) async {
-    if (employee.timeTrack == null) {
+    if (employee.currentTimeTrack == null) {
       EmployeeTimeTrackModel employeeTimeTrack = EmployeeTimeTrackModel(
         employee_id: employee.id!,
         start_time: DateTime.now(),
@@ -22,7 +22,7 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
   }
 
   Future<void> addTimeFinish(EmployeeModel employee) async {
-    EmployeeTimeTrackModel employeeTimeTrack = employee.timeTrack!.copyWith(finish_time: DateTime.now());
+    EmployeeTimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(finish_time: DateTime.now());
 
     await _repository.updateEmployeeTimeTrack(employeeTimeTrack);
     notifyListeners();
