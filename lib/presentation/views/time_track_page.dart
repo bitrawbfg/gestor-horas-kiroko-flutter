@@ -18,58 +18,91 @@ class TimeTrackPage extends StatefulWidget {
 class _TimeTrackPageState extends State<TimeTrackPage> {
   int? selectedEmployeeId;
 
-  final LayerLink _datePickerLink = LayerLink();
   OverlayEntry? _datePickerEntry;
   final GlobalKey _dateButtonKey = GlobalKey();
 
   final double _pickerOffsetY = 48; // adjust if your button height differs
 
-  void _removeDatePickerOverlay() {
+  void _closeDatePickerOverlay() {
     _datePickerEntry?.remove();
     _datePickerEntry = null;
   }
 
   void _showDatePickerOverlay(BuildContext context, EmployeeViewModel vm) {
-    // prevent duplicates
     if (_datePickerEntry != null) return;
 
-    // measure button width so picker aligns nicely
+    final overlay = Overlay.of(context, rootOverlay: true);
+
     final buttonBox =
         _dateButtonKey.currentContext?.findRenderObject() as RenderBox?;
-    final buttonWidth = buttonBox?.size.width;
+    if (buttonBox == null) return;
+
+    final buttonSize = buttonBox.size;
+    final buttonOffset = buttonBox.localToGlobal(Offset.zero);
+
+    // Where the picker should start (below the button)
+    final left = buttonOffset.dx;
+    final top = buttonOffset.dy + buttonSize.height + _pickerOffsetY;
+
+    // Keep it inside the viewport: clamp if needed
+    final screenSize = MediaQuery.of(context).size;
+    final maxWidth = screenSize.width - 16; // small margin
+    final desiredWidth = (buttonSize.width + 300).clamp(0, maxWidth) as double;
+
+    // Reduce height so it won't go past bottom too aggressively
+    const pickerHeight = 220.0;
 
     _datePickerEntry = OverlayEntry(
       builder: (context) {
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
+            // close on outside tap
             if (vm.open) vm.toggle();
-            _removeDatePickerOverlay();
+            // remove after tap processing
+            _closeDatePickerOverlay();
           },
           child: Stack(
             children: [
-              CompositedTransformFollower(
-                link: _datePickerLink,
-                showWhenUnlinked: false,
-                offset: Offset(0, _pickerOffsetY),
+              Positioned(
+                left: left,
+                top: top,
+                width: desiredWidth,
                 child: Material(
                   elevation: 12,
                   borderRadius: BorderRadius.circular(12),
                   clipBehavior: Clip.antiAlias,
-                  child: Expanded(
-                    child: SizedBox(
-                      width: buttonWidth! + 300,
-                      height: 320, // try 180–220
-                      child: CalendarDatePicker(
-                        initialDate: vm.selectedDate ?? DateTime.now(),
-                        firstDate: vm.firstDate,
-                        lastDate: vm.lastDate,
-                        onDateChanged: (d) {
-                          vm.setDate(d);
-                          _removeDatePickerOverlay();
-                        },
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: pickerHeight + 40,
+                        child: CalendarDatePicker(
+                          initialDate: vm.selectedDate ?? DateTime.now(),
+                          firstDate: vm.firstDate,
+                          lastDate: vm.lastDate,
+                          onDateChanged: (date) {
+                            vm.setDate(date);
+
+                            _closeDatePickerOverlay();
+                          },
+                        ),
                       ),
-                    ),
+                      ElevatedButton(
+                        onPressed:
+                            (vm.selectedDate.weekday ==
+                                    DateTime.now().weekday) &&
+                                (vm.selectedDate.day == DateTime.now().day) &&
+                                (vm.selectedDate.month ==
+                                    DateTime.now().month) &&
+                                (vm.selectedDate.year == DateTime.now().year)
+                            ? null
+                            : () {
+                                vm.setDate(DateTime.now());
+                                _closeDatePickerOverlay();
+                              },
+                        child: Text('Volver a hoy'),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -79,12 +112,12 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
       },
     );
 
-    Overlay.of(context, rootOverlay: true).insert(_datePickerEntry!);
+    overlay.insert(_datePickerEntry!);
   }
 
   @override
   void dispose() {
-    _removeDatePickerOverlay();
+    _closeDatePickerOverlay();
     super.dispose();
   }
 
@@ -111,16 +144,6 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
         final selectedEmployee = employees
             .where((employee) => employee.id == selectedEmployeeId)
             .firstOrNull;
-
-        // keep overlay in sync with vm.open
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final vm = employeeViewModel;
-          if (vm.open && _datePickerEntry == null) {
-            _showDatePickerOverlay(context, vm);
-          } else if (!vm.open && _datePickerEntry != null) {
-            _removeDatePickerOverlay();
-          }
-        });
 
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -180,23 +203,20 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                           ),
 
                     // Date button (anchors the overlay)
-                    CompositedTransformTarget(
-                      link: _datePickerLink,
-                      child: ElevatedButton(
-                        key: _dateButtonKey,
-                        onPressed: () {
-                          employeeViewModel.toggle();
+                    ElevatedButton(
+                      key: _dateButtonKey,
+                      onPressed: () {
+                        employeeViewModel.toggle();
 
-                          // show immediately (so it feels responsive)
-                          // (overlay insertion is also handled in addPostFrameCallback)
-                          if (employeeViewModel.open) {
-                            _showDatePickerOverlay(context, employeeViewModel);
-                          } else {
-                            _removeDatePickerOverlay();
-                          }
-                        },
-                        child: Icon(Icons.calendar_month),
-                      ),
+                        // show immediately (so it feels responsive)
+                        // (overlay insertion is also handled in addPostFrameCallback)
+                        if (employeeViewModel.open) {
+                          _showDatePickerOverlay(context, employeeViewModel);
+                        } else {
+                          _closeDatePickerOverlay();
+                        }
+                      },
+                      child: Icon(Icons.calendar_month),
                     ),
 
                     // Remove your old Expanded + AnimatedSize picker here.
