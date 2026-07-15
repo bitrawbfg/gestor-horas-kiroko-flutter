@@ -43,6 +43,7 @@ class DatabaseHelper {
       start_time DATETIME,
       finish_time DATETIME,
       registered_date DATE,
+      difference INTEGER DEFAULT 0
       FOREIGN KEY(employee_id) REFERENCES employees(id)
     );
     ''');

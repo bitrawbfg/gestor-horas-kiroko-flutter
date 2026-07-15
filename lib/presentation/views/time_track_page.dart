@@ -54,9 +54,9 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
 
     _datePickerEntry = OverlayEntry(
       builder: (context) {
-        return GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
+        return TapRegion(
+          //behavior: HitTestBehavior.translucent,
+          onTapOutside: (tap) {
             // close on outside tap
             if (vm.open) vm.toggle();
             // remove after tap processing
@@ -68,6 +68,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                 left: left,
                 top: top,
                 width: desiredWidth,
+                height: desiredWidth - 40,
                 child: Material(
                   elevation: 12,
                   borderRadius: BorderRadius.circular(12),

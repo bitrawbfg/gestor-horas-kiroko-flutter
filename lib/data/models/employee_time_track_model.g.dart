@@ -17,6 +17,10 @@ _$EmployeeTimeTrackModelImpl _$$EmployeeTimeTrackModelImplFromJson(
   finish_time: json['finish_time'] == null
       ? null
       : DateTime.parse(json['finish_time'] as String),
+  registered_date: json['registered_date'] == null
+      ? null
+      : DateTime.parse(json['registered_date'] as String),
+  difference: (json['difference'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$EmployeeTimeTrackModelImplToJson(
@@ -26,4 +30,6 @@ Map<String, dynamic> _$$EmployeeTimeTrackModelImplToJson(
   'employee_id': instance.employee_id,
   'start_time': instance.start_time?.toIso8601String(),
   'finish_time': instance.finish_time?.toIso8601String(),
+  'registered_date': instance.registered_date?.toIso8601String(),
+  'difference': instance.difference,
 };

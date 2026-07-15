@@ -27,6 +27,8 @@ mixin _$EmployeeTimeTrackModel {
   int get employee_id => throw _privateConstructorUsedError;
   DateTime? get start_time => throw _privateConstructorUsedError;
   DateTime? get finish_time => throw _privateConstructorUsedError;
+  DateTime? get registered_date => throw _privateConstructorUsedError;
+  int? get difference => throw _privateConstructorUsedError;
 
   /// Serializes this EmployeeTimeTrackModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,6 +52,8 @@ abstract class $EmployeeTimeTrackModelCopyWith<$Res> {
     int employee_id,
     DateTime? start_time,
     DateTime? finish_time,
+    DateTime? registered_date,
+    int? difference,
   });
 }
 
@@ -75,6 +79,8 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
     Object? employee_id = null,
     Object? start_time = freezed,
     Object? finish_time = freezed,
+    Object? registered_date = freezed,
+    Object? difference = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -94,6 +100,14 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
                 ? _value.finish_time
                 : finish_time // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
+            registered_date: freezed == registered_date
+                ? _value.registered_date
+                : registered_date // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            difference: freezed == difference
+                ? _value.difference
+                : difference // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -114,6 +128,8 @@ abstract class _$$EmployeeTimeTrackModelImplCopyWith<$Res>
     int employee_id,
     DateTime? start_time,
     DateTime? finish_time,
+    DateTime? registered_date,
+    int? difference,
   });
 }
 
@@ -136,6 +152,8 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
     Object? employee_id = null,
     Object? start_time = freezed,
     Object? finish_time = freezed,
+    Object? registered_date = freezed,
+    Object? difference = freezed,
   }) {
     return _then(
       _$EmployeeTimeTrackModelImpl(
@@ -155,6 +173,14 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
             ? _value.finish_time
             : finish_time // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
+        registered_date: freezed == registered_date
+            ? _value.registered_date
+            : registered_date // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        difference: freezed == difference
+            ? _value.difference
+            : difference // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -168,6 +194,8 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
     required this.employee_id,
     this.start_time,
     this.finish_time,
+    this.registered_date,
+    this.difference,
   });
 
   factory _$EmployeeTimeTrackModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -181,10 +209,14 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
   final DateTime? start_time;
   @override
   final DateTime? finish_time;
+  @override
+  final DateTime? registered_date;
+  @override
+  final int? difference;
 
   @override
   String toString() {
-    return 'EmployeeTimeTrackModel(id: $id, employee_id: $employee_id, start_time: $start_time, finish_time: $finish_time)';
+    return 'EmployeeTimeTrackModel(id: $id, employee_id: $employee_id, start_time: $start_time, finish_time: $finish_time, registered_date: $registered_date, difference: $difference)';
   }
 
   @override
@@ -198,13 +230,24 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
             (identical(other.start_time, start_time) ||
                 other.start_time == start_time) &&
             (identical(other.finish_time, finish_time) ||
-                other.finish_time == finish_time));
+                other.finish_time == finish_time) &&
+            (identical(other.registered_date, registered_date) ||
+                other.registered_date == registered_date) &&
+            (identical(other.difference, difference) ||
+                other.difference == difference));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, employee_id, start_time, finish_time);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    employee_id,
+    start_time,
+    finish_time,
+    registered_date,
+    difference,
+  );
 
   /// Create a copy of EmployeeTimeTrackModel
   /// with the given fields replaced by the non-null parameter values.
@@ -230,6 +273,8 @@ abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
     required final int employee_id,
     final DateTime? start_time,
     final DateTime? finish_time,
+    final DateTime? registered_date,
+    final int? difference,
   }) = _$EmployeeTimeTrackModelImpl;
 
   factory _EmployeeTimeTrackModel.fromJson(Map<String, dynamic> json) =
@@ -243,6 +288,10 @@ abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
   DateTime? get start_time;
   @override
   DateTime? get finish_time;
+  @override
+  DateTime? get registered_date;
+  @override
+  int? get difference;
 
   /// Create a copy of EmployeeTimeTrackModel
   /// with the given fields replaced by the non-null parameter values.
