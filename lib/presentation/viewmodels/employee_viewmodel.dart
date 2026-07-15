@@ -11,7 +11,7 @@ class EmployeeViewModel extends ChangeNotifier {
   final firstDate = DateTime(2000);
   final lastDate = DateTime(2100);
 
-  DateTime? selectedDate;
+  DateTime selectedDate = DateTime.now();
   bool open = false;
 
   void toggle() {

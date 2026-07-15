@@ -90,8 +90,10 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime startOfWeek = DateTime.now().subtract(
-      Duration(days: DateTime.now().weekday - 1),
+    EmployeeViewModel viewModel = context.watch<EmployeeViewModel>();
+
+    DateTime startOfWeek = viewModel.selectedDate.subtract(
+      Duration(days: viewModel.selectedDate.weekday - 1),
     );
 
     List<DateTime> weekDates = List.generate(7, (index) {
@@ -193,14 +195,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                             _removeDatePickerOverlay();
                           }
                         },
-                        child: Text(
-                          employeeViewModel.selectedDate == null
-                              ? 'Pick a date'
-                              : employeeViewModel.selectedDate!
-                                    .toIso8601String()
-                                    .split('T')
-                                    .first,
-                        ),
+                        child: Icon(Icons.calendar_month),
                       ),
                     ),
 
