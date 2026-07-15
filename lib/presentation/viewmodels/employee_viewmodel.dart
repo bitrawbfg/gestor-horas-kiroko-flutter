@@ -8,6 +8,29 @@ class EmployeeViewModel extends ChangeNotifier {
   final EmployeeRepositoryImpl _employeesRepository = EmployeeRepositoryImpl();
   final EmployeeTimeTrackingRepositoryImpl _timeTrackRepository = EmployeeTimeTrackingRepositoryImpl();
 
+  final firstDate = DateTime(2000);
+  final lastDate = DateTime(2100);
+
+  DateTime? selectedDate;
+  bool open = false;
+
+  void toggle() {
+    open = !open;
+    notifyListeners();
+  }
+
+  void close() {
+    if (!open) return;
+    open = false;
+    notifyListeners();
+  }
+
+  void setDate(DateTime d) {
+    selectedDate = d;
+    open = false; // optional: close after selecting
+    notifyListeners();
+  }
+
   List<EmployeeModel> _employees = [];
 
   List<EmployeeModel> get employees => _employees;

@@ -18,6 +18,76 @@ class TimeTrackPage extends StatefulWidget {
 class _TimeTrackPageState extends State<TimeTrackPage> {
   int? selectedEmployeeId;
 
+  final LayerLink _datePickerLink = LayerLink();
+  OverlayEntry? _datePickerEntry;
+  final GlobalKey _dateButtonKey = GlobalKey();
+
+  final double _pickerOffsetY = 48; // adjust if your button height differs
+
+  void _removeDatePickerOverlay() {
+    _datePickerEntry?.remove();
+    _datePickerEntry = null;
+  }
+
+  void _showDatePickerOverlay(BuildContext context, EmployeeViewModel vm) {
+    // prevent duplicates
+    if (_datePickerEntry != null) return;
+
+    // measure button width so picker aligns nicely
+    final buttonBox =
+        _dateButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    final buttonWidth = buttonBox?.size.width;
+
+    _datePickerEntry = OverlayEntry(
+      builder: (context) {
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            if (vm.open) vm.toggle();
+            _removeDatePickerOverlay();
+          },
+          child: Stack(
+            children: [
+              CompositedTransformFollower(
+                link: _datePickerLink,
+                showWhenUnlinked: false,
+                offset: Offset(0, _pickerOffsetY),
+                child: Material(
+                  elevation: 12,
+                  borderRadius: BorderRadius.circular(12),
+                  clipBehavior: Clip.antiAlias,
+                  child: Expanded(
+                    child: SizedBox(
+                      width: buttonWidth! + 300,
+                      height: 320, // try 180–220
+                      child: CalendarDatePicker(
+                        initialDate: vm.selectedDate ?? DateTime.now(),
+                        firstDate: vm.firstDate,
+                        lastDate: vm.lastDate,
+                        onDateChanged: (d) {
+                          vm.setDate(d);
+                          _removeDatePickerOverlay();
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    Overlay.of(context, rootOverlay: true).insert(_datePickerEntry!);
+  }
+
+  @override
+  void dispose() {
+    _removeDatePickerOverlay();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     DateTime startOfWeek = DateTime.now().subtract(
@@ -35,9 +105,20 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
         if (selectedEmployeeId == null && employees.isNotEmpty) {
           selectedEmployeeId = employees.first.id;
         }
+
         final selectedEmployee = employees
             .where((employee) => employee.id == selectedEmployeeId)
             .firstOrNull;
+
+        // keep overlay in sync with vm.open
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final vm = employeeViewModel;
+          if (vm.open && _datePickerEntry == null) {
+            _showDatePickerOverlay(context, vm);
+          } else if (!vm.open && _datePickerEntry != null) {
+            _removeDatePickerOverlay();
+          }
+        });
 
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -67,7 +148,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                     selectedEmployee?.currentTimeTrack?.start_time == null
                         ? ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(80, 80),
+                              minimumSize: const Size(80, 80),
                               foregroundColor: Colors.blue,
                             ),
                             onPressed: () async {
@@ -75,27 +156,63 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                                 selectedEmployee!,
                               );
                             },
-                            child: Icon(Icons.play_arrow),
+                            child: const Icon(Icons.play_arrow),
                           )
                         : ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(80, 80),
+                              minimumSize: const Size(80, 80),
                               foregroundColor: Colors.red,
                             ),
                             onPressed: () async {
                               if (selectedEmployee?.currentTimeTrack != null ||
-                                  selectedEmployee?.currentTimeTrack?.start_time !=
+                                  selectedEmployee
+                                          ?.currentTimeTrack
+                                          ?.start_time !=
                                       null) {
                                 await employeeViewModel.addTimeFinish(
                                   selectedEmployee!,
                                 );
                               }
                             },
-                            child: Icon(Icons.stop_circle),
+                            child: const Icon(Icons.stop_circle),
                           ),
+
+                    // Date button (anchors the overlay)
+                    CompositedTransformTarget(
+                      link: _datePickerLink,
+                      child: ElevatedButton(
+                        key: _dateButtonKey,
+                        onPressed: () {
+                          employeeViewModel.toggle();
+
+                          // show immediately (so it feels responsive)
+                          // (overlay insertion is also handled in addPostFrameCallback)
+                          if (employeeViewModel.open) {
+                            _showDatePickerOverlay(context, employeeViewModel);
+                          } else {
+                            _removeDatePickerOverlay();
+                          }
+                        },
+                        child: Text(
+                          employeeViewModel.selectedDate == null
+                              ? 'Pick a date'
+                              : employeeViewModel.selectedDate!
+                                    .toIso8601String()
+                                    .split('T')
+                                    .first,
+                        ),
+                      ),
+                    ),
+
+                    // Remove your old Expanded + AnimatedSize picker here.
+                    // The overlay will render above everything else.
                   ],
                 ),
-                DataTableEmployees(weekDates: weekDates, employeeTimeTrackViewModel: employeeTimeTrackViewModel, employeeViewModel: employeeViewModel,),
+                DataTableEmployees(
+                  weekDates: weekDates,
+                  employeeTimeTrackViewModel: employeeTimeTrackViewModel,
+                  employeeViewModel: employeeViewModel,
+                ),
               ],
             ),
           ),
@@ -130,10 +247,7 @@ class DataTableEmployees extends StatelessWidget {
             headingRowAlignment: MainAxisAlignment.center,
             label: Column(
               children: [
-                Text(
-                  'Lunes',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Lunes', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   '${weekDates[0].day}',
                   style: TextStyle(color: Colors.grey[600]),
@@ -145,10 +259,7 @@ class DataTableEmployees extends StatelessWidget {
             headingRowAlignment: MainAxisAlignment.center,
             label: Column(
               children: [
-                Text(
-                  'Martes',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Martes', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   '${weekDates[1].day}',
                   style: TextStyle(color: Colors.grey[600]),
@@ -175,10 +286,7 @@ class DataTableEmployees extends StatelessWidget {
             headingRowAlignment: MainAxisAlignment.center,
             label: Column(
               children: [
-                Text(
-                  'Jueves',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Jueves', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   '${weekDates[3].day}',
                   style: TextStyle(color: Colors.grey[600]),
@@ -190,10 +298,7 @@ class DataTableEmployees extends StatelessWidget {
             headingRowAlignment: MainAxisAlignment.center,
             label: Column(
               children: [
-                Text(
-                  'Viernes',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Viernes', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   '${weekDates[4].day}',
                   style: TextStyle(color: Colors.grey[600]),
@@ -205,10 +310,7 @@ class DataTableEmployees extends StatelessWidget {
             headingRowAlignment: MainAxisAlignment.center,
             label: Column(
               children: [
-                Text(
-                  'Sábado',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Sábado', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   '${weekDates[5].day}',
                   style: TextStyle(color: Colors.grey[600]),
@@ -220,10 +322,7 @@ class DataTableEmployees extends StatelessWidget {
             headingRowAlignment: MainAxisAlignment.center,
             label: Column(
               children: [
-                Text(
-                  'Domingo',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Domingo', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   '${weekDates[6].day}',
                   style: TextStyle(color: Colors.grey[600]),
@@ -237,28 +336,32 @@ class DataTableEmployees extends StatelessWidget {
             numeric: true,
           ),
         ],
-        rows: List<DataRow>.generate(
-          employeeViewModel.employees.length,
-          (index) {
-            EmployeeModel employee =
-                employeeViewModel.employees[index];
-            EmployeeTimeTrackModel? timeTrack = employee.currentTimeTrack;
+        rows: List<DataRow>.generate(employeeViewModel.employees.length, (
+          index,
+        ) {
+          EmployeeModel employee = employeeViewModel.employees[index];
+          EmployeeTimeTrackModel? timeTrack = employee.currentTimeTrack;
 
-            return DataRow(
-              cells: [
-                DataCell(Text(employee.name)),
-                DataCell(Center(child: Text(timeTrack == null ? '-' : '${timeTrack.start_time}'))),
-                DataCell(Center(child: Text('C' * (15 - (index + 5) % 10)))),
-                DataCell(Center(child: Text('D' * (15 - (index + 10) % 10)))),
-                DataCell(Center(child: Text('A' * (10 - index % 10)))),
-                DataCell(Center(child: Text('B' * (10 - (index + 5) % 10)))),
-                DataCell(Center(child: Text('C' * (15 - (index + 5) % 10)))),
-                DataCell(Center(child: Text('D' * (15 - (index + 10) % 10)))),
-                DataCell(Text(((index + 0.1) * 25.4).toString())),
-              ],
-            );
-          },
-        ),
+          return DataRow(
+            cells: [
+              DataCell(Text(employee.name)),
+              DataCell(
+                Center(
+                  child: Text(
+                    timeTrack == null ? '-' : '${timeTrack.start_time}',
+                  ),
+                ),
+              ),
+              DataCell(Center(child: Text('C' * (15 - (index + 5) % 10)))),
+              DataCell(Center(child: Text('D' * (15 - (index + 10) % 10)))),
+              DataCell(Center(child: Text('A' * (10 - index % 10)))),
+              DataCell(Center(child: Text('B' * (10 - (index + 5) % 10)))),
+              DataCell(Center(child: Text('C' * (15 - (index + 5) % 10)))),
+              DataCell(Center(child: Text('D' * (15 - (index + 10) % 10)))),
+              DataCell(Text(((index + 0.1) * 25.4).toString())),
+            ],
+          );
+        }),
       ),
     );
   }
