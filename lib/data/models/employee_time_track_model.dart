@@ -31,9 +31,9 @@ class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
     return EmployeeTimeTrackModel(
       id: map['id'],
       employee_id: map['employee_id'],
-      start_time: map['start_time'],
-      finish_time: map['finish_time'],
-      registered_date: map['registered_date'],
+      start_time: DateTime.tryParse(map['start_time']),
+      finish_time: DateTime.tryParse(map['finish_time']),
+      registered_date: DateTime.tryParse(map['registered_date']),
       difference: map['difference'],
     );
   }

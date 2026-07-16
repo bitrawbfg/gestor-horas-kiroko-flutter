@@ -356,11 +356,69 @@ class DataTableEmployees extends StatelessWidget {
           index,
         ) {
           EmployeeModel employee = employeeViewModel.employees[index];
-          EmployeeTimeTrackModel? timeTrack = employee.currentTimeTrack;
+          EmployeeTimeTrackModel? timeTrack =
+              employee.currentTimeTrack; // This will be removed
+
+          List<EmployeeTimeTrackModel> timeTrackings =
+              employeeTimeTrackViewModel.timeTrackings;
+          List<EmployeeTimeTrackModel> employeeTimeTrackings = timeTrackings
+              .where((timeTrack) => employee.id == timeTrack.employee_id)
+              .toList();
+
+          int checkColumnWeekDayWithTimeTrackings(int weekDateValue) {
+            int day = weekDates[weekDateValue].day;
+
+            List<EmployeeTimeTrackModel> timeTrackingsThatMatchDay =
+                employeeTimeTrackings
+                    .where((timeTrack) => timeTrack.registered_date?.day == day)
+                    .toList();
+
+            int sumOfRegisteredTime = 0;
+            for (EmployeeTimeTrackModel timeTrack in timeTrackingsThatMatchDay) {
+              sumOfRegisteredTime += timeTrack.difference!;
+            }
+
+            return Duration(minutes: sumOfRegisteredTime).inMinutes;
+          }
 
           return DataRow(
             cells: [
               DataCell(Text(employee.name)),
+              DataCell(
+                Center(
+                  child: Text('${checkColumnWeekDayWithTimeTrackings(0)}'),
+                ),
+              ),
+              DataCell(
+                Center(
+                  child: Text('${checkColumnWeekDayWithTimeTrackings(1)}'),
+                ),
+              ),
+              DataCell(
+                Center(
+                  child: Text('${checkColumnWeekDayWithTimeTrackings(2)}'),
+                ),
+              ),
+              DataCell(
+                Center(
+                  child: Text('${checkColumnWeekDayWithTimeTrackings(3)}'),
+                ),
+              ),
+              DataCell(
+                Center(
+                  child: Text('${checkColumnWeekDayWithTimeTrackings(4)}'),
+                ),
+              ),
+              DataCell(
+                Center(
+                  child: Text('${checkColumnWeekDayWithTimeTrackings(5)}'),
+                ),
+              ),
+              DataCell(
+                Center(
+                  child: Text('${checkColumnWeekDayWithTimeTrackings(6)}'),
+                ),
+              ),
               DataCell(
                 Center(
                   child: Text(
@@ -368,13 +426,6 @@ class DataTableEmployees extends StatelessWidget {
                   ),
                 ),
               ),
-              DataCell(Center(child: Text('C' * (15 - (index + 5) % 10)))),
-              DataCell(Center(child: Text('D' * (15 - (index + 10) % 10)))),
-              DataCell(Center(child: Text('A' * (10 - index % 10)))),
-              DataCell(Center(child: Text('B' * (10 - (index + 5) % 10)))),
-              DataCell(Center(child: Text('C' * (15 - (index + 5) % 10)))),
-              DataCell(Center(child: Text('D' * (15 - (index + 10) % 10)))),
-              DataCell(Text(((index + 0.1) * 25.4).toString())),
             ],
           );
         }),
