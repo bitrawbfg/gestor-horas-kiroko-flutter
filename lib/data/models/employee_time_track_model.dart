@@ -28,12 +28,16 @@ class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
   }*/
 
   factory EmployeeTimeTrackModel.fromMap(Map<String, dynamic> map) {
+    final startTime = map['start_time'] as String?;
+    final finishTime = map['finish_time'] as String?;
+    final registeredDate = map['registered_date'] as String?;
+
     return EmployeeTimeTrackModel(
       id: map['id'],
       employee_id: map['employee_id'],
-      start_time: DateTime.tryParse(map['start_time']),
-      finish_time: DateTime.tryParse(map['finish_time']),
-      registered_date: DateTime.tryParse(map['registered_date']),
+      start_time: startTime == null ? null : DateTime.tryParse(startTime),
+      finish_time: finishTime == null ? null : DateTime.tryParse(finishTime),
+      registered_date: registeredDate == null ? null : DateTime.tryParse(registeredDate),
       difference: map['difference'],
     );
   }
