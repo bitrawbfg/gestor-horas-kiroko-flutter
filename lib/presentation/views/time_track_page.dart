@@ -8,6 +8,7 @@ import 'package:gestor_horas/presentation/viewmodels/date_view_model.dart';
 import 'package:gestor_horas/presentation/viewmodels/employee_time_track_viewmodel.dart';
 import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class TimeTrackPage extends StatefulWidget {
   const TimeTrackPage({super.key});
@@ -75,7 +76,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                 left: left,
                 top: top,
                 width: desiredWidth,
-                height: desiredWidth - 40,
+                height: desiredWidth + 80,
                 child: Material(
                   elevation: 12,
                   borderRadius: BorderRadius.circular(12),
@@ -83,13 +84,22 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: pickerHeight + 40,
-                        child: CalendarDatePicker(
-                          initialDate: dateViewModel.selectedDate,
-                          firstDate: dateViewModel.minDate,
-                          lastDate: dateViewModel.maxDate,
-                          onDateChanged: (date) {
-                            dateViewModel.setSelectedDate(date);
+                        child: TableCalendar(
+                          focusedDay: dateViewModel.selectedDate,
+                          firstDay: dateViewModel.minDate,
+                          lastDay: dateViewModel.maxDate,
+                          rangeStartDay: dateViewModel.firstDayOfWeek,
+                          rangeEndDay: dateViewModel.lastDayOfWeek,
+                          rangeSelectionMode: RangeSelectionMode.enforced,
+                          calendarFormat: CalendarFormat.month,
+                          locale: 'es_ES',
+                          startingDayOfWeek: StartingDayOfWeek.monday,
+                          headerStyle: const HeaderStyle(
+                            formatButtonVisible: false,
+                            titleCentered: true,
+                          ),
+                          onDaySelected: (selectedDay, focusedDay) {
+                            dateViewModel.setSelectedDate(selectedDay);
                             timeTrackViewModel.loadTimeTrackings();
 
                             _closeDatePickerOverlay();
@@ -246,9 +256,6 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                           },
                           child: Icon(Icons.calendar_month),
                         ),
-
-                        // Remove your old Expanded + AnimatedSize picker here.
-                        // The overlay will render above everything else.
                       ],
                     ),
                     DataTableEmployees(
