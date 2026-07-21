@@ -96,7 +96,7 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  int checkColumnWeekDayWithTimeTrackings(
+  Widget checkColumnWeekDayWithTimeTrackings(
     int weekDateValue,
     int employeeId,
     List<DateTime> weekDates,
@@ -116,6 +116,33 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
       sumOfRegisteredTime += timeTrack.difference!;
     }
 
-    return Duration(minutes: sumOfRegisteredTime).inMinutes;
+    int duration = Duration(minutes: sumOfRegisteredTime).inMinutes;
+
+    return Text(duration == 0 ? '-' : '$duration');
+  }
+
+  int getTimeWorkedInWeekByEmployee(
+    int employeeId,
+    DateTime startDay,
+    DateTime finishDay,
+  ) {
+    startDay = startDay.copyWith(hour: 00, minute: 00, second: 00);
+    finishDay = finishDay.copyWith(hour: 23, minute: 59, second: 59);
+
+    List<EmployeeTimeTrackModel> timeTrackingsList = timeTrackings
+        .where(
+          (timeTrack) =>
+              timeTrack.employee_id == employeeId &&
+              timeTrack.registered_date!.isAfter(startDay) &&
+              timeTrack.registered_date!.isBefore(finishDay),
+        )
+        .toList();
+
+    int totalTime = 0;
+    for (EmployeeTimeTrackModel timeTrack in timeTrackingsList) {
+      totalTime += timeTrack.difference!;
+    }
+
+    return totalTime;
   }
 }

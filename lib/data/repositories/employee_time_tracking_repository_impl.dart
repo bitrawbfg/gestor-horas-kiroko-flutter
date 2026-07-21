@@ -13,6 +13,8 @@ class EmployeeTimeTrackingRepositoryImpl
   Future<int> insertEmployeeTimeTrack(EmployeeTimeTrackModel employee) async {
     final database = await _databaseHelper.database;
 
+    employee.start_time!.copyWith(day: 18);
+
     int id = await database.insert(
       EMPLOYEE_TIME_TRACKING_TABLE,
       employee.toJson(),
@@ -87,6 +89,35 @@ class EmployeeTimeTrackingRepositoryImpl
       EMPLOYEE_TIME_TRACKING_TABLE,
       // where: 'registered_date >= ? AND registered_date <= ?',
       // whereArgs: ['$startDay', '$finishDay'],
+    );
+
+    List<EmployeeTimeTrackModel> timeTrackingsList = timeTrackings
+        .map((timeTrack) => EmployeeTimeTrackModel.fromMap(timeTrack))
+        .where(
+          (timeTrack) =>
+              timeTrack.registered_date!.isAfter(startDay) &&
+              timeTrack.registered_date!.isBefore(finishDay),
+        )
+        .toList();
+
+    for (EmployeeTimeTrackModel timeTrack in timeTrackingsList) {
+      print(timeTrack.registered_date?.isAfter(startDay));
+      print(timeTrack.registered_date?.isBefore(finishDay));
+    }
+
+    return timeTrackingsList;
+  }
+
+  Future<List<EmployeeTimeTrackModel>> getTimeTrackingDateToDateFromEmployee(
+    DateTime startDay,
+    DateTime finishDay,
+    int employeeId,
+  ) async {
+    final database = await _databaseHelper.database;
+    final List<Map<String, dynamic>> timeTrackings = await database.query(
+      EMPLOYEE_TIME_TRACKING_TABLE,
+      where: 'employee_id = ?',
+      whereArgs: [employeeId],
     );
 
     List<EmployeeTimeTrackModel> timeTrackingsList = timeTrackings
