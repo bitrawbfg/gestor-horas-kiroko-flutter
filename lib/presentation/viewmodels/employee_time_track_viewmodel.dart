@@ -7,11 +7,43 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
   final EmployeeTimeTrackingRepositoryImpl _repository =
       EmployeeTimeTrackingRepositoryImpl();
   List<EmployeeTimeTrackModel> _timeTrackings = [];
+
   List<EmployeeTimeTrackModel> get timeTrackings => _timeTrackings;
 
-  Future<void> loadTimeTrackings({List<EmployeeTimeTrackModel>? timeTrackings, required DateTime startDay, required DateTime finishDay}) async {
+  Future<void> loadTimeTrackings({
+    List<EmployeeTimeTrackModel>? timeTrackings,
+    DateTime? startDay,
+    DateTime? finishDay,
+    DateTime? selectedDay,
+  }) async {
+    DateTime startOfWeek;
+
+    if (selectedDay == null) {
+      startOfWeek = DateTime.now().subtract(
+        Duration(days: DateTime.now().weekday - 1),
+      );
+    } else {
+      startOfWeek = selectedDay.subtract(
+        Duration(days: DateTime.now().weekday - 1),
+      );
+    }
+
+    List<DateTime> weekDates = List.generate(7, (index) {
+      return startOfWeek.add(Duration(days: index));
+    });
+
     if (timeTrackings == null) {
-      _timeTrackings = await _repository.getAllTimeTrackingFromDateToDate(startDay, finishDay);
+      if (startDay != null || finishDay != null) {
+        _timeTrackings = await _repository.getAllTimeTrackingFromDateToDate(
+          startDay!,
+          finishDay!,
+        );
+      } else {
+        _timeTrackings = await _repository.getAllTimeTrackingFromDateToDate(
+          weekDates[0],
+          weekDates[6],
+        );
+      }
     } else {
       _timeTrackings = timeTrackings;
     }
@@ -39,24 +71,51 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<EmployeeModel> addTimeFinish(EmployeeModel employee) async {
+  Future<void> addTimeFinish(EmployeeModel employee) async {
     EmployeeTimeTrackModel employeeTimeTrack = employee.currentTimeTrack!
         .copyWith(
-      finish_time: DateTime.now(),
-      registered_date: DateTime.now(),
-      difference: DateTime.now()
-          .difference(employee.currentTimeTrack!.start_time!)
-          .inMinutes,
-    );
+          finish_time: DateTime.now(),
+          registered_date: DateTime.now(),
+          difference: DateTime.now()
+              .difference(employee.currentTimeTrack!.start_time!)
+              .inMinutes,
+        );
 
     await _repository.updateEmployeeTimeTrack(employeeTimeTrack);
-    return employee.copyWith(currentTimeTrack: null);
+    loadTimeTrackings();
   }
 
-  Future<void> getTimeTrackingsBetweenDates(DateTime startDay, DateTime finishDay) async {
-    List<EmployeeTimeTrackModel> obtainedTimeTrackings = await _repository.getAllTimeTrackingFromDateToDate(startDay, finishDay);
+  Future<void> getTimeTrackingsBetweenDates(
+    DateTime startDay,
+    DateTime finishDay,
+  ) async {
+    List<EmployeeTimeTrackModel> obtainedTimeTrackings = await _repository
+        .getAllTimeTrackingFromDateToDate(startDay, finishDay);
 
     _timeTrackings = obtainedTimeTrackings;
     notifyListeners();
+  }
+
+  int checkColumnWeekDayWithTimeTrackings(
+    int weekDateValue,
+    int employeeId,
+    List<DateTime> weekDates,
+  ) {
+    int day = weekDates[weekDateValue].day;
+    List<EmployeeTimeTrackModel> employeeTimeTrackings = timeTrackings
+        .where((timeTrack) => employeeId == timeTrack.employee_id)
+        .toList();
+
+    List<EmployeeTimeTrackModel> timeTrackingsThatMatchDay =
+        employeeTimeTrackings
+            .where((timeTrack) => timeTrack.registered_date?.day == day)
+            .toList();
+
+    int sumOfRegisteredTime = 0;
+    for (EmployeeTimeTrackModel timeTrack in timeTrackingsThatMatchDay) {
+      sumOfRegisteredTime += timeTrack.difference!;
+    }
+
+    return Duration(minutes: sumOfRegisteredTime).inMinutes;
   }
 }

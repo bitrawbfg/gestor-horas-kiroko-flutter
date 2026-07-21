@@ -6,14 +6,6 @@ import 'package:gestor_horas/presentation/views/home_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  DateTime startOfWeek = DateTime.now().subtract(
-    Duration(days: DateTime.now().weekday - 1),
-  );
-
-  List<DateTime> weekDates = List.generate(7, (index) {
-    return startOfWeek.add(Duration(days: index));
-  });
-
   runApp(
     MultiProvider(
       providers: [
@@ -21,11 +13,7 @@ void main() {
           create: (_) => EmployeeViewModel()..loadEmployees(),
         ),
         ChangeNotifierProvider(
-          create: (_) => EmployeeTimeTrackViewmodel()
-            ..loadTimeTrackings(
-              startDay: weekDates[0],
-              finishDay: weekDates[6],
-            ),
+          create: (_) => EmployeeTimeTrackViewmodel()..loadTimeTrackings(),
         ),
       ],
       child: const MyApp(),

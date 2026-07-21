@@ -28,7 +28,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
     _datePickerEntry = null;
   }
 
-  void _showDatePickerOverlay(BuildContext context, EmployeeViewModel vm) {
+  void _showDatePickerOverlay(BuildContext context, EmployeeViewModel employeeViewModel, EmployeeTimeTrackViewmodel timeTrackViewModel) {
     if (_datePickerEntry != null) return;
 
     final overlay = Overlay.of(context, rootOverlay: true);
@@ -58,7 +58,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
           //behavior: HitTestBehavior.translucent,
           onTapOutside: (tap) {
             // close on outside tap
-            if (vm.open) vm.toggle();
+            if (employeeViewModel.open) employeeViewModel.toggle();
             // remove after tap processing
             _closeDatePickerOverlay();
           },
@@ -78,11 +78,12 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                       SizedBox(
                         height: pickerHeight + 40,
                         child: CalendarDatePicker(
-                          initialDate: vm.selectedDate ?? DateTime.now(),
-                          firstDate: vm.firstDate,
-                          lastDate: vm.lastDate,
+                          initialDate: employeeViewModel.selectedDate ?? DateTime.now(),
+                          firstDate: employeeViewModel.firstDate,
+                          lastDate: employeeViewModel.lastDate,
                           onDateChanged: (date) {
-                            vm.setDate(date);
+                            employeeViewModel.setDate(date);
+                            timeTrackViewModel.loadTimeTrackings(selectedDay: date);
 
                             _closeDatePickerOverlay();
                           },
@@ -90,15 +91,15 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                       ),
                       ElevatedButton(
                         onPressed:
-                            (vm.selectedDate.weekday ==
+                            (employeeViewModel.selectedDate.weekday ==
                                     DateTime.now().weekday) &&
-                                (vm.selectedDate.day == DateTime.now().day) &&
-                                (vm.selectedDate.month ==
+                                (employeeViewModel.selectedDate.day == DateTime.now().day) &&
+                                (employeeViewModel.selectedDate.month ==
                                     DateTime.now().month) &&
-                                (vm.selectedDate.year == DateTime.now().year)
+                                (employeeViewModel.selectedDate.year == DateTime.now().year)
                             ? null
                             : () {
-                                vm.setDate(DateTime.now());
+                                employeeViewModel.setDate(DateTime.now());
                                 _closeDatePickerOverlay();
                               },
                         child: Text('Volver a hoy'),
@@ -126,13 +127,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
   Widget build(BuildContext context) {
     EmployeeViewModel viewModel = context.watch<EmployeeViewModel>();
 
-    DateTime startOfWeek = viewModel.selectedDate.subtract(
-      Duration(days: viewModel.selectedDate.weekday - 1),
-    );
 
-    List<DateTime> weekDates = List.generate(7, (index) {
-      return startOfWeek.add(Duration(days: index));
-    });
 
     return Consumer2<EmployeeViewModel, EmployeeTimeTrackViewmodel>(
       builder: (context, employeeViewModel, employeeTimeTrackViewModel, child) {
@@ -196,11 +191,11 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                                           ?.currentTimeTrack
                                           ?.start_time !=
                                       null) {
-                                EmployeeModel employeeWithoutTimeFinish = await employeeTimeTrackViewModel.addTimeFinish(
+                                await employeeTimeTrackViewModel.addTimeFinish(
                                   selectedEmployee!,
                                 );
 
-                                employeeViewModel.updateEmployee(employeeWithoutTimeFinish);
+                                employeeViewModel.updateEmployee(selectedEmployee.copyWith(currentTimeTrack: null));
                               }
                             },
                             child: const Icon(Icons.stop_circle),
@@ -215,7 +210,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                         // show immediately (so it feels responsive)
                         // (overlay insertion is also handled in addPostFrameCallback)
                         if (employeeViewModel.open) {
-                          _showDatePickerOverlay(context, employeeViewModel);
+                          _showDatePickerOverlay(context, employeeViewModel, employeeTimeTrackViewModel);
                         } else {
                           _closeDatePickerOverlay();
                         }
@@ -228,7 +223,6 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                   ],
                 ),
                 DataTableEmployees(
-                  weekDates: weekDates,
                   employeeTimeTrackViewModel: employeeTimeTrackViewModel,
                   employeeViewModel: employeeViewModel,
                 ),
@@ -244,17 +238,23 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
 class DataTableEmployees extends StatelessWidget {
   const DataTableEmployees({
     super.key,
-    required this.weekDates,
     required this.employeeViewModel,
     required this.employeeTimeTrackViewModel,
   });
 
   final EmployeeViewModel employeeViewModel;
   final EmployeeTimeTrackViewmodel employeeTimeTrackViewModel;
-  final List<DateTime> weekDates;
 
   @override
   Widget build(BuildContext context) {
+    DateTime startOfWeek = employeeViewModel.selectedDate.subtract(
+      Duration(days: employeeViewModel.selectedDate.weekday - 1),
+    );
+
+    List<DateTime> weekDates = List.generate(7, (index) {
+      return startOfWeek.add(Duration(days: index));
+    });
+
     return Expanded(
       child: DataTable2(
         columnSpacing: 12,
@@ -359,73 +359,49 @@ class DataTableEmployees extends StatelessWidget {
           index,
         ) {
           EmployeeModel employee = employeeViewModel.employees[index];
-          EmployeeTimeTrackModel? timeTrack =
-              employee.currentTimeTrack; // This will be removed
-
-          List<EmployeeTimeTrackModel> timeTrackings =
-              employeeTimeTrackViewModel.timeTrackings;
-          List<EmployeeTimeTrackModel> employeeTimeTrackings = timeTrackings
-              .where((timeTrack) => employee.id == timeTrack.employee_id)
-              .toList();
-
-          int checkColumnWeekDayWithTimeTrackings(int weekDateValue) {
-            int day = weekDates[weekDateValue].day;
-
-            List<EmployeeTimeTrackModel> timeTrackingsThatMatchDay =
-                employeeTimeTrackings
-                    .where((timeTrack) => timeTrack.registered_date?.day == day)
-                    .toList();
-
-            int sumOfRegisteredTime = 0;
-            for (EmployeeTimeTrackModel timeTrack in timeTrackingsThatMatchDay) {
-              sumOfRegisteredTime += timeTrack.difference!;
-            }
-
-            return Duration(minutes: sumOfRegisteredTime).inMinutes;
-          }
 
           return DataRow(
             cells: [
               DataCell(Text(employee.name)),
               DataCell(
                 Center(
-                  child: Text('${checkColumnWeekDayWithTimeTrackings(0)}'),
+                  child: Text('${employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(0, employee.id!, weekDates)}'),
                 ),
               ),
               DataCell(
                 Center(
-                  child: Text('${checkColumnWeekDayWithTimeTrackings(1)}'),
+                  child: Text('${employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(1, employee.id!, weekDates)}'),
                 ),
               ),
               DataCell(
                 Center(
-                  child: Text('${checkColumnWeekDayWithTimeTrackings(2)}'),
+                  child: Text('${employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(2, employee.id!, weekDates)}'),
                 ),
               ),
               DataCell(
                 Center(
-                  child: Text('${checkColumnWeekDayWithTimeTrackings(3)}'),
+                  child: Text('${employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(3, employee.id!, weekDates)}'),
                 ),
               ),
               DataCell(
                 Center(
-                  child: Text('${checkColumnWeekDayWithTimeTrackings(4)}'),
+                  child: Text('${employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(4, employee.id!, weekDates)}'),
                 ),
               ),
               DataCell(
                 Center(
-                  child: Text('${checkColumnWeekDayWithTimeTrackings(5)}'),
+                  child: Text('${employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(5, employee.id!, weekDates)}'),
                 ),
               ),
               DataCell(
                 Center(
-                  child: Text('${checkColumnWeekDayWithTimeTrackings(6)}'),
+                  child: Text('${employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(6, employee.id!, weekDates)}'),
                 ),
               ),
               DataCell(
                 Center(
                   child: Text(
-                    timeTrack == null ? '-' : '${timeTrack.start_time}',
+                    employee.currentTimeTrack == null ? '-' : '${employee.currentTimeTrack!.difference}',
                   ),
                 ),
               ),
