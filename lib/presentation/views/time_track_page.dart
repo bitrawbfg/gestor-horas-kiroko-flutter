@@ -178,9 +178,10 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                               foregroundColor: Colors.blue,
                             ),
                             onPressed: () async {
-                              await employeeViewModel.addTimeStart(
+                              EmployeeModel? employeeWithTimeStart = await employeeTimeTrackViewModel.addTimeStart(
                                 selectedEmployee!,
                               );
+                              await employeeViewModel.updateEmployee(employeeWithTimeStart!);
                             },
                             child: const Icon(Icons.play_arrow),
                           )
@@ -195,9 +196,11 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                                           ?.currentTimeTrack
                                           ?.start_time !=
                                       null) {
-                                await employeeViewModel.addTimeFinish(
+                                EmployeeModel employeeWithoutTimeFinish = await employeeTimeTrackViewModel.addTimeFinish(
                                   selectedEmployee!,
                                 );
+
+                                employeeViewModel.updateEmployee(employeeWithoutTimeFinish);
                               }
                             },
                             child: const Icon(Icons.stop_circle),

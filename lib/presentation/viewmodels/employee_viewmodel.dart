@@ -39,6 +39,16 @@ class EmployeeViewModel extends ChangeNotifier {
   Future<void> loadEmployees({List<EmployeeModel>? employees}) async {
     if (employees == null) {
       _employees = await _employeesRepository.getEmployees();
+
+      for (EmployeeModel employee in _employees) {
+        int index = _employees.indexOf(employee);
+        EmployeeTimeTrackModel? timeTrack = await _timeTrackRepository.getLastTimeTrackingByEmployeeId(employee.id!);
+
+        if (timeTrack != null) {
+          EmployeeModel employeeWithTimeTrack = employee.copyWith(currentTimeTrack: timeTrack);
+          _employees[index] = employeeWithTimeTrack;
+        }
+      }
     } else {
       _employees = employees;
     }
@@ -75,47 +85,16 @@ class EmployeeViewModel extends ChangeNotifier {
 
   Future<void> updateEmployee(EmployeeModel employee) async {
     await _employeesRepository.updateEmployee(employee);
+
+    EmployeeModel employeeInList = _employees.where((employeeFromList) => employeeFromList.id == employee.id).first;
+    int indexEmployee = _employees.indexOf(employeeInList);
+    _employees[indexEmployee] = employee;
+
     await loadEmployees();
   }
 
   Future<void> deleteEmployee(EmployeeModel employee) async {
     await _employeesRepository.deleteEmployee(employee);
     await loadEmployees();
-  }
-
-  Future<void> addTimeStart(EmployeeModel employee) async {
-    if (employee.currentTimeTrack == null) {
-      EmployeeTimeTrackModel employeeTimeTrack = EmployeeTimeTrackModel(
-        employee_id: employee.id!,
-        start_time: DateTime.now(),
-      );
-
-      int idTimeTrack = await _timeTrackRepository.insertEmployeeTimeTrack(
-        employeeTimeTrack,
-      );
-      int idIndexEmployee = _employees.indexOf(employee);
-      _employees[idIndexEmployee] = employee.copyWith(
-        currentTimeTrack: employeeTimeTrack.copyWith(id: idTimeTrack),
-      );
-
-      notifyListeners();
-    }
-  }
-
-  Future<void> addTimeFinish(EmployeeModel employee) async {
-    EmployeeTimeTrackModel employeeTimeTrack = employee.currentTimeTrack!
-        .copyWith(
-          finish_time: DateTime.now(),
-          registered_date: DateTime.now(),
-          difference: DateTime.now()
-              .difference(employee.currentTimeTrack!.start_time!)
-              .inMinutes,
-        );
-
-    await _timeTrackRepository.updateEmployeeTimeTrack(employeeTimeTrack);
-    int idIndexEmployee = _employees.indexOf(employee);
-    _employees[idIndexEmployee] = employee.copyWith(currentTimeTrack: null);
-
-    notifyListeners();
   }
 }

@@ -16,30 +16,41 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
       _timeTrackings = timeTrackings;
     }
 
-    print(_timeTrackings);
-
     notifyListeners();
   }
 
-  Future<EmployeeTimeTrackModel?> addTimeStart(EmployeeModel employee) async {
+  Future<EmployeeModel?> addTimeStart(EmployeeModel employee) async {
     if (employee.currentTimeTrack == null) {
       EmployeeTimeTrackModel employeeTimeTrack = EmployeeTimeTrackModel(
         employee_id: employee.id!,
         start_time: DateTime.now(),
       );
 
-      int id = await _repository.insertEmployeeTimeTrack(employeeTimeTrack);
-      return employeeTimeTrack.copyWith(id: id);
-    }
+      int idTimeTrack = await _repository.insertEmployeeTimeTrack(
+        employeeTimeTrack,
+      );
 
-    return null;
+      return employee.copyWith(
+        currentTimeTrack: employeeTimeTrack.copyWith(id: idTimeTrack),
+      );
+    } else {
+      // TODO: Add exception
+      return null;
+    }
   }
 
-  Future<void> addTimeFinish(EmployeeModel employee) async {
-    EmployeeTimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(finish_time: DateTime.now());
+  Future<EmployeeModel> addTimeFinish(EmployeeModel employee) async {
+    EmployeeTimeTrackModel employeeTimeTrack = employee.currentTimeTrack!
+        .copyWith(
+      finish_time: DateTime.now(),
+      registered_date: DateTime.now(),
+      difference: DateTime.now()
+          .difference(employee.currentTimeTrack!.start_time!)
+          .inMinutes,
+    );
 
     await _repository.updateEmployeeTimeTrack(employeeTimeTrack);
-    notifyListeners();
+    return employee.copyWith(currentTimeTrack: null);
   }
 
   Future<void> getTimeTrackingsBetweenDates(DateTime startDay, DateTime finishDay) async {

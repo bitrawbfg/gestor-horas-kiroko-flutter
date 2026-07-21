@@ -43,6 +43,21 @@ class EmployeeTimeTrackingRepositoryImpl
     );
   }
 
+  Future<EmployeeTimeTrackModel?> getLastTimeTrackingByEmployeeId(
+    int employeeId,
+  ) async {
+    final database = await _databaseHelper.database;
+
+    final List<Map<String, dynamic>> timeTrackingsMap = await database.rawQuery(
+      'SELECT * FROM $EMPLOYEE_TIME_TRACKING_TABLE WHERE ROWID IN (SELECT max(ROWID) FROM $EMPLOYEE_TIME_TRACKING_TABLE WHERE employee_id = ? AND finish_time IS NULL AND start_time IS NOT NULL);',
+      [employeeId],
+    );
+
+    if (timeTrackingsMap.isEmpty) return null;
+
+    return EmployeeTimeTrackModel.fromMap(timeTrackingsMap.first);
+  }
+
   @override
   Future<EmployeeTimeTrackModel> getTimeTrackingById(int id) async {
     final database = await _databaseHelper.database;
@@ -70,12 +85,24 @@ class EmployeeTimeTrackingRepositoryImpl
     final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> timeTrackings = await database.query(
       EMPLOYEE_TIME_TRACKING_TABLE,
-      where: 'registered_date >= ? AND registered_date <= ?',
-      whereArgs: ['$startDay', '$finishDay'],
+      // where: 'registered_date >= ? AND registered_date <= ?',
+      // whereArgs: ['$startDay', '$finishDay'],
     );
 
-    return timeTrackings
+    List<EmployeeTimeTrackModel> timeTrackingsList = timeTrackings
         .map((timeTrack) => EmployeeTimeTrackModel.fromMap(timeTrack))
+        .where(
+          (timeTrack) =>
+              timeTrack.registered_date!.isAfter(startDay) &&
+              timeTrack.registered_date!.isBefore(finishDay),
+        )
         .toList();
+
+    for (EmployeeTimeTrackModel timeTrack in timeTrackingsList) {
+      print(timeTrack.registered_date?.isAfter(startDay));
+      print(timeTrack.registered_date?.isBefore(finishDay));
+    }
+
+    return timeTrackingsList;
   }
 }
