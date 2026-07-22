@@ -29,6 +29,8 @@ mixin _$EmployeeTimeTrackModel {
   DateTime? get finish_time => throw _privateConstructorUsedError;
   DateTime? get registered_date => throw _privateConstructorUsedError;
   int? get difference => throw _privateConstructorUsedError;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool? get isTurnOnGoing => throw _privateConstructorUsedError;
 
   /// Serializes this EmployeeTimeTrackModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -54,6 +56,7 @@ abstract class $EmployeeTimeTrackModelCopyWith<$Res> {
     DateTime? finish_time,
     DateTime? registered_date,
     int? difference,
+    @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   });
 }
 
@@ -81,6 +84,7 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
     Object? finish_time = freezed,
     Object? registered_date = freezed,
     Object? difference = freezed,
+    Object? isTurnOnGoing = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -108,6 +112,10 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
                 ? _value.difference
                 : difference // ignore: cast_nullable_to_non_nullable
                       as int?,
+            isTurnOnGoing: freezed == isTurnOnGoing
+                ? _value.isTurnOnGoing
+                : isTurnOnGoing // ignore: cast_nullable_to_non_nullable
+                      as bool?,
           )
           as $Val,
     );
@@ -130,6 +138,7 @@ abstract class _$$EmployeeTimeTrackModelImplCopyWith<$Res>
     DateTime? finish_time,
     DateTime? registered_date,
     int? difference,
+    @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   });
 }
 
@@ -154,6 +163,7 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
     Object? finish_time = freezed,
     Object? registered_date = freezed,
     Object? difference = freezed,
+    Object? isTurnOnGoing = freezed,
   }) {
     return _then(
       _$EmployeeTimeTrackModelImpl(
@@ -181,6 +191,10 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
             ? _value.difference
             : difference // ignore: cast_nullable_to_non_nullable
                   as int?,
+        isTurnOnGoing: freezed == isTurnOnGoing
+            ? _value.isTurnOnGoing
+            : isTurnOnGoing // ignore: cast_nullable_to_non_nullable
+                  as bool?,
       ),
     );
   }
@@ -196,6 +210,7 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
     this.finish_time,
     this.registered_date,
     this.difference,
+    @JsonKey(includeToJson: false, includeFromJson: false) this.isTurnOnGoing,
   });
 
   factory _$EmployeeTimeTrackModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -213,10 +228,13 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
   final DateTime? registered_date;
   @override
   final int? difference;
+  @override
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  final bool? isTurnOnGoing;
 
   @override
   String toString() {
-    return 'EmployeeTimeTrackModel(id: $id, employee_id: $employee_id, start_time: $start_time, finish_time: $finish_time, registered_date: $registered_date, difference: $difference)';
+    return 'EmployeeTimeTrackModel(id: $id, employee_id: $employee_id, start_time: $start_time, finish_time: $finish_time, registered_date: $registered_date, difference: $difference, isTurnOnGoing: $isTurnOnGoing)';
   }
 
   @override
@@ -234,7 +252,9 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
             (identical(other.registered_date, registered_date) ||
                 other.registered_date == registered_date) &&
             (identical(other.difference, difference) ||
-                other.difference == difference));
+                other.difference == difference) &&
+            (identical(other.isTurnOnGoing, isTurnOnGoing) ||
+                other.isTurnOnGoing == isTurnOnGoing));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -247,6 +267,7 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
     finish_time,
     registered_date,
     difference,
+    isTurnOnGoing,
   );
 
   /// Create a copy of EmployeeTimeTrackModel
@@ -275,6 +296,8 @@ abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
     final DateTime? finish_time,
     final DateTime? registered_date,
     final int? difference,
+    @JsonKey(includeToJson: false, includeFromJson: false)
+    final bool? isTurnOnGoing,
   }) = _$EmployeeTimeTrackModelImpl;
 
   factory _EmployeeTimeTrackModel.fromJson(Map<String, dynamic> json) =
@@ -292,6 +315,9 @@ abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
   DateTime? get registered_date;
   @override
   int? get difference;
+  @override
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool? get isTurnOnGoing;
 
   /// Create a copy of EmployeeTimeTrackModel
   /// with the given fields replaced by the non-null parameter values.

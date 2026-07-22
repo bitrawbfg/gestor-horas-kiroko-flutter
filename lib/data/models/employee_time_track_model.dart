@@ -15,6 +15,7 @@ class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
     DateTime? finish_time,
     DateTime? registered_date,
     int? difference,
+    @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   }) = _EmployeeTimeTrackModel;
 
   factory EmployeeTimeTrackModel.fromJson(Map<String, dynamic> json) =>
@@ -37,8 +38,14 @@ class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
       employee_id: map['employee_id'],
       start_time: startTime == null ? null : DateTime.tryParse(startTime),
       finish_time: finishTime == null ? null : DateTime.tryParse(finishTime),
-      registered_date: registeredDate == null ? null : DateTime.tryParse(registeredDate),
+      registered_date: registeredDate == null
+          ? null
+          : DateTime.tryParse(registeredDate),
       difference: map['difference'],
+      isTurnOnGoing:
+          startTime != null &&
+          startTime.isNotEmpty &&
+          (finishTime == null || finishTime.isEmpty),
     );
   }
 }

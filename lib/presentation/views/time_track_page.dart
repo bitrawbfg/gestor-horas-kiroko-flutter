@@ -292,7 +292,13 @@ class DataTableEmployees extends StatelessWidget {
         horizontalMargin: 12,
         minWidth: 600,
         columns: [
-          DataColumn2(label: Text('Nombre'), size: ColumnSize.L),
+          DataColumn2(
+            label: Text(
+              style: TextStyle(fontWeight: FontWeight.bold),
+              'Empleado',
+            ),
+            size: ColumnSize.L,
+          ),
           DataColumn(
             headingRowAlignment: MainAxisAlignment.center,
             label: Column(
@@ -390,7 +396,7 @@ class DataTableEmployees extends StatelessWidget {
           index,
         ) {
           EmployeeModel employee = employeeViewModel.employees[index];
-          int timeWorkedInWeek = employeeTimeTrackViewModel
+          Duration timeWorkedInWeek = employeeTimeTrackViewModel
               .getTimeWorkedInWeekByEmployee(employee.id!);
 
           return DataRow(
@@ -439,10 +445,10 @@ class DataTableEmployees extends StatelessWidget {
                 ),
               ),
               DataCell(
-                Center(
-                  child: Text(
-                    timeWorkedInWeek == 0 ? '-' : '$timeWorkedInWeek',
-                  ),
+                Text(
+                  timeWorkedInWeek == 0
+                      ? '-'
+                      : '${timeWorkedInWeek.inHours.remainder(24)}h ${timeWorkedInWeek.inMinutes.remainder(60)}m',
                 ),
               ),
             ],

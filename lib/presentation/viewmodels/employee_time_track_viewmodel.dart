@@ -35,6 +35,7 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
       EmployeeTimeTrackModel employeeTimeTrack = EmployeeTimeTrackModel(
         employee_id: employee.id!,
         start_time: DateTime.now(),
+        registered_date: DateTime.now(),
       );
 
       int idTimeTrack = await _repository.insertEmployeeTimeTrack(
@@ -91,31 +92,39 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
 
     int sumOfRegisteredTime = 0;
     for (EmployeeTimeTrackModel timeTrack in timeTrackingsThatMatchDay) {
-      sumOfRegisteredTime += timeTrack.difference!;
+      if (!timeTrack.isTurnOnGoing!) {
+        sumOfRegisteredTime += timeTrack.difference!;
+      }
     }
 
-    int duration = Duration(minutes: sumOfRegisteredTime).inMinutes;
+    Duration duration = Duration(minutes: sumOfRegisteredTime);
 
-    return Text(duration == 0 ? '-' : '$duration');
+    return Text(
+      duration.inMinutes == 0
+          ? '-'
+          : '${duration.inHours.remainder(24)}h ${duration.inMinutes.remainder(60)}m',
+    );
   }
 
-  int getTimeWorkedInWeekByEmployee(
-    int employeeId,
-  ) {
+  Duration getTimeWorkedInWeekByEmployee(int employeeId) {
     List<EmployeeTimeTrackModel> timeTrackingsList = timeTrackings
         .where(
           (timeTrack) =>
               timeTrack.employee_id == employeeId &&
-              timeTrack.registered_date!.isAfter(_dateViewModel.firstDayOfWeek) &&
+              timeTrack.registered_date!.isAfter(
+                _dateViewModel.firstDayOfWeek,
+              ) &&
               timeTrack.registered_date!.isBefore(_dateViewModel.lastDayOfWeek),
         )
         .toList();
 
     int totalTime = 0;
     for (EmployeeTimeTrackModel timeTrack in timeTrackingsList) {
-      totalTime += timeTrack.difference!;
+      if (!timeTrack.isTurnOnGoing!) {
+        totalTime += timeTrack.difference!;
+      }
     }
 
-    return totalTime;
+    return Duration(minutes: totalTime);
   }
 }
