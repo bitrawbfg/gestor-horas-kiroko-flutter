@@ -21,8 +21,8 @@ class DatabaseHelper {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
 
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, fileName);
+    final directory = await getDatabasesPath();
+    final path = join(directory, fileName);
 
     return await databaseFactory.openDatabase(
       path,
@@ -35,17 +35,19 @@ class DatabaseHelper {
     CREATE TABLE IF NOT EXISTS employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       name TEXT NOT NULL
-    );
-    
+    )
+    ''');
+
+    await db.execute('''
     CREATE TABLE IF NOT EXISTS employee_time_tracking (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       employee_id INTEGER NOT NULL,
       start_time DATETIME,
       finish_time DATETIME,
       registered_date DATE,
-      difference INTEGER DEFAULT 0
+      difference INTEGER DEFAULT 0,
       FOREIGN KEY(employee_id) REFERENCES employees(id)
-    );
+    ) 
     ''');
   }
 

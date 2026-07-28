@@ -40,8 +40,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
 
     final overlay = Overlay.of(context, rootOverlay: true);
 
-    final buttonBox =
-        _dateButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    final buttonBox = _dateButtonKey.currentContext?.findRenderObject() as RenderBox?;
     if (buttonBox == null) return;
 
     final buttonSize = buttonBox.size;
@@ -65,8 +64,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
           //behavior: HitTestBehavior.translucent,
           onTapOutside: (tap) {
             // close on outside tap
-            if (dateViewModel.isCalendarOpen)
-              dateViewModel.toggleCalendarView();
+            if (dateViewModel.isCalendarOpen) dateViewModel.toggleCalendarView();
             // remove after tap processing
             _closeDatePickerOverlay();
           },
@@ -108,14 +106,10 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                       ),
                       ElevatedButton(
                         onPressed:
-                            (dateViewModel.selectedDate.weekday ==
-                                    DateTime.now().weekday) &&
-                                (dateViewModel.selectedDate.day ==
-                                    DateTime.now().day) &&
-                                (dateViewModel.selectedDate.month ==
-                                    DateTime.now().month) &&
-                                (dateViewModel.selectedDate.year ==
-                                    DateTime.now().year)
+                            (dateViewModel.selectedDate.weekday == DateTime.now().weekday) &&
+                                (dateViewModel.selectedDate.day == DateTime.now().day) &&
+                                (dateViewModel.selectedDate.month == DateTime.now().month) &&
+                                (dateViewModel.selectedDate.year == DateTime.now().year)
                             ? null
                             : () {
                                 dateViewModel.setSelectedDate(DateTime.now());
@@ -146,128 +140,107 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
   Widget build(BuildContext context) {
     EmployeeViewModel viewModel = context.watch<EmployeeViewModel>();
 
-    return Consumer3<
-      EmployeeViewModel,
-      EmployeeTimeTrackViewmodel,
-      DateViewModel
-    >(
-      builder:
-          (
-            context,
-            employeeViewModel,
-            employeeTimeTrackViewModel,
-            dateViewModel,
-            child,
-          ) {
-            List<EmployeeModel> employees = employeeViewModel.employees;
+    return Consumer3<EmployeeViewModel, EmployeeTimeTrackViewmodel, DateViewModel>(
+      builder: (context, employeeViewModel, employeeTimeTrackViewModel, dateViewModel, child) {
+        List<EmployeeModel> employees = employeeViewModel.employees;
 
-            if (selectedEmployeeId == null && employees.isNotEmpty) {
-              selectedEmployeeId = employees.first.id;
-            }
+        if (selectedEmployeeId == null && employees.isNotEmpty) {
+          selectedEmployeeId = employees.first.id;
+        }
 
-            final selectedEmployee = employees
-                .where((employee) => employee.id == selectedEmployeeId)
-                .firstOrNull;
+        final selectedEmployee = employees
+            .where((employee) => employee.id == selectedEmployeeId)
+            .firstOrNull;
 
-            return Padding(
-              padding: const EdgeInsets.all(8),
-              child: Center(
-                child: Column(
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                DropdownButton<EmployeeModel>(
+                  onChanged: (EmployeeModel? value) {
+                    setState(() {
+                      selectedEmployeeId = value!.id;
+                    });
+                  },
+                  value: selectedEmployee,
+                  items: employees
+                      .map<DropdownMenuItem<EmployeeModel>>(
+                        (EmployeeModel employee) => DropdownMenuItem(
+                          value: employee,
+                          child: Row(children: [Text(employee.name)]),
+                        ),
+                      )
+                      .toList(),
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    DropdownButton<EmployeeModel>(
-                      onChanged: (EmployeeModel? value) {
-                        setState(() {
-                          selectedEmployeeId = value!.id;
-                        });
-                      },
-                      value: selectedEmployee,
-                      items: employees
-                          .map<DropdownMenuItem<EmployeeModel>>(
-                            (EmployeeModel employee) => DropdownMenuItem(
-                              value: employee,
-                              child: Row(children: [Text(employee.name)]),
+                    selectedEmployee?.currentTimeTrack?.start_time == null
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(80, 80),
+                              foregroundColor: Colors.blue,
                             ),
+                            onPressed: () async {
+                              EmployeeModel? employeeWithTimeStart =
+                                  await employeeTimeTrackViewModel.addTimeStart(selectedEmployee!);
+                              await employeeViewModel.updateEmployee(employeeWithTimeStart!);
+                            },
+                            child: const Icon(Icons.play_arrow),
                           )
-                          .toList(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        selectedEmployee?.currentTimeTrack?.start_time == null
-                            ? ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size(80, 80),
-                                  foregroundColor: Colors.blue,
-                                ),
-                                onPressed: () async {
-                                  EmployeeModel? employeeWithTimeStart =
-                                      await employeeTimeTrackViewModel
-                                          .addTimeStart(selectedEmployee!);
-                                  await employeeViewModel.updateEmployee(
-                                    employeeWithTimeStart!,
-                                  );
-                                },
-                                child: const Icon(Icons.play_arrow),
-                              )
-                            : ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size(80, 80),
-                                  foregroundColor: Colors.red,
-                                ),
-                                onPressed: () async {
-                                  if (selectedEmployee?.currentTimeTrack !=
-                                          null ||
-                                      selectedEmployee
-                                              ?.currentTimeTrack
-                                              ?.start_time !=
-                                          null) {
-                                    await employeeTimeTrackViewModel
-                                        .addTimeFinish(selectedEmployee!);
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(80, 80),
+                              foregroundColor: Colors.red,
+                            ),
+                            onPressed: () async {
+                              if (selectedEmployee?.currentTimeTrack != null ||
+                                  selectedEmployee?.currentTimeTrack?.start_time != null) {
+                                await employeeTimeTrackViewModel.addTimeFinish(selectedEmployee!);
 
-                                    employeeViewModel.updateEmployee(
-                                      selectedEmployee.copyWith(
-                                        currentTimeTrack: null,
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: const Icon(Icons.stop_circle),
-                              ),
+                                employeeViewModel.updateEmployee(
+                                  selectedEmployee.copyWith(currentTimeTrack: null),
+                                );
+                              }
+                            },
+                            child: const Icon(Icons.stop_circle),
+                          ),
 
-                        // Date button (anchors the overlay)
-                        ElevatedButton(
-                          key: _dateButtonKey,
-                          onPressed: () {
-                            dateViewModel.toggleCalendarView();
+                    // Date button (anchors the overlay)
+                    ElevatedButton(
+                      key: _dateButtonKey,
+                      onPressed: () {
+                        dateViewModel.toggleCalendarView();
 
-                            // show immediately (so it feels responsive)
-                            // (overlay insertion is also handled in addPostFrameCallback)
-                            if (dateViewModel.isCalendarOpen) {
-                              _showDatePickerOverlay(
-                                context,
-                                employeeViewModel,
-                                employeeTimeTrackViewModel,
-                                dateViewModel,
-                              );
-                            } else {
-                              _closeDatePickerOverlay();
-                            }
-                          },
-                          child: Icon(Icons.calendar_month),
-                        ),
-                      ],
-                    ),
-                    DataTableEmployees(
-                      employeeTimeTrackViewModel: employeeTimeTrackViewModel,
-                      employeeViewModel: employeeViewModel,
-                      dateViewModel: dateViewModel,
+                        // show immediately (so it feels responsive)
+                        // (overlay insertion is also handled in addPostFrameCallback)
+                        if (dateViewModel.isCalendarOpen) {
+                          _showDatePickerOverlay(
+                            context,
+                            employeeViewModel,
+                            employeeTimeTrackViewModel,
+                            dateViewModel,
+                          );
+                        } else {
+                          _closeDatePickerOverlay();
+                        }
+                      },
+                      child: Icon(Icons.calendar_month),
                     ),
                   ],
                 ),
-              ),
-            );
-          },
+                DataTableEmployees(
+                  employeeTimeTrackViewModel: employeeTimeTrackViewModel,
+                  employeeViewModel: employeeViewModel,
+                  dateViewModel: dateViewModel,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -293,10 +266,7 @@ class DataTableEmployees extends StatelessWidget {
         minWidth: 600,
         columns: [
           DataColumn2(
-            label: Text(
-              style: TextStyle(fontWeight: FontWeight.bold),
-              'Empleado',
-            ),
+            label: Text(style: TextStyle(fontWeight: FontWeight.bold), 'Empleado'),
             size: ColumnSize.L,
           ),
           DataColumn(
@@ -327,10 +297,7 @@ class DataTableEmployees extends StatelessWidget {
             headingRowAlignment: MainAxisAlignment.center,
             label: Column(
               children: [
-                Text(
-                  'Miércoles',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Miércoles', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   '${dateViewModel.weekDates[2].day}',
                   style: TextStyle(color: Colors.grey[600]),
@@ -392,58 +359,22 @@ class DataTableEmployees extends StatelessWidget {
             numeric: true,
           ),
         ],
-        rows: List<DataRow>.generate(employeeViewModel.employees.length, (
-          index,
-        ) {
+        rows: List<DataRow>.generate(employeeViewModel.employees.length, (index) {
           EmployeeModel employee = employeeViewModel.employees[index];
-          Duration timeWorkedInWeek = employeeTimeTrackViewModel
-              .getTimeWorkedInWeekByEmployee(employee.id!);
+          Duration timeWorkedInWeek = employeeTimeTrackViewModel.getTimeWorkedInWeekByEmployee(
+            employee.id!,
+          );
 
           return DataRow(
             cells: [
               DataCell(Text(employee.name)),
-              DataCell(
-                Center(
-                  child: employeeTimeTrackViewModel
-                      .checkColumnWeekDayWithTimeTrackings(0, employee.id!),
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: employeeTimeTrackViewModel
-                      .checkColumnWeekDayWithTimeTrackings(1, employee.id!),
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: employeeTimeTrackViewModel
-                      .checkColumnWeekDayWithTimeTrackings(2, employee.id!),
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: employeeTimeTrackViewModel
-                      .checkColumnWeekDayWithTimeTrackings(3, employee.id!),
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: employeeTimeTrackViewModel
-                      .checkColumnWeekDayWithTimeTrackings(4, employee.id!),
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: employeeTimeTrackViewModel
-                      .checkColumnWeekDayWithTimeTrackings(5, employee.id!),
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: employeeTimeTrackViewModel
-                      .checkColumnWeekDayWithTimeTrackings(6, employee.id!),
-                ),
-              ),
+              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(0, employee.id!, context),
+              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(1, employee.id!, context),
+              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(2, employee.id!, context),
+              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(3, employee.id!, context),
+              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(4, employee.id!, context),
+              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(5, employee.id!, context),
+              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(6, employee.id!, context),
               DataCell(
                 Text(
                   timeWorkedInWeek == 0
