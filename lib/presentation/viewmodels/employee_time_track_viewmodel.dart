@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gestor_horas/configuration/service_locator.dart';
 import 'package:gestor_horas/data/models/employee_time_track_model.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/repositories/employee_time_tracking_repository_impl.dart';
 import 'package:gestor_horas/presentation/viewmodels/date_view_model.dart';
+import 'package:gestor_horas/presentation/viewmodels/side_panel_view_model.dart';
+import 'package:provider/provider.dart';
+import 'package:side_panel/side_panel.dart';
 
 class EmployeeTimeTrackViewmodel extends ChangeNotifier {
   final DateViewModel _dateViewModel;
@@ -48,29 +52,32 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
     EmployeeTimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
       finish_time: DateTime.now(),
       registered_date: DateTime.now(),
-      difference: DateTime.now().difference(employee.currentTimeTrack!.start_time!).inMinutes,
+      difference: DateTime
+          .now()
+          .difference(employee.currentTimeTrack!.start_time!)
+          .inMinutes,
     );
 
     await _repository.updateEmployeeTimeTrack(employeeTimeTrack);
+
+    locator<SidePanelViewModel>().getTimeTrackingsFromEmployee(employee.id!, employee.currentTimeTrack!.registered_date!.day);
     loadTimeTrackings();
   }
 
   Future<void> getTimeTrackingsBetweenDates() async {
     List<EmployeeTimeTrackModel> obtainedTimeTrackings = await _repository
         .getAllTimeTrackingFromDateToDate(
-          _dateViewModel.firstDayOfWeek,
-          _dateViewModel.lastDayOfWeek,
-        );
+      _dateViewModel.firstDayOfWeek,
+      _dateViewModel.lastDayOfWeek,
+    );
 
     _timeTrackings = obtainedTimeTrackings;
     notifyListeners();
   }
 
-  DataCell checkColumnWeekDayWithTimeTrackings(
-    int weekDateValue,
-    int employeeId,
-    BuildContext context,
-  ) {
+  DataCell checkColumnWeekDayWithTimeTrackings(int weekDateValue,
+      int employeeId,
+      BuildContext context,) {
     int day = _dateViewModel.weekDates[weekDateValue].day;
     List<EmployeeTimeTrackModel> employeeTimeTrackings = timeTrackings
         .where((timeTrack) => employeeId == timeTrack.employee_id)
@@ -91,16 +98,11 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
 
     return DataCell(
       GestureDetector(
-        onDoubleTap: () => showDialog(
-          context: context,
-          builder: (BuildContext context) => const Dialog(
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: Column(children: [Text('Modificar hora')]),
-            ),
-          ),
-        ),
+        onDoubleTap: () {
+          locator<SidePanelController>().showRightPanel();
+
+          locator<SidePanelViewModel>().getTimeTrackingsFromEmployee(employeeId, day);
+        },
         child: Center(
           child: Text(
             duration.inMinutes == 0
@@ -112,14 +114,26 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
     );
   }
 
+  List<EmployeeTimeTrackModel> getTimeTrackingsFromEmployee(int employeeId, int day) {
+    List<EmployeeTimeTrackModel> employeeTimeTrackings = timeTrackings
+        .where((timeTrack) => employeeId == timeTrack.employee_id && timeTrack.difference != 0)
+        .toList();
+
+    List<EmployeeTimeTrackModel> timeTrackingsThatMatchDay = employeeTimeTrackings
+        .where((timeTrack) => timeTrack.registered_date?.day == day)
+        .toList();
+
+    return timeTrackingsThatMatchDay;
+  }
+
   Duration getTimeWorkedInWeekByEmployee(int employeeId) {
     List<EmployeeTimeTrackModel> timeTrackingsList = timeTrackings
         .where(
           (timeTrack) =>
-              timeTrack.employee_id == employeeId &&
-              timeTrack.registered_date!.isAfter(_dateViewModel.firstDayOfWeek) &&
-              timeTrack.registered_date!.isBefore(_dateViewModel.lastDayOfWeek),
-        )
+      timeTrack.employee_id == employeeId &&
+          timeTrack.registered_date!.isAfter(_dateViewModel.firstDayOfWeek) &&
+          timeTrack.registered_date!.isBefore(_dateViewModel.lastDayOfWeek),
+    )
         .toList();
 
     int totalTime = 0;
