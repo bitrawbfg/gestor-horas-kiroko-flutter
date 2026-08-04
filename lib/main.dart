@@ -15,7 +15,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => locator<EmployeeViewModel>()..loadEmployees()),
         ChangeNotifierProvider(
-          create: (_) => locator<TimeTrackViewmodel>()..loadTimeTrackings(),
+          create: (_) => locator<TimeTrackViewModel>()..loadTimeTrackings(),
         ),
         ChangeNotifierProvider(create: (_) => locator<DateViewModel>()),
         ChangeNotifierProvider(create: (_) => locator<SidePanelViewModel>()),

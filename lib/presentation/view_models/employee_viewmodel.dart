@@ -13,6 +13,12 @@ class EmployeeViewModel extends ChangeNotifier {
 
   List<EmployeeModel> get employees => _employees;
 
+  EmployeeModel? _selectedEmployee;
+  EmployeeModel? get selectedEmployee => _selectedEmployee;
+  set selectedEmployee(EmployeeModel value) {
+    _selectedEmployee = value;
+  }
+
   Future<void> loadEmployees({List<EmployeeModel>? employees}) async {
     if (employees == null) {
       _employees = await _employeesRepository.getEmployees();
@@ -46,6 +52,14 @@ class EmployeeViewModel extends ChangeNotifier {
         .copyWith(currentTimeTrack: timeTrack);
     _employees[employeeToReplace] = employeeModel;
 
+    notifyListeners();
+  }
+
+  Future<void> getEmployeesById(int id) async {
+    EmployeeModel employee = await _employeesRepository
+        .getEmployeeById(id);
+
+    _selectedEmployee = employee;
     notifyListeners();
   }
 

@@ -1,30 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../data/models/time_trackings/time_track_model.dart';
-import 'time_track_viewmodel.dart';
-
 class SidePanelViewModel extends ChangeNotifier {
-  final TimeTrackViewmodel _employeeTimeTrackViewmodel;
 
-  SidePanelViewModel(this._employeeTimeTrackViewmodel);
+  SidePanelViewModel();
 
-  List<TimeTrackModel> _timeTrackings = [];
+  bool _isPanelOpen = false;
 
-  List<TimeTrackModel> get timeTrackings => _timeTrackings;
+  bool get isPanelOpen => _isPanelOpen;
 
-  Future<void> loadTimeTrackingsFromEmployee({List<TimeTrackModel>? recievedTimeTrackings}) async {
-    if (recievedTimeTrackings != null) {
-      _timeTrackings = recievedTimeTrackings;
-    }
+  Future<void> togglePanelOpen() async {
+    _isPanelOpen = !_isPanelOpen;
 
     notifyListeners();
-  }
-
-  void getTimeTrackingsFromEmployee(int employeeId, int day) {
-    List<TimeTrackModel> employeeTimeTrackings = _employeeTimeTrackViewmodel.getTimeTrackingsFromEmployee(employeeId, day);
-
-    _timeTrackings = employeeTimeTrackings;
-
-    loadTimeTrackingsFromEmployee(recievedTimeTrackings: employeeTimeTrackings);
   }
 }

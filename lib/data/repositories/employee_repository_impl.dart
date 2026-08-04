@@ -29,26 +29,23 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   Future<void> deleteEmployee(EmployeeModel employee) async {
     final database = await _databaseHelper.database;
 
-    await database.delete(
-      employeesTable,
-      where: 'id = ?',
-      whereArgs: [employee.id],
-    );
+    await database.delete(employeesTable, where: 'id = ?', whereArgs: [employee.id]);
   }
 
   @override
   Future<EmployeeModel> getEmployeeById(int id) async {
+    final database = await _databaseHelper.database;
+    final List<Map<String, dynamic>> employees = await database.query(employeesTable, where: 'id = ?', whereArgs: [id]);
 
-    // TODO: implement getEmployeeById
-    throw UnimplementedError();
+    return List.generate(employees.length, (employee) {
+      return EmployeeModel.fromMap(employees[employee]);
+    }).firstWhere((employee) => employee.id == id);
   }
 
   @override
   Future<List<EmployeeModel>> getEmployees() async {
     final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> employees = await database.query(
-      employeesTable,
-    );
+    final List<Map<String, dynamic>> employees = await database.query(employeesTable);
 
     return List.generate(employees.length, (employee) {
       return EmployeeModel.fromMap(employees[employee]);
@@ -65,8 +62,6 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       whereArgs: ['%$name%'],
     );
 
-    return employees
-        .map((employee) => EmployeeModel.fromMap(employee))
-        .toList();
+    return employees.map((employee) => EmployeeModel.fromMap(employee)).toList();
   }
 }

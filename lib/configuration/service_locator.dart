@@ -11,10 +11,10 @@ final locator = GetIt.instance;
 void setupLocator() {
   locator.registerLazySingleton<DateViewModel>(() => DateViewModel());
   locator.registerLazySingleton<EmployeeViewModel>(() => EmployeeViewModel());
-  locator.registerLazySingleton<SidePanelViewModel>(() => SidePanelViewModel(locator<TimeTrackViewmodel>()));
+  locator.registerLazySingleton<SidePanelViewModel>(() => SidePanelViewModel());
   locator.registerLazySingleton<SidePanelController>(() => SidePanelController());
 
-  locator.registerLazySingleton<TimeTrackViewmodel>(
-    () => TimeTrackViewmodel(locator<DateViewModel>()),
+  locator.registerLazySingleton<TimeTrackViewModel>(
+    () => TimeTrackViewModel(locator<DateViewModel>()),
   );
 }

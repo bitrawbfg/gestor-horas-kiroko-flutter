@@ -19,13 +19,6 @@ class EmployeeModel with _$EmployeeModel {
   factory EmployeeModel.fromJson(Map<String, dynamic> json) =>
       _$EmployeeModelFromJson(json);
 
-  /*Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }*/
-
   factory EmployeeModel.fromMap(Map<String, dynamic> map) {
     return EmployeeModel(id: map['id'], name: map['name']);
   }
