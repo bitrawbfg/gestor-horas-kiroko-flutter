@@ -24,8 +24,7 @@ mixin _$EmployeeModel {
   int? get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   @JsonKey(includeToJson: false, includeFromJson: false)
-  EmployeeTimeTrackModel? get currentTimeTrack =>
-      throw _privateConstructorUsedError;
+  TimeTrackModel? get currentTimeTrack => throw _privateConstructorUsedError;
 
   /// Serializes this EmployeeModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,10 +47,10 @@ abstract class $EmployeeModelCopyWith<$Res> {
     int? id,
     String name,
     @JsonKey(includeToJson: false, includeFromJson: false)
-    EmployeeTimeTrackModel? currentTimeTrack,
+    TimeTrackModel? currentTimeTrack,
   });
 
-  $EmployeeTimeTrackModelCopyWith<$Res>? get currentTimeTrack;
+  $TimeTrackModelCopyWith<$Res>? get currentTimeTrack;
 }
 
 /// @nodoc
@@ -86,7 +85,7 @@ class _$EmployeeModelCopyWithImpl<$Res, $Val extends EmployeeModel>
             currentTimeTrack: freezed == currentTimeTrack
                 ? _value.currentTimeTrack
                 : currentTimeTrack // ignore: cast_nullable_to_non_nullable
-                      as EmployeeTimeTrackModel?,
+                      as TimeTrackModel?,
           )
           as $Val,
     );
@@ -96,14 +95,12 @@ class _$EmployeeModelCopyWithImpl<$Res, $Val extends EmployeeModel>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $EmployeeTimeTrackModelCopyWith<$Res>? get currentTimeTrack {
+  $TimeTrackModelCopyWith<$Res>? get currentTimeTrack {
     if (_value.currentTimeTrack == null) {
       return null;
     }
 
-    return $EmployeeTimeTrackModelCopyWith<$Res>(_value.currentTimeTrack!, (
-      value,
-    ) {
+    return $TimeTrackModelCopyWith<$Res>(_value.currentTimeTrack!, (value) {
       return _then(_value.copyWith(currentTimeTrack: value) as $Val);
     });
   }
@@ -122,11 +119,11 @@ abstract class _$$EmployeeModelImplCopyWith<$Res>
     int? id,
     String name,
     @JsonKey(includeToJson: false, includeFromJson: false)
-    EmployeeTimeTrackModel? currentTimeTrack,
+    TimeTrackModel? currentTimeTrack,
   });
 
   @override
-  $EmployeeTimeTrackModelCopyWith<$Res>? get currentTimeTrack;
+  $TimeTrackModelCopyWith<$Res>? get currentTimeTrack;
 }
 
 /// @nodoc
@@ -160,7 +157,7 @@ class __$$EmployeeModelImplCopyWithImpl<$Res>
         currentTimeTrack: freezed == currentTimeTrack
             ? _value.currentTimeTrack
             : currentTimeTrack // ignore: cast_nullable_to_non_nullable
-                  as EmployeeTimeTrackModel?,
+                  as TimeTrackModel?,
       ),
     );
   }
@@ -185,7 +182,7 @@ class _$EmployeeModelImpl implements _EmployeeModel {
   final String name;
   @override
   @JsonKey(includeToJson: false, includeFromJson: false)
-  final EmployeeTimeTrackModel? currentTimeTrack;
+  final TimeTrackModel? currentTimeTrack;
 
   @override
   String toString() {
@@ -226,7 +223,7 @@ abstract class _EmployeeModel implements EmployeeModel {
     final int? id,
     required final String name,
     @JsonKey(includeToJson: false, includeFromJson: false)
-    final EmployeeTimeTrackModel? currentTimeTrack,
+    final TimeTrackModel? currentTimeTrack,
   }) = _$EmployeeModelImpl;
 
   factory _EmployeeModel.fromJson(Map<String, dynamic> json) =
@@ -238,7 +235,7 @@ abstract class _EmployeeModel implements EmployeeModel {
   String get name;
   @override
   @JsonKey(includeToJson: false, includeFromJson: false)
-  EmployeeTimeTrackModel? get currentTimeTrack;
+  TimeTrackModel? get currentTimeTrack;
 
   /// Create a copy of EmployeeModel
   /// with the given fields replaced by the non-null parameter values.

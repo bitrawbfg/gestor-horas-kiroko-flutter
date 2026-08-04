@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:gestor_horas/data/models/employee_time_track_model.dart';
+import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 
 part 'employee_model.freezed.dart';
 
@@ -13,7 +13,7 @@ class EmployeeModel with _$EmployeeModel {
     int? id,
     required String name,
     @JsonKey(includeToJson: false, includeFromJson: false)
-    EmployeeTimeTrackModel? currentTimeTrack,
+    TimeTrackModel? currentTimeTrack,
   }) = _EmployeeModel;
 
   factory EmployeeModel.fromJson(Map<String, dynamic> json) =>

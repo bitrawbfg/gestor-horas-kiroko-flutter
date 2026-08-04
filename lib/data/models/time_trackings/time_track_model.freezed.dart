@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'employee_time_track_model.dart';
+part of 'time_track_model.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,14 +15,12 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-EmployeeTimeTrackModel _$EmployeeTimeTrackModelFromJson(
-  Map<String, dynamic> json,
-) {
-  return _EmployeeTimeTrackModel.fromJson(json);
+TimeTrackModel _$TimeTrackModelFromJson(Map<String, dynamic> json) {
+  return _TimeTrackModel.fromJson(json);
 }
 
 /// @nodoc
-mixin _$EmployeeTimeTrackModel {
+mixin _$TimeTrackModel {
   int? get id => throw _privateConstructorUsedError;
   int get employeeId => throw _privateConstructorUsedError;
   DateTime? get startTime => throw _privateConstructorUsedError;
@@ -32,22 +30,22 @@ mixin _$EmployeeTimeTrackModel {
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool? get isTurnOnGoing => throw _privateConstructorUsedError;
 
-  /// Serializes this EmployeeTimeTrackModel to a JSON map.
+  /// Serializes this TimeTrackModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of EmployeeTimeTrackModel
+  /// Create a copy of TimeTrackModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $EmployeeTimeTrackModelCopyWith<EmployeeTimeTrackModel> get copyWith =>
+  $TimeTrackModelCopyWith<TimeTrackModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $EmployeeTimeTrackModelCopyWith<$Res> {
-  factory $EmployeeTimeTrackModelCopyWith(
-    EmployeeTimeTrackModel value,
-    $Res Function(EmployeeTimeTrackModel) then,
-  ) = _$EmployeeTimeTrackModelCopyWithImpl<$Res, EmployeeTimeTrackModel>;
+abstract class $TimeTrackModelCopyWith<$Res> {
+  factory $TimeTrackModelCopyWith(
+    TimeTrackModel value,
+    $Res Function(TimeTrackModel) then,
+  ) = _$TimeTrackModelCopyWithImpl<$Res, TimeTrackModel>;
   @useResult
   $Res call({
     int? id,
@@ -61,19 +59,16 @@ abstract class $EmployeeTimeTrackModelCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$EmployeeTimeTrackModelCopyWithImpl<
-  $Res,
-  $Val extends EmployeeTimeTrackModel
->
-    implements $EmployeeTimeTrackModelCopyWith<$Res> {
-  _$EmployeeTimeTrackModelCopyWithImpl(this._value, this._then);
+class _$TimeTrackModelCopyWithImpl<$Res, $Val extends TimeTrackModel>
+    implements $TimeTrackModelCopyWith<$Res> {
+  _$TimeTrackModelCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of EmployeeTimeTrackModel
+  /// Create a copy of TimeTrackModel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -123,12 +118,12 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
 }
 
 /// @nodoc
-abstract class _$$EmployeeTimeTrackModelImplCopyWith<$Res>
-    implements $EmployeeTimeTrackModelCopyWith<$Res> {
-  factory _$$EmployeeTimeTrackModelImplCopyWith(
-    _$EmployeeTimeTrackModelImpl value,
-    $Res Function(_$EmployeeTimeTrackModelImpl) then,
-  ) = __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>;
+abstract class _$$TimeTrackModelImplCopyWith<$Res>
+    implements $TimeTrackModelCopyWith<$Res> {
+  factory _$$TimeTrackModelImplCopyWith(
+    _$TimeTrackModelImpl value,
+    $Res Function(_$TimeTrackModelImpl) then,
+  ) = __$$TimeTrackModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({
@@ -143,16 +138,15 @@ abstract class _$$EmployeeTimeTrackModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
-    extends
-        _$EmployeeTimeTrackModelCopyWithImpl<$Res, _$EmployeeTimeTrackModelImpl>
-    implements _$$EmployeeTimeTrackModelImplCopyWith<$Res> {
-  __$$EmployeeTimeTrackModelImplCopyWithImpl(
-    _$EmployeeTimeTrackModelImpl _value,
-    $Res Function(_$EmployeeTimeTrackModelImpl) _then,
+class __$$TimeTrackModelImplCopyWithImpl<$Res>
+    extends _$TimeTrackModelCopyWithImpl<$Res, _$TimeTrackModelImpl>
+    implements _$$TimeTrackModelImplCopyWith<$Res> {
+  __$$TimeTrackModelImplCopyWithImpl(
+    _$TimeTrackModelImpl _value,
+    $Res Function(_$TimeTrackModelImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of EmployeeTimeTrackModel
+  /// Create a copy of TimeTrackModel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -166,7 +160,7 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
     Object? isTurnOnGoing = freezed,
   }) {
     return _then(
-      _$EmployeeTimeTrackModelImpl(
+      _$TimeTrackModelImpl(
         id: freezed == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
@@ -202,8 +196,8 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
-  const _$EmployeeTimeTrackModelImpl({
+class _$TimeTrackModelImpl implements _TimeTrackModel {
+  const _$TimeTrackModelImpl({
     this.id,
     required this.employeeId,
     this.startTime,
@@ -213,8 +207,8 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
     @JsonKey(includeToJson: false, includeFromJson: false) this.isTurnOnGoing,
   });
 
-  factory _$EmployeeTimeTrackModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$EmployeeTimeTrackModelImplFromJson(json);
+  factory _$TimeTrackModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TimeTrackModelImplFromJson(json);
 
   @override
   final int? id;
@@ -234,14 +228,14 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
 
   @override
   String toString() {
-    return 'EmployeeTimeTrackModel(id: $id, employeeId: $employeeId, startTime: $startTime, finishTime: $finishTime, registeredDate: $registeredDate, difference: $difference, isTurnOnGoing: $isTurnOnGoing)';
+    return 'TimeTrackModel(id: $id, employeeId: $employeeId, startTime: $startTime, finishTime: $finishTime, registeredDate: $registeredDate, difference: $difference, isTurnOnGoing: $isTurnOnGoing)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$EmployeeTimeTrackModelImpl &&
+            other is _$TimeTrackModelImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.employeeId, employeeId) ||
                 other.employeeId == employeeId) &&
@@ -270,26 +264,25 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
     isTurnOnGoing,
   );
 
-  /// Create a copy of EmployeeTimeTrackModel
+  /// Create a copy of TimeTrackModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$EmployeeTimeTrackModelImplCopyWith<_$EmployeeTimeTrackModelImpl>
-  get copyWith =>
-      __$$EmployeeTimeTrackModelImplCopyWithImpl<_$EmployeeTimeTrackModelImpl>(
+  _$$TimeTrackModelImplCopyWith<_$TimeTrackModelImpl> get copyWith =>
+      __$$TimeTrackModelImplCopyWithImpl<_$TimeTrackModelImpl>(
         this,
         _$identity,
       );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$EmployeeTimeTrackModelImplToJson(this);
+    return _$$TimeTrackModelImplToJson(this);
   }
 }
 
-abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
-  const factory _EmployeeTimeTrackModel({
+abstract class _TimeTrackModel implements TimeTrackModel {
+  const factory _TimeTrackModel({
     final int? id,
     required final int employeeId,
     final DateTime? startTime,
@@ -298,10 +291,10 @@ abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
     final int? difference,
     @JsonKey(includeToJson: false, includeFromJson: false)
     final bool? isTurnOnGoing,
-  }) = _$EmployeeTimeTrackModelImpl;
+  }) = _$TimeTrackModelImpl;
 
-  factory _EmployeeTimeTrackModel.fromJson(Map<String, dynamic> json) =
-      _$EmployeeTimeTrackModelImpl.fromJson;
+  factory _TimeTrackModel.fromJson(Map<String, dynamic> json) =
+      _$TimeTrackModelImpl.fromJson;
 
   @override
   int? get id;
@@ -319,10 +312,10 @@ abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool? get isTurnOnGoing;
 
-  /// Create a copy of EmployeeTimeTrackModel
+  /// Create a copy of TimeTrackModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$EmployeeTimeTrackModelImplCopyWith<_$EmployeeTimeTrackModelImpl>
-  get copyWith => throw _privateConstructorUsedError;
+  _$$TimeTrackModelImplCopyWith<_$TimeTrackModelImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

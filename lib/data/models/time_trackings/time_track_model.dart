@@ -1,14 +1,14 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'employee_time_track_model.freezed.dart';
+part 'time_track_model.freezed.dart';
 
-part 'employee_time_track_model.g.dart';
+part 'time_track_model.g.dart';
 
 // Tutorial para crear modelos con @freezed
 // https://medium.com/@CodeCraftMobile/flutter-clean-architecture-implement-local-storage-with-sqlite-freezed-using-sqflite-and-bloc-68b967c604fc
 @freezed
-class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
-  const factory EmployeeTimeTrackModel({
+class TimeTrackModel with _$TimeTrackModel {
+  const factory TimeTrackModel({
     int? id,
     required int employeeId,
     DateTime? startTime,
@@ -16,17 +16,17 @@ class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
     DateTime? registeredDate,
     int? difference,
     @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
-  }) = _EmployeeTimeTrackModel;
+  }) = _TimeTrackModel;
 
-  factory EmployeeTimeTrackModel.fromJson(Map<String, dynamic> json) =>
-      _$EmployeeTimeTrackModelFromJson(json);
+  factory TimeTrackModel.fromJson(Map<String, dynamic> json) =>
+      _$TimeTrackModelFromJson(json);
 
-  factory EmployeeTimeTrackModel.fromMap(Map<String, dynamic> map) {
+  factory TimeTrackModel.fromMap(Map<String, dynamic> map) {
     final startTime = map['start_time'] as String?;
     final finishTime = map['finish_time'] as String?;
     final registeredDate = map['registered_date'] as String?;
 
-    return EmployeeTimeTrackModel(
+    return TimeTrackModel(
       id: map['id'],
       employeeId: map['employee_id'],
       startTime: startTime == null ? null : DateTime.tryParse(startTime),

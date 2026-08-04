@@ -2,18 +2,18 @@ import 'dart:collection';
 
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/data/models/employee_time_track_model.dart';
+import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
-import 'package:gestor_horas/presentation/viewmodels/date_view_model.dart';
-import 'package:gestor_horas/presentation/viewmodels/employee_time_track_viewmodel.dart';
-import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
+import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
+import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
+import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:side_panel/side_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../configuration/service_locator.dart';
-import '../viewmodels/side_panel_view_model.dart';
+import '../view_models/side_panel_view_model.dart';
 
 class TimeTrackPage extends StatefulWidget {
   const TimeTrackPage({super.key});
@@ -40,7 +40,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
   void _showDatePickerOverlay(
     BuildContext context,
     EmployeeViewModel employeeViewModel,
-    EmployeeTimeTrackViewmodel timeTrackViewModel,
+    TimeTrackViewmodel timeTrackViewModel,
     DateViewModel dateViewModel,
   ) {
     if (_datePickerEntry != null) return;
@@ -164,7 +164,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                         itemCount: sidePanelViewModel.timeTrackings.length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
-                          EmployeeTimeTrackModel timeTracking =
+                          TimeTrackModel timeTracking =
                               sidePanelViewModel.timeTrackings[index];
                           DateTime startTime = timeTracking.startTime!;
                           DateTime finishTime = timeTracking.finishTime!;
@@ -230,7 +230,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
         ),
       ),
       controller: locator<SidePanelController>(),
-      child: Consumer3<EmployeeViewModel, EmployeeTimeTrackViewmodel, DateViewModel>(
+      child: Consumer3<EmployeeViewModel, TimeTrackViewmodel, DateViewModel>(
         builder: (context, employeeViewModel, employeeTimeTrackViewModel, dateViewModel, child) {
           List<EmployeeModel> employees = employeeViewModel.employees;
 
@@ -349,7 +349,7 @@ class DataTableEmployees extends StatelessWidget {
   });
 
   final EmployeeViewModel employeeViewModel;
-  final EmployeeTimeTrackViewmodel employeeTimeTrackViewModel;
+  final TimeTrackViewmodel employeeTimeTrackViewModel;
   final DateViewModel dateViewModel;
   final SidePanelController sidePanelController;
 

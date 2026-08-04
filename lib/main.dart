@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gestor_horas/configuration/service_locator.dart';
-import 'package:gestor_horas/presentation/viewmodels/date_view_model.dart';
-import 'package:gestor_horas/presentation/viewmodels/employee_time_track_viewmodel.dart';
-import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
-import 'package:gestor_horas/presentation/viewmodels/side_panel_view_model.dart';
+import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
+import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
+import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
+import 'package:gestor_horas/presentation/view_models/side_panel_view_model.dart';
 import 'package:gestor_horas/presentation/views/home_page.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => locator<EmployeeViewModel>()..loadEmployees()),
         ChangeNotifierProvider(
-          create: (_) => locator<EmployeeTimeTrackViewmodel>()..loadTimeTrackings(),
+          create: (_) => locator<TimeTrackViewmodel>()..loadTimeTrackings(),
         ),
         ChangeNotifierProvider(create: (_) => locator<DateViewModel>()),
         ChangeNotifierProvider(create: (_) => locator<SidePanelViewModel>()),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/data/models/employee_time_track_model.dart';
+import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/repositories/employee_repository_impl.dart';
-import 'package:gestor_horas/data/repositories/employee_time_tracking_repository_impl.dart';
+import 'package:gestor_horas/data/repositories/time_tracking_repository_impl.dart';
 
 class EmployeeViewModel extends ChangeNotifier {
   final EmployeeRepositoryImpl _employeesRepository = EmployeeRepositoryImpl();
-  final EmployeeTimeTrackingRepositoryImpl _timeTrackRepository =
-      EmployeeTimeTrackingRepositoryImpl();
+  final TimeTrackingRepositoryImpl _timeTrackRepository =
+      TimeTrackingRepositoryImpl();
 
   List<EmployeeModel> _employees = [];
 
@@ -19,7 +19,7 @@ class EmployeeViewModel extends ChangeNotifier {
 
       for (EmployeeModel employee in _employees) {
         int index = _employees.indexOf(employee);
-        EmployeeTimeTrackModel? timeTrack = await _timeTrackRepository.getLastTimeTrackingByEmployeeId(employee.id!);
+        TimeTrackModel? timeTrack = await _timeTrackRepository.getLastTimeTrackingByEmployeeId(employee.id!);
 
         if (timeTrack != null) {
           EmployeeModel employeeWithTimeTrack = employee.copyWith(currentTimeTrack: timeTrack);
@@ -35,7 +35,7 @@ class EmployeeViewModel extends ChangeNotifier {
 
   Future<void> assignTimeTrackToEmployee(
     int employeeId,
-    EmployeeTimeTrackModel timeTrack,
+    TimeTrackModel timeTrack,
   ) async {
     int employeeToReplace = _employees.indexOf(
       _employees.firstWhere((employee) => employee.id == employeeId),
