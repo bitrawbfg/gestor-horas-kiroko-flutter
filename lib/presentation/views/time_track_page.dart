@@ -7,6 +7,7 @@ import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/presentation/viewmodels/date_view_model.dart';
 import 'package:gestor_horas/presentation/viewmodels/employee_time_track_viewmodel.dart';
 import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:side_panel/side_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -149,7 +150,8 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
 
     return SidePanel(
       right: Panel(
-        overlay: false,
+        size: 400,
+        overlay: true,
         child: Consumer<SidePanelViewModel>(
           builder: (BuildContext context, SidePanelViewModel sidePanelViewModel, Widget? child) {
             return Container(
@@ -169,14 +171,52 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                               sidePanelViewModel.timeTrackings[index];
                           DateTime startTime = timeTracking.start_time!;
                           DateTime finishTime = timeTracking.finish_time!;
+                          Duration duration = Duration(minutes: timeTracking.difference!);
 
                           return Card(
                             child: ListTile(
-                              subtitle: Text(
-                                '${timeTracking.difference}',
-                                overflow: TextOverflow.ellipsis,
+                              title: Row(
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                        'Hora de entrada',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        DateFormat('kk:mm').format(startTime),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                        'Duración',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${duration.inHours}h ${duration.inMinutes}min',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              title: Text(
+                              subtitle: Text(
                                 '${startTime.day} / ${startTime.month}',
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -184,11 +224,6 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                           );
                         },
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: locator<SidePanelController>().hideRightPanel,
-                      child: Text('Guardar'),
                     ),
                   ],
                 ),
