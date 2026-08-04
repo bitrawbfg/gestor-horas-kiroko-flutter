@@ -1,5 +1,4 @@
 import 'package:gestor_horas/data/models/employee_time_track_model.dart';
-import 'package:gestor_horas/data/models/employees/employee_model.dart';
 
 abstract class EmployeeTimeTrackingRepository {
   Future<EmployeeTimeTrackModel> getTimeTrackingById(int id);

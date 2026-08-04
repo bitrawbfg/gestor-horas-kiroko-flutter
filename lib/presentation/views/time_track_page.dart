@@ -145,9 +145,6 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
 
   @override
   Widget build(BuildContext context) {
-    EmployeeViewModel viewModel = context.watch<EmployeeViewModel>();
-    EmployeeTimeTrackViewmodel timeTrackViewModel = context.watch<EmployeeTimeTrackViewmodel>();
-
     return SidePanel(
       right: Panel(
         size: 400,
@@ -169,8 +166,8 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                         itemBuilder: (BuildContext context, int index) {
                           EmployeeTimeTrackModel timeTracking =
                               sidePanelViewModel.timeTrackings[index];
-                          DateTime startTime = timeTracking.start_time!;
-                          DateTime finishTime = timeTracking.finish_time!;
+                          DateTime startTime = timeTracking.startTime!;
+                          DateTime finishTime = timeTracking.finishTime!;
                           Duration duration = Duration(minutes: timeTracking.difference!);
 
                           return Card(
@@ -270,7 +267,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      selectedEmployee?.currentTimeTrack?.start_time == null
+                      selectedEmployee?.currentTimeTrack?.startTime == null
                           ? ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size(80, 80),
@@ -292,7 +289,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                               ),
                               onPressed: () async {
                                 if (selectedEmployee?.currentTimeTrack != null ||
-                                    selectedEmployee?.currentTimeTrack?.start_time != null) {
+                                    selectedEmployee?.currentTimeTrack?.startTime != null) {
                                   await employeeTimeTrackViewModel.addTimeFinish(selectedEmployee!);
 
                                   employeeViewModel.updateEmployee(

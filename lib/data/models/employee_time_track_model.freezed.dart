@@ -24,10 +24,10 @@ EmployeeTimeTrackModel _$EmployeeTimeTrackModelFromJson(
 /// @nodoc
 mixin _$EmployeeTimeTrackModel {
   int? get id => throw _privateConstructorUsedError;
-  int get employee_id => throw _privateConstructorUsedError;
-  DateTime? get start_time => throw _privateConstructorUsedError;
-  DateTime? get finish_time => throw _privateConstructorUsedError;
-  DateTime? get registered_date => throw _privateConstructorUsedError;
+  int get employeeId => throw _privateConstructorUsedError;
+  DateTime? get startTime => throw _privateConstructorUsedError;
+  DateTime? get finishTime => throw _privateConstructorUsedError;
+  DateTime? get registeredDate => throw _privateConstructorUsedError;
   int? get difference => throw _privateConstructorUsedError;
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool? get isTurnOnGoing => throw _privateConstructorUsedError;
@@ -51,10 +51,10 @@ abstract class $EmployeeTimeTrackModelCopyWith<$Res> {
   @useResult
   $Res call({
     int? id,
-    int employee_id,
-    DateTime? start_time,
-    DateTime? finish_time,
-    DateTime? registered_date,
+    int employeeId,
+    DateTime? startTime,
+    DateTime? finishTime,
+    DateTime? registeredDate,
     int? difference,
     @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   });
@@ -79,10 +79,10 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
   @override
   $Res call({
     Object? id = freezed,
-    Object? employee_id = null,
-    Object? start_time = freezed,
-    Object? finish_time = freezed,
-    Object? registered_date = freezed,
+    Object? employeeId = null,
+    Object? startTime = freezed,
+    Object? finishTime = freezed,
+    Object? registeredDate = freezed,
     Object? difference = freezed,
     Object? isTurnOnGoing = freezed,
   }) {
@@ -92,21 +92,21 @@ class _$EmployeeTimeTrackModelCopyWithImpl<
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as int?,
-            employee_id: null == employee_id
-                ? _value.employee_id
-                : employee_id // ignore: cast_nullable_to_non_nullable
+            employeeId: null == employeeId
+                ? _value.employeeId
+                : employeeId // ignore: cast_nullable_to_non_nullable
                       as int,
-            start_time: freezed == start_time
-                ? _value.start_time
-                : start_time // ignore: cast_nullable_to_non_nullable
+            startTime: freezed == startTime
+                ? _value.startTime
+                : startTime // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            finish_time: freezed == finish_time
-                ? _value.finish_time
-                : finish_time // ignore: cast_nullable_to_non_nullable
+            finishTime: freezed == finishTime
+                ? _value.finishTime
+                : finishTime // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            registered_date: freezed == registered_date
-                ? _value.registered_date
-                : registered_date // ignore: cast_nullable_to_non_nullable
+            registeredDate: freezed == registeredDate
+                ? _value.registeredDate
+                : registeredDate // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
             difference: freezed == difference
                 ? _value.difference
@@ -133,10 +133,10 @@ abstract class _$$EmployeeTimeTrackModelImplCopyWith<$Res>
   @useResult
   $Res call({
     int? id,
-    int employee_id,
-    DateTime? start_time,
-    DateTime? finish_time,
-    DateTime? registered_date,
+    int employeeId,
+    DateTime? startTime,
+    DateTime? finishTime,
+    DateTime? registeredDate,
     int? difference,
     @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   });
@@ -158,10 +158,10 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
-    Object? employee_id = null,
-    Object? start_time = freezed,
-    Object? finish_time = freezed,
-    Object? registered_date = freezed,
+    Object? employeeId = null,
+    Object? startTime = freezed,
+    Object? finishTime = freezed,
+    Object? registeredDate = freezed,
     Object? difference = freezed,
     Object? isTurnOnGoing = freezed,
   }) {
@@ -171,21 +171,21 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as int?,
-        employee_id: null == employee_id
-            ? _value.employee_id
-            : employee_id // ignore: cast_nullable_to_non_nullable
+        employeeId: null == employeeId
+            ? _value.employeeId
+            : employeeId // ignore: cast_nullable_to_non_nullable
                   as int,
-        start_time: freezed == start_time
-            ? _value.start_time
-            : start_time // ignore: cast_nullable_to_non_nullable
+        startTime: freezed == startTime
+            ? _value.startTime
+            : startTime // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        finish_time: freezed == finish_time
-            ? _value.finish_time
-            : finish_time // ignore: cast_nullable_to_non_nullable
+        finishTime: freezed == finishTime
+            ? _value.finishTime
+            : finishTime // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        registered_date: freezed == registered_date
-            ? _value.registered_date
-            : registered_date // ignore: cast_nullable_to_non_nullable
+        registeredDate: freezed == registeredDate
+            ? _value.registeredDate
+            : registeredDate // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
         difference: freezed == difference
             ? _value.difference
@@ -205,10 +205,10 @@ class __$$EmployeeTimeTrackModelImplCopyWithImpl<$Res>
 class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
   const _$EmployeeTimeTrackModelImpl({
     this.id,
-    required this.employee_id,
-    this.start_time,
-    this.finish_time,
-    this.registered_date,
+    required this.employeeId,
+    this.startTime,
+    this.finishTime,
+    this.registeredDate,
     this.difference,
     @JsonKey(includeToJson: false, includeFromJson: false) this.isTurnOnGoing,
   });
@@ -219,13 +219,13 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
   @override
   final int? id;
   @override
-  final int employee_id;
+  final int employeeId;
   @override
-  final DateTime? start_time;
+  final DateTime? startTime;
   @override
-  final DateTime? finish_time;
+  final DateTime? finishTime;
   @override
-  final DateTime? registered_date;
+  final DateTime? registeredDate;
   @override
   final int? difference;
   @override
@@ -234,7 +234,7 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
 
   @override
   String toString() {
-    return 'EmployeeTimeTrackModel(id: $id, employee_id: $employee_id, start_time: $start_time, finish_time: $finish_time, registered_date: $registered_date, difference: $difference, isTurnOnGoing: $isTurnOnGoing)';
+    return 'EmployeeTimeTrackModel(id: $id, employeeId: $employeeId, startTime: $startTime, finishTime: $finishTime, registeredDate: $registeredDate, difference: $difference, isTurnOnGoing: $isTurnOnGoing)';
   }
 
   @override
@@ -243,14 +243,14 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
         (other.runtimeType == runtimeType &&
             other is _$EmployeeTimeTrackModelImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.employee_id, employee_id) ||
-                other.employee_id == employee_id) &&
-            (identical(other.start_time, start_time) ||
-                other.start_time == start_time) &&
-            (identical(other.finish_time, finish_time) ||
-                other.finish_time == finish_time) &&
-            (identical(other.registered_date, registered_date) ||
-                other.registered_date == registered_date) &&
+            (identical(other.employeeId, employeeId) ||
+                other.employeeId == employeeId) &&
+            (identical(other.startTime, startTime) ||
+                other.startTime == startTime) &&
+            (identical(other.finishTime, finishTime) ||
+                other.finishTime == finishTime) &&
+            (identical(other.registeredDate, registeredDate) ||
+                other.registeredDate == registeredDate) &&
             (identical(other.difference, difference) ||
                 other.difference == difference) &&
             (identical(other.isTurnOnGoing, isTurnOnGoing) ||
@@ -262,10 +262,10 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    employee_id,
-    start_time,
-    finish_time,
-    registered_date,
+    employeeId,
+    startTime,
+    finishTime,
+    registeredDate,
     difference,
     isTurnOnGoing,
   );
@@ -291,10 +291,10 @@ class _$EmployeeTimeTrackModelImpl implements _EmployeeTimeTrackModel {
 abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
   const factory _EmployeeTimeTrackModel({
     final int? id,
-    required final int employee_id,
-    final DateTime? start_time,
-    final DateTime? finish_time,
-    final DateTime? registered_date,
+    required final int employeeId,
+    final DateTime? startTime,
+    final DateTime? finishTime,
+    final DateTime? registeredDate,
     final int? difference,
     @JsonKey(includeToJson: false, includeFromJson: false)
     final bool? isTurnOnGoing,
@@ -306,13 +306,13 @@ abstract class _EmployeeTimeTrackModel implements EmployeeTimeTrackModel {
   @override
   int? get id;
   @override
-  int get employee_id;
+  int get employeeId;
   @override
-  DateTime? get start_time;
+  DateTime? get startTime;
   @override
-  DateTime? get finish_time;
+  DateTime? get finishTime;
   @override
-  DateTime? get registered_date;
+  DateTime? get registeredDate;
   @override
   int? get difference;
   @override

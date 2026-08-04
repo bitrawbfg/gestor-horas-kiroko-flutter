@@ -10,23 +10,16 @@ part 'employee_time_track_model.g.dart';
 class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
   const factory EmployeeTimeTrackModel({
     int? id,
-    required int employee_id,
-    DateTime? start_time,
-    DateTime? finish_time,
-    DateTime? registered_date,
+    required int employeeId,
+    DateTime? startTime,
+    DateTime? finishTime,
+    DateTime? registeredDate,
     int? difference,
     @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   }) = _EmployeeTimeTrackModel;
 
   factory EmployeeTimeTrackModel.fromJson(Map<String, dynamic> json) =>
       _$EmployeeTimeTrackModelFromJson(json);
-
-  /*Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }*/
 
   factory EmployeeTimeTrackModel.fromMap(Map<String, dynamic> map) {
     final startTime = map['start_time'] as String?;
@@ -35,10 +28,10 @@ class EmployeeTimeTrackModel with _$EmployeeTimeTrackModel {
 
     return EmployeeTimeTrackModel(
       id: map['id'],
-      employee_id: map['employee_id'],
-      start_time: startTime == null ? null : DateTime.tryParse(startTime),
-      finish_time: finishTime == null ? null : DateTime.tryParse(finishTime),
-      registered_date: registeredDate == null
+      employeeId: map['employee_id'],
+      startTime: startTime == null ? null : DateTime.tryParse(startTime),
+      finishTime: finishTime == null ? null : DateTime.tryParse(finishTime),
+      registeredDate: registeredDate == null
           ? null
           : DateTime.tryParse(registeredDate),
       difference: map['difference'],
