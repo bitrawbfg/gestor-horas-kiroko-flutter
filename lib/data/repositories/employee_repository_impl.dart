@@ -4,13 +4,13 @@ import 'package:gestor_horas/domain/repositories/employee_repository.dart';
 
 class EmployeeRepositoryImpl implements EmployeeRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
-  static const String EMPLOYEES_TABLE = 'employees';
+  static const String employeesTable = 'employees';
 
   @override
   Future<void> insertEmployee(EmployeeModel employee) async {
     final database = await _databaseHelper.database;
 
-    await database.insert(EMPLOYEES_TABLE, employee.toJson());
+    await database.insert(employeesTable, employee.toJson());
   }
 
   @override
@@ -18,7 +18,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     final database = await _databaseHelper.database;
 
     await database.update(
-      EMPLOYEES_TABLE,
+      employeesTable,
       employee.toJson(),
       where: 'id = ?',
       whereArgs: [employee.id],
@@ -30,7 +30,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     final database = await _databaseHelper.database;
 
     await database.delete(
-      EMPLOYEES_TABLE,
+      employeesTable,
       where: 'id = ?',
       whereArgs: [employee.id],
     );
@@ -38,7 +38,6 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
 
   @override
   Future<EmployeeModel> getEmployeeById(int id) async {
-    final database = await _databaseHelper.database;
 
     // TODO: implement getEmployeeById
     throw UnimplementedError();
@@ -48,7 +47,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   Future<List<EmployeeModel>> getEmployees() async {
     final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> employees = await database.query(
-      EMPLOYEES_TABLE,
+      employeesTable,
     );
 
     return List.generate(employees.length, (employee) {
@@ -61,7 +60,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     // TODO: implement getEmployeesByName
     final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> employees = await database.query(
-      EMPLOYEES_TABLE,
+      employeesTable,
       where: 'name LIKE ?',
       whereArgs: ['%$name%'],
     );

@@ -5,7 +5,6 @@ import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/repositories/employee_time_tracking_repository_impl.dart';
 import 'package:gestor_horas/presentation/viewmodels/date_view_model.dart';
 import 'package:gestor_horas/presentation/viewmodels/side_panel_view_model.dart';
-import 'package:provider/provider.dart';
 import 'package:side_panel/side_panel.dart';
 
 class EmployeeTimeTrackViewmodel extends ChangeNotifier {
@@ -34,9 +33,9 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
   Future<EmployeeModel?> addTimeStart(EmployeeModel employee) async {
     if (employee.currentTimeTrack == null) {
       EmployeeTimeTrackModel employeeTimeTrack = EmployeeTimeTrackModel(
-        employee_id: employee.id!,
-        start_time: DateTime.now(),
-        registered_date: DateTime.now(),
+        employeeId: employee.id!,
+        startTime: DateTime.now(),
+        registeredDate: DateTime.now(),
       );
 
       int idTimeTrack = await _repository.insertEmployeeTimeTrack(employeeTimeTrack);
@@ -50,17 +49,17 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
 
   Future<void> addTimeFinish(EmployeeModel employee) async {
     EmployeeTimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
-      finish_time: DateTime.now(),
-      registered_date: DateTime.now(),
+      finishTime: DateTime.now(),
+      registeredDate: DateTime.now(),
       difference: DateTime
           .now()
-          .difference(employee.currentTimeTrack!.start_time!)
+          .difference(employee.currentTimeTrack!.startTime!)
           .inMinutes,
     );
 
     await _repository.updateEmployeeTimeTrack(employeeTimeTrack);
 
-    locator<SidePanelViewModel>().getTimeTrackingsFromEmployee(employee.id!, employee.currentTimeTrack!.registered_date!.day);
+    locator<SidePanelViewModel>().getTimeTrackingsFromEmployee(employee.id!, employee.currentTimeTrack!.registeredDate!.day);
     loadTimeTrackings();
   }
 
@@ -80,11 +79,11 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
       BuildContext context,) {
     int day = _dateViewModel.weekDates[weekDateValue].day;
     List<EmployeeTimeTrackModel> employeeTimeTrackings = timeTrackings
-        .where((timeTrack) => employeeId == timeTrack.employee_id)
+        .where((timeTrack) => employeeId == timeTrack.employeeId)
         .toList();
 
     List<EmployeeTimeTrackModel> timeTrackingsThatMatchDay = employeeTimeTrackings
-        .where((timeTrack) => timeTrack.registered_date?.day == day)
+        .where((timeTrack) => timeTrack.registeredDate?.day == day)
         .toList();
 
     int sumOfRegisteredTime = 0;
@@ -116,11 +115,11 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
 
   List<EmployeeTimeTrackModel> getTimeTrackingsFromEmployee(int employeeId, int day) {
     List<EmployeeTimeTrackModel> employeeTimeTrackings = timeTrackings
-        .where((timeTrack) => employeeId == timeTrack.employee_id && timeTrack.difference != 0)
+        .where((timeTrack) => employeeId == timeTrack.employeeId && timeTrack.difference != 0)
         .toList();
 
     List<EmployeeTimeTrackModel> timeTrackingsThatMatchDay = employeeTimeTrackings
-        .where((timeTrack) => timeTrack.registered_date?.day == day)
+        .where((timeTrack) => timeTrack.registeredDate?.day == day)
         .toList();
 
     return timeTrackingsThatMatchDay;
@@ -130,9 +129,9 @@ class EmployeeTimeTrackViewmodel extends ChangeNotifier {
     List<EmployeeTimeTrackModel> timeTrackingsList = timeTrackings
         .where(
           (timeTrack) =>
-      timeTrack.employee_id == employeeId &&
-          timeTrack.registered_date!.isAfter(_dateViewModel.firstDayOfWeek) &&
-          timeTrack.registered_date!.isBefore(_dateViewModel.lastDayOfWeek),
+      timeTrack.employeeId == employeeId &&
+          timeTrack.registeredDate!.isAfter(_dateViewModel.firstDayOfWeek) &&
+          timeTrack.registeredDate!.isBefore(_dateViewModel.lastDayOfWeek),
     )
         .toList();
 
