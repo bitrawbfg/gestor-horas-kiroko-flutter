@@ -25,122 +25,6 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
 
   int? selectedEmployeeId;
 
-  OverlayEntry? _datePickerEntry;
-  final GlobalKey _dateButtonKey = GlobalKey();
-
-  final double _pickerOffsetY = 48; // adjust if your button height differs
-
-  void _closeDatePickerOverlay() {
-    _datePickerEntry?.remove();
-    _datePickerEntry = null;
-  }
-
-  void _showDatePickerOverlay(
-    BuildContext context,
-    EmployeeViewModel employeeViewModel,
-    TimeTrackViewModel timeTrackViewModel,
-    DateViewModel dateViewModel,
-  ) {
-    if (_datePickerEntry != null) return;
-
-    final overlay = Overlay.of(context, rootOverlay: true);
-
-    final buttonBox = _dateButtonKey.currentContext?.findRenderObject() as RenderBox?;
-    if (buttonBox == null) return;
-
-    final buttonSize = buttonBox.size;
-    final buttonOffset = buttonBox.localToGlobal(Offset.zero);
-
-    // Where the picker should start (below the button)
-    final left = buttonOffset.dx;
-    final top = buttonOffset.dy + buttonSize.height + _pickerOffsetY;
-
-    // Keep it inside the viewport: clamp if needed
-    final screenSize = MediaQuery.of(context).size;
-    final maxWidth = screenSize.width - 16; // small margin
-    final desiredWidth = (buttonSize.width + 300).clamp(0, maxWidth) as double;
-
-    // Reduce height so it won't go past bottom too aggressively
-    const pickerHeight = 220.0;
-
-    _datePickerEntry = OverlayEntry(
-      builder: (context) {
-        return TapRegion(
-          //behavior: HitTestBehavior.translucent,
-          onTapOutside: (tap) {
-            // close on outside tap
-            if (dateViewModel.isCalendarOpen) dateViewModel.toggleCalendarView();
-            // remove after tap processing
-            _closeDatePickerOverlay();
-          },
-          child: Stack(
-            children: [
-              Positioned(
-                left: left,
-                top: top,
-                width: desiredWidth,
-                height: desiredWidth + 80,
-                child: Material(
-                  elevation: 12,
-                  borderRadius: BorderRadius.circular(12),
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        child: TableCalendar(
-                          focusedDay: dateViewModel.selectedDate,
-                          firstDay: dateViewModel.minDate,
-                          lastDay: dateViewModel.maxDate,
-                          rangeStartDay: dateViewModel.firstDayOfWeek,
-                          rangeEndDay: dateViewModel.lastDayOfWeek,
-                          rangeSelectionMode: RangeSelectionMode.enforced,
-                          calendarFormat: CalendarFormat.month,
-                          locale: 'es_ES',
-                          startingDayOfWeek: StartingDayOfWeek.monday,
-                          headerStyle: const HeaderStyle(
-                            formatButtonVisible: false,
-                            titleCentered: true,
-                          ),
-                          onDaySelected: (selectedDay, focusedDay) {
-                            dateViewModel.setSelectedDate(selectedDay);
-                            timeTrackViewModel.loadTimeTrackings();
-
-                            _closeDatePickerOverlay();
-                          },
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed:
-                            (dateViewModel.selectedDate.weekday == DateTime.now().weekday) &&
-                                (dateViewModel.selectedDate.day == DateTime.now().day) &&
-                                (dateViewModel.selectedDate.month == DateTime.now().month) &&
-                                (dateViewModel.selectedDate.year == DateTime.now().year)
-                            ? null
-                            : () {
-                                dateViewModel.setSelectedDate(DateTime.now());
-                                _closeDatePickerOverlay();
-                              },
-                        child: Text('Volver a hoy'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    overlay.insert(_datePickerEntry!);
-  }
-
-  @override
-  void dispose() {
-    _closeDatePickerOverlay();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return SidePanel(
@@ -228,26 +112,66 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                               child: const Icon(Icons.stop_circle),
                             ),
 
-                      // Date button (anchors the overlay)
-                      ElevatedButton(
-                        key: _dateButtonKey,
-                        onPressed: () {
-                          dateViewModel.toggleCalendarView();
-
-                          // show immediately (so it feels responsive)
-                          // (overlay insertion is also handled in addPostFrameCallback)
-                          if (dateViewModel.isCalendarOpen) {
-                            _showDatePickerOverlay(
-                              context,
-                              employeeViewModel,
-                              employeeTimeTrackViewModel,
-                              dateViewModel,
-                            );
-                          } else {
-                            _closeDatePickerOverlay();
-                          }
+                      // Calendar widget
+                      MenuAnchor(
+                        menuChildren: [
+                          Container(
+                            width: 350,
+                            height: 500,
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: TableCalendar(
+                                    focusedDay: dateViewModel.selectedDate,
+                                    firstDay: dateViewModel.minDate,
+                                    lastDay: dateViewModel.maxDate,
+                                    rangeStartDay: dateViewModel.firstDayOfWeek,
+                                    rangeEndDay: dateViewModel.lastDayOfWeek,
+                                    rangeSelectionMode: RangeSelectionMode.enforced,
+                                    calendarFormat: CalendarFormat.month,
+                                    locale: 'es_ES',
+                                    startingDayOfWeek: StartingDayOfWeek.monday,
+                                    headerStyle: const HeaderStyle(
+                                      formatButtonVisible: false,
+                                      titleCentered: true,
+                                    ),
+                                    onDaySelected: (selectedDay, focusedDay) {
+                                      dateViewModel.setSelectedDate(selectedDay);
+                                      locator<TimeTrackViewModel>().loadTimeTrackings();
+                                    },
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed:
+                                      (dateViewModel.selectedDate.weekday ==
+                                              DateTime.now().weekday) &&
+                                          (dateViewModel.selectedDate.day == DateTime.now().day) &&
+                                          (dateViewModel.selectedDate.month ==
+                                              DateTime.now().month) &&
+                                          (dateViewModel.selectedDate.year == DateTime.now().year)
+                                      ? null
+                                      : () {
+                                          dateViewModel.setSelectedDate(DateTime.now());
+                                        },
+                                  child: Text('Volver a hoy'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        builder: (BuildContext context, MenuController controller, Widget? child) {
+                          return ElevatedButton(
+                            onPressed: () {
+                              if (controller.isOpen) {
+                                controller.close();
+                              } else {
+                                controller.open();
+                              }
+                            },
+                            child: const Icon(Icons.calendar_month),
+                          );
                         },
-                        child: Icon(Icons.calendar_month),
                       ),
                     ],
                   ),
