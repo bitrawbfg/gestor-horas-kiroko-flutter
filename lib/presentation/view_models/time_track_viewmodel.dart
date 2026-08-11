@@ -48,17 +48,42 @@ class TimeTrackViewModel extends ChangeNotifier {
   }
 
   Future<void> addTimeFinish(EmployeeModel employee) async {
-    TimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
-      finishTime: DateTime.now(),
-      registeredDate: DateTime.now(),
-      difference: DateTime.now().difference(employee.currentTimeTrack!.startTime!).inMinutes,
+    int differenceBetweenTimes = DateTime.now().difference(employee.currentTimeTrack!.startTime!).inMinutes;
+
+    if (differenceBetweenTimes != 0) {
+      TimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
+        finishTime: DateTime.now(),
+        registeredDate: DateTime.now(),
+        difference: differenceBetweenTimes,
+      );
+
+      await _repository.updateTimeTrack(employeeTimeTrack);
+
+      locator<TimeTrackViewModel>().getTimeTrackingsFromEmployee(
+        employee.id!,
+        employee.currentTimeTrack!.registeredDate!.day,
+      );
+      loadTimeTrackings();
+    } else {
+      //TODO: Create exception or something when this happens
+    }
+  }
+
+  Future<void> editTimeTrack(TimeTrackModel timeTrack, DateTime startTime, DateTime finishTime) async {
+    int differenceBetweenTimes = finishTime.difference(startTime).inMinutes;
+
+    TimeTrackModel employeeTimeTrack = timeTrack.copyWith(
+      startTime: startTime,
+      finishTime: finishTime,
+      registeredDate: finishTime,
+      difference: differenceBetweenTimes,
     );
 
     await _repository.updateTimeTrack(employeeTimeTrack);
 
-    locator<TimeTrackViewModel>().getTimeTrackingsFromEmployee(
-      employee.id!,
-      employee.currentTimeTrack!.registeredDate!.day,
+    getTimeTrackingsFromEmployee(
+      timeTrack.employeeId,
+      timeTrack.registeredDate!.day,
     );
     loadTimeTrackings();
   }
@@ -101,7 +126,10 @@ class TimeTrackViewModel extends ChangeNotifier {
         onDoubleTap: () async {
           locator<SidePanelController>().showRightPanel();
           locator<TimeTrackViewModel>().getTimeTrackingsFromEmployee(employeeId, day);
+
+          EmployeeModel selectedEmployee;
           await locator<EmployeeViewModel>().getEmployeesById(employeeId);
+          print(locator<EmployeeViewModel>().selectedEmployee?.name);
         },
         child: Center(
           child: Text(
@@ -116,7 +144,7 @@ class TimeTrackViewModel extends ChangeNotifier {
 
   void getTimeTrackingsFromEmployee(int employeeId, int day) {
     List<TimeTrackModel> timeTrackingsThatMatch = timeTrackings
-        .where((timeTrack) => employeeId == timeTrack.employeeId && timeTrack.difference != 0)
+        .where((timeTrack) => employeeId == timeTrack.employeeId && timeTrack.difference! > 0)
         .where((timeTrack) => timeTrack.registeredDate?.day == day)
         .toList();
 
