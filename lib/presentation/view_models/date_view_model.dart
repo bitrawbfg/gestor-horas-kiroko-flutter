@@ -34,4 +34,6 @@ class DateViewModel extends ChangeNotifier {
     /// Closes the calendar view when a date is selected
     notifyListeners();
   }
+
+
 }
