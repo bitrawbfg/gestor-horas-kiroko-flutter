@@ -6,19 +6,16 @@ import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
 import 'package:side_panel/side_panel.dart';
 
+import '../../configuration/service_locator.dart';
+
 class DataTableEmployees extends StatelessWidget {
-  const DataTableEmployees({
+  DataTableEmployees({
     super.key,
-    required this.employeeViewModel,
-    required this.employeeTimeTrackViewModel,
-    required this.dateViewModel,
-    required this.sidePanelController,
   });
 
-  final EmployeeViewModel employeeViewModel;
-  final TimeTrackViewModel employeeTimeTrackViewModel;
-  final DateViewModel dateViewModel;
-  final SidePanelController sidePanelController;
+  final EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
+  final TimeTrackViewModel timeTrackViewModel = locator<TimeTrackViewModel>();
+  final DateViewModel dateViewModel = locator<DateViewModel>();
 
   @override
   Widget build(BuildContext context) {
@@ -124,44 +121,44 @@ class DataTableEmployees extends StatelessWidget {
         ],
         rows: List<DataRow>.generate(employeeViewModel.employees.length, (index) {
           EmployeeModel employee = employeeViewModel.employees[index];
-          Duration timeWorkedInWeek = employeeTimeTrackViewModel.getTimeWorkedInWeekByEmployee(
+          Duration timeWorkedInWeek = timeTrackViewModel.getTimeWorkedInWeekByEmployee(
             employee.id!,
           );
 
           return DataRow(
             cells: [
               DataCell(Text(employee.name)),
-              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
+              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
                 0,
                 employee.id!,
                 context,
               ),
-              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
+              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
                 1,
                 employee.id!,
                 context,
               ),
-              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
+              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
                 2,
                 employee.id!,
                 context,
               ),
-              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
+              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
                 3,
                 employee.id!,
                 context,
               ),
-              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
+              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
                 4,
                 employee.id!,
                 context,
               ),
-              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
+              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
                 5,
                 employee.id!,
                 context,
               ),
-              employeeTimeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
+              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
                 6,
                 employee.id!,
                 context,

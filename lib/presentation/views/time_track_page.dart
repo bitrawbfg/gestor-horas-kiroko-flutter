@@ -59,7 +59,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                         .map<DropdownMenuItem<EmployeeModel>>(
                           (EmployeeModel employee) => DropdownMenuItem(
                             value: employee,
-                            child: Row(children: [Text(employee.name)]),
+                            child: SizedBox(width: 100, height: 30, child: Text(employee.name)),
                           ),
                         )
                         .toList(),
@@ -175,12 +175,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                       ),
                     ],
                   ),
-                  DataTableEmployees(
-                    employeeTimeTrackViewModel: employeeTimeTrackViewModel,
-                    employeeViewModel: employeeViewModel,
-                    dateViewModel: dateViewModel,
-                    sidePanelController: _sidePanelController,
-                  ),
+                  DataTableEmployees(),
                 ],
               ),
             ),

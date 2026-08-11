@@ -11,11 +11,16 @@ class TimeTrackViewModel extends ChangeNotifier {
   final DateViewModel _dateViewModel;
   final TimeTrackingRepositoryImpl _repository = TimeTrackingRepositoryImpl();
 
+  EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
+
   TimeTrackViewModel(this._dateViewModel);
 
   List<TimeTrackModel> _timeTrackings = [];
+  List<TimeTrackModel> _timeTrackingsFromEmployee = [];
 
   List<TimeTrackModel> get timeTrackings => _timeTrackings;
+
+  List<TimeTrackModel> get timeTrackingsFromEmployee => _timeTrackingsFromEmployee;
 
   Future<void> loadTimeTrackings({List<TimeTrackModel>? timeTrackings}) async {
     if (timeTrackings == null) {
@@ -48,22 +53,20 @@ class TimeTrackViewModel extends ChangeNotifier {
   }
 
   Future<void> addTimeFinish(EmployeeModel employee) async {
-    int differenceBetweenTimes = DateTime.now()
+    DateTime finishTime = DateTime.now();
+    int differenceBetweenTimes = finishTime
         .difference(employee.currentTimeTrack!.startTime!)
         .inMinutes;
 
     TimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
-      finishTime: DateTime.now(),
-      registeredDate: DateTime.now(),
+      finishTime: finishTime,
+      registeredDate: finishTime.copyWith(hour: 23, minute: 59, second: 59),
       difference: differenceBetweenTimes,
     );
 
     await _repository.updateTimeTrack(employeeTimeTrack);
 
-    locator<TimeTrackViewModel>().getTimeTrackingsFromEmployee(
-      employee.id!,
-      employee.currentTimeTrack!.registeredDate!.day,
-    );
+    getTimeTrackingsFromEmployee(employee.id!, employee.currentTimeTrack!.registeredDate!.day);
     loadTimeTrackings();
   }
 
@@ -131,11 +134,10 @@ class TimeTrackViewModel extends ChangeNotifier {
       GestureDetector(
         onDoubleTap: () async {
           locator<SidePanelController>().showRightPanel();
-          locator<TimeTrackViewModel>().getTimeTrackingsFromEmployee(employeeId, day);
+          getTimeTrackingsFromEmployee(employeeId, day);
 
-          EmployeeModel selectedEmployee;
-          await locator<EmployeeViewModel>().getEmployeesById(employeeId);
-          print(locator<EmployeeViewModel>().selectedEmployee?.name);
+          await employeeViewModel.getEmployeesById(employeeId);
+          EmployeeModel? selectedEmployee = employeeViewModel.selectedEmployee;
         },
         child: Center(
           child: Text(
