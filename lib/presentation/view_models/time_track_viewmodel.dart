@@ -48,28 +48,30 @@ class TimeTrackViewModel extends ChangeNotifier {
   }
 
   Future<void> addTimeFinish(EmployeeModel employee) async {
-    int differenceBetweenTimes = DateTime.now().difference(employee.currentTimeTrack!.startTime!).inMinutes;
+    int differenceBetweenTimes = DateTime.now()
+        .difference(employee.currentTimeTrack!.startTime!)
+        .inMinutes;
 
-    if (differenceBetweenTimes != 0) {
-      TimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
-        finishTime: DateTime.now(),
-        registeredDate: DateTime.now(),
-        difference: differenceBetweenTimes,
-      );
+    TimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
+      finishTime: DateTime.now(),
+      registeredDate: DateTime.now(),
+      difference: differenceBetweenTimes,
+    );
 
-      await _repository.updateTimeTrack(employeeTimeTrack);
+    await _repository.updateTimeTrack(employeeTimeTrack);
 
-      locator<TimeTrackViewModel>().getTimeTrackingsFromEmployee(
-        employee.id!,
-        employee.currentTimeTrack!.registeredDate!.day,
-      );
-      loadTimeTrackings();
-    } else {
-      //TODO: Create exception or something when this happens
-    }
+    locator<TimeTrackViewModel>().getTimeTrackingsFromEmployee(
+      employee.id!,
+      employee.currentTimeTrack!.registeredDate!.day,
+    );
+    loadTimeTrackings();
   }
 
-  Future<void> editTimeTrack(TimeTrackModel timeTrack, DateTime startTime, DateTime finishTime) async {
+  Future<void> editTimeTrack(
+    TimeTrackModel timeTrack,
+    DateTime startTime,
+    DateTime finishTime,
+  ) async {
     int differenceBetweenTimes = finishTime.difference(startTime).inMinutes;
 
     TimeTrackModel employeeTimeTrack = timeTrack.copyWith(
@@ -81,10 +83,14 @@ class TimeTrackViewModel extends ChangeNotifier {
 
     await _repository.updateTimeTrack(employeeTimeTrack);
 
-    getTimeTrackingsFromEmployee(
-      timeTrack.employeeId,
-      timeTrack.registeredDate!.day,
-    );
+    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
+    loadTimeTrackings();
+  }
+
+  Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
+    await _repository.deleteTimeTrack(timeTrack);
+
+    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
     loadTimeTrackings();
   }
 

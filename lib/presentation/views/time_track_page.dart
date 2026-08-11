@@ -385,6 +385,14 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                                                         },
                                                         child: Text('Guardar cambios'),
                                                       ),
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          await timeTrackViewModel.deleteTimeTrack(
+                                                            timeTracking,
+                                                          );
+                                                        },
+                                                        child: Text('Eliminar registro'),
+                                                      ),
                                                     ],
                                                   ),
                                                 ],
@@ -469,7 +477,17 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                               onPressed: () async {
                                 if (selectedEmployee?.currentTimeTrack != null ||
                                     selectedEmployee?.currentTimeTrack?.startTime != null) {
-                                  await employeeTimeTrackViewModel.addTimeFinish(selectedEmployee!);
+                                  int differenceBetweenTimes = DateTime.now()
+                                      .difference(selectedEmployee!.currentTimeTrack!.startTime!)
+                                      .inMinutes;
+
+                                  if (differenceBetweenTimes != 0) {
+                                    await employeeTimeTrackViewModel.addTimeFinish(
+                                      selectedEmployee!,
+                                    );
+                                  } else {
+                                    await employeeTimeTrackViewModel.deleteTimeTrack(selectedEmployee!.currentTimeTrack!);
+                                  }
 
                                   employeeViewModel.updateEmployee(
                                     selectedEmployee.copyWith(currentTimeTrack: null),
