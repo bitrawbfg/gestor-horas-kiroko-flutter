@@ -5,7 +5,6 @@ import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/repositories/time_tracking_repository_impl.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
-import 'package:side_panel/side_panel.dart';
 
 class TimeTrackViewModel extends ChangeNotifier {
   final DateViewModel _dateViewModel;
@@ -77,7 +76,6 @@ class TimeTrackViewModel extends ChangeNotifier {
     await _repository.updateTimeTrack(employeeTimeTrack);
 
     loadTimeTrackings();
-    getTimeTrackingsFromEmployee(employee.id!, employee.currentTimeTrack!.registeredDate!.day);
   }
 
   Future<void> editTimeTrack(
@@ -97,20 +95,17 @@ class TimeTrackViewModel extends ChangeNotifier {
     await _repository.updateTimeTrack(employeeTimeTrack);
 
     await loadTimeTrackings();
-    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
   }
 
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
     await _repository.deleteTimeTrack(timeTrack);
 
     await loadTimeTrackings();
-    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
   }
 
-  DataCell checkColumnWeekDayWithTimeTrackings(
+  Duration getDailyDurationForEmployee(
     int weekDateValue,
     int employeeId,
-    BuildContext context,
   ) {
     int day = _dateViewModel.weekDates[weekDateValue].day;
 
@@ -129,29 +124,8 @@ class TimeTrackViewModel extends ChangeNotifier {
       }
     }
 
-    Duration duration = Duration(minutes: sumOfRegisteredTime);
-
-    return DataCell(
-      GestureDetector(
-        onDoubleTap: () async {
-          locator<SidePanelController>().showRightPanel();
-          getTimeTrackingsFromEmployee(employeeId, day);
-
-          await employeeViewModel.getEmployeesById(employeeId);
-          EmployeeModel? selectedEmployee = employeeViewModel.selectedEmployee;
-        },
-        child: Center(
-          child: Text(
-            duration.inMinutes == 0
-                ? '-'
-                : '${duration.inHours.remainder(24)}h ${duration.inMinutes.remainder(60)}m',
-          ),
-        ),
-      ),
-    );
+    return Duration(minutes: sumOfRegisteredTime);
   }
-
-
 
   Duration getTimeWorkedInWeekByEmployee(int employeeId) {
     List<TimeTrackModel> timeTrackingsList = timeTrackings

@@ -6,15 +6,14 @@ import 'package:gestor_horas/data/repositories/time_tracking_repository_impl.dar
 
 class EmployeeViewModel extends ChangeNotifier {
   final EmployeeRepositoryImpl _employeesRepository = EmployeeRepositoryImpl();
-  final TimeTrackingRepositoryImpl _timeTrackRepository =
-      TimeTrackingRepositoryImpl();
+  final TimeTrackingRepositoryImpl _timeTrackRepository = TimeTrackingRepositoryImpl();
 
   List<EmployeeModel> _employees = [];
-
   List<EmployeeModel> get employees => _employees;
 
-  late EmployeeModel _selectedEmployee;
-  EmployeeModel get selectedEmployee => _selectedEmployee;
+  EmployeeModel? _selectedEmployee;
+  EmployeeModel? get selectedEmployee => _selectedEmployee;
+
   set setSelectedEmployee(EmployeeModel value) {
     _selectedEmployee = value;
   }
@@ -25,7 +24,9 @@ class EmployeeViewModel extends ChangeNotifier {
 
       for (EmployeeModel employee in _employees) {
         int index = _employees.indexOf(employee);
-        TimeTrackModel? timeTrack = await _timeTrackRepository.getLastTimeTrackingByEmployeeId(employee.id!);
+        TimeTrackModel? timeTrack = await _timeTrackRepository.getLastTimeTrackingByEmployeeId(
+          employee.id!,
+        );
 
         if (timeTrack != null) {
           EmployeeModel employeeWithTimeTrack = employee.copyWith(currentTimeTrack: timeTrack);
@@ -39,10 +40,7 @@ class EmployeeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> assignTimeTrackToEmployee(
-    int employeeId,
-    TimeTrackModel timeTrack,
-  ) async {
+  Future<void> assignTimeTrackToEmployee(int employeeId, TimeTrackModel timeTrack) async {
     int employeeToReplace = _employees.indexOf(
       _employees.firstWhere((employee) => employee.id == employeeId),
     );
@@ -56,16 +54,14 @@ class EmployeeViewModel extends ChangeNotifier {
   }
 
   Future<void> getEmployeesById(int id) async {
-    EmployeeModel employee = await _employeesRepository
-        .getEmployeeById(id);
+    EmployeeModel employee = await _employeesRepository.getEmployeeById(id);
 
     _selectedEmployee = employee;
     notifyListeners();
   }
 
   Future<void> getEmployeesByName(String name) async {
-    List<EmployeeModel> employees = await _employeesRepository
-        .getEmployeesByName(name);
+    List<EmployeeModel> employees = await _employeesRepository.getEmployeesByName(name);
     await loadEmployees(employees: employees);
   }
 
@@ -77,7 +73,9 @@ class EmployeeViewModel extends ChangeNotifier {
   Future<void> updateEmployee(EmployeeModel employee) async {
     await _employeesRepository.updateEmployee(employee);
 
-    EmployeeModel employeeInList = _employees.where((employeeFromList) => employeeFromList.id == employee.id).first;
+    EmployeeModel employeeInList = _employees
+        .where((employeeFromList) => employeeFromList.id == employee.id)
+        .first;
     int indexEmployee = _employees.indexOf(employeeInList);
     _employees[indexEmployee] = employee;
 

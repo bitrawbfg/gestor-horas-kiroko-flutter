@@ -9,9 +9,7 @@ import 'package:side_panel/side_panel.dart';
 import '../../configuration/service_locator.dart';
 
 class DataTableEmployees extends StatelessWidget {
-  DataTableEmployees({
-    super.key,
-  });
+  DataTableEmployees({super.key});
 
   final EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
   final TimeTrackViewModel timeTrackViewModel = locator<TimeTrackViewModel>();
@@ -128,41 +126,13 @@ class DataTableEmployees extends StatelessWidget {
           return DataRow(
             cells: [
               DataCell(Text(employee.name)),
-              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
-                0,
-                employee.id!,
-                context,
-              ),
-              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
-                1,
-                employee.id!,
-                context,
-              ),
-              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
-                2,
-                employee.id!,
-                context,
-              ),
-              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
-                3,
-                employee.id!,
-                context,
-              ),
-              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
-                4,
-                employee.id!,
-                context,
-              ),
-              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
-                5,
-                employee.id!,
-                context,
-              ),
-              timeTrackViewModel.checkColumnWeekDayWithTimeTrackings(
-                6,
-                employee.id!,
-                context,
-              ),
+              getDailyTimeWorkedByEmployee(0, employee.id!),
+              getDailyTimeWorkedByEmployee(1, employee.id!),
+              getDailyTimeWorkedByEmployee(2, employee.id!),
+              getDailyTimeWorkedByEmployee(3, employee.id!),
+              getDailyTimeWorkedByEmployee(4, employee.id!),
+              getDailyTimeWorkedByEmployee(5, employee.id!),
+              getDailyTimeWorkedByEmployee(6, employee.id!),
               DataCell(
                 Text(
                   timeWorkedInWeek.inMinutes == 0
@@ -173,6 +143,33 @@ class DataTableEmployees extends StatelessWidget {
             ],
           );
         }),
+      ),
+    );
+  }
+
+  DataCell getDailyTimeWorkedByEmployee(int weekDateValue, int employeeId) {
+    TimeTrackViewModel timeTrackViewModel = locator<TimeTrackViewModel>();
+    EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
+    DateViewModel dateViewModel = locator<DateViewModel>();
+    int day = dateViewModel.weekDates[weekDateValue].day;
+
+    Duration duration = timeTrackViewModel.getDailyDurationForEmployee(weekDateValue, employeeId);
+
+    return DataCell(
+      GestureDetector(
+        onDoubleTap: () async {
+          locator<SidePanelController>().showRightPanel();
+          timeTrackViewModel.getTimeTrackingsFromEmployee(employeeId, day);
+
+          await employeeViewModel.getEmployeesById(employeeId);
+        },
+        child: Center(
+          child: Text(
+            duration.inMinutes == 0
+                ? '-'
+                : '${duration.inHours.remainder(24)}h ${duration.inMinutes.remainder(60)}m',
+          ),
+        ),
       ),
     );
   }
