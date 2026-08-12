@@ -35,6 +35,16 @@ class TimeTrackViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void getTimeTrackingsFromEmployee(int employeeId, int day) {
+    List<TimeTrackModel> timeTrackingsThatMatch = timeTrackings
+        .where((timeTrack) => employeeId == timeTrack.employeeId && timeTrack.difference! > 0)
+        .where((timeTrack) => timeTrack.registeredDate?.day == day)
+        .toList();
+
+    _timeTrackingsFromEmployee = timeTrackingsThatMatch;
+    notifyListeners();
+  }
+
   Future<EmployeeModel?> addTimeStart(EmployeeModel employee) async {
     if (employee.currentTimeTrack == null) {
       TimeTrackModel employeeTimeTrack = TimeTrackModel(
@@ -66,8 +76,8 @@ class TimeTrackViewModel extends ChangeNotifier {
 
     await _repository.updateTimeTrack(employeeTimeTrack);
 
-    getTimeTrackingsFromEmployee(employee.id!, employee.currentTimeTrack!.registeredDate!.day);
     loadTimeTrackings();
+    getTimeTrackingsFromEmployee(employee.id!, employee.currentTimeTrack!.registeredDate!.day);
   }
 
   Future<void> editTimeTrack(
@@ -86,25 +96,15 @@ class TimeTrackViewModel extends ChangeNotifier {
 
     await _repository.updateTimeTrack(employeeTimeTrack);
 
-    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
     loadTimeTrackings();
+    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
   }
 
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
     await _repository.deleteTimeTrack(timeTrack);
 
-    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
     loadTimeTrackings();
-  }
-
-  Future<void> getTimeTrackingsBetweenDates() async {
-    List<TimeTrackModel> obtainedTimeTrackings = await _repository.getAllTimeTrackingFromDateToDate(
-      _dateViewModel.firstDayOfWeek,
-      _dateViewModel.lastDayOfWeek,
-    );
-
-    _timeTrackings = obtainedTimeTrackings;
-    notifyListeners();
+    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
   }
 
   DataCell checkColumnWeekDayWithTimeTrackings(
@@ -113,6 +113,7 @@ class TimeTrackViewModel extends ChangeNotifier {
     BuildContext context,
   ) {
     int day = _dateViewModel.weekDates[weekDateValue].day;
+
     List<TimeTrackModel> employeeTimeTrackings = timeTrackings
         .where((timeTrack) => employeeId == timeTrack.employeeId)
         .toList();
@@ -150,15 +151,7 @@ class TimeTrackViewModel extends ChangeNotifier {
     );
   }
 
-  void getTimeTrackingsFromEmployee(int employeeId, int day) {
-    List<TimeTrackModel> timeTrackingsThatMatch = timeTrackings
-        .where((timeTrack) => employeeId == timeTrack.employeeId && timeTrack.difference! > 0)
-        .where((timeTrack) => timeTrack.registeredDate?.day == day)
-        .toList();
 
-    _timeTrackings = timeTrackingsThatMatch;
-    notifyListeners();
-  }
 
   Duration getTimeWorkedInWeekByEmployee(int employeeId) {
     List<TimeTrackModel> timeTrackingsList = timeTrackings

@@ -13,8 +13,8 @@ class EmployeeViewModel extends ChangeNotifier {
 
   List<EmployeeModel> get employees => _employees;
 
-  EmployeeModel? _selectedEmployee;
-  EmployeeModel? get selectedEmployee => _selectedEmployee;
+  late EmployeeModel _selectedEmployee;
+  EmployeeModel get selectedEmployee => _selectedEmployee;
   set setSelectedEmployee(EmployeeModel value) {
     _selectedEmployee = value;
   }

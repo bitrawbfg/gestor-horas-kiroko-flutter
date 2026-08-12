@@ -48,70 +48,9 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  DropdownButton<EmployeeModel>(
-                    onChanged: (EmployeeModel? value) {
-                      setState(() {
-                        selectedEmployeeId = value!.id;
-                      });
-                    },
-                    value: selectedEmployee,
-                    items: employees
-                        .map<DropdownMenuItem<EmployeeModel>>(
-                          (EmployeeModel employee) => DropdownMenuItem(
-                            value: employee,
-                            child: SizedBox(width: 100, height: 30, child: Text(employee.name)),
-                          ),
-                        )
-                        .toList(),
-                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      selectedEmployee?.currentTimeTrack?.startTime == null
-                          ? ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(80, 80),
-                                foregroundColor: Colors.blue,
-                              ),
-                              onPressed: () async {
-                                EmployeeModel? employeeWithTimeStart =
-                                    await employeeTimeTrackViewModel.addTimeStart(
-                                      selectedEmployee!,
-                                    );
-                                await employeeViewModel.updateEmployee(employeeWithTimeStart!);
-                              },
-                              child: const Icon(Icons.play_arrow),
-                            )
-                          : ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(80, 80),
-                                foregroundColor: Colors.red,
-                              ),
-                              onPressed: () async {
-                                if (selectedEmployee?.currentTimeTrack != null ||
-                                    selectedEmployee?.currentTimeTrack?.startTime != null) {
-                                  int differenceBetweenTimes = DateTime.now()
-                                      .difference(selectedEmployee!.currentTimeTrack!.startTime!)
-                                      .inMinutes;
-
-                                  if (differenceBetweenTimes != 0) {
-                                    await employeeTimeTrackViewModel.addTimeFinish(
-                                      selectedEmployee!,
-                                    );
-                                  } else {
-                                    await employeeTimeTrackViewModel.deleteTimeTrack(
-                                      selectedEmployee!.currentTimeTrack!,
-                                    );
-                                  }
-
-                                  employeeViewModel.updateEmployee(
-                                    selectedEmployee.copyWith(currentTimeTrack: null),
-                                  );
-                                }
-                              },
-                              child: const Icon(Icons.stop_circle),
-                            ),
-
                       // Calendar widget
                       MenuAnchor(
                         menuChildren: [

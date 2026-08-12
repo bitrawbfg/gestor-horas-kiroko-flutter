@@ -6,10 +6,15 @@ import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class SidePanelTimeTrackingWidget extends StatelessWidget {
-  SidePanelTimeTrackingWidget({super.key});
+class SidePanelTimeTrackingWidget extends StatefulWidget {
+  const SidePanelTimeTrackingWidget({super.key});
 
-  final EmployeeModel? employee = locator<EmployeeViewModel>().selectedEmployee;
+  @override
+  State<SidePanelTimeTrackingWidget> createState() => _SidePanelTimeTrackingWidgetState();
+}
+
+class _SidePanelTimeTrackingWidgetState extends State<SidePanelTimeTrackingWidget> {
+  EmployeeModel? employee = locator<EmployeeViewModel>().selectedEmployee;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +39,7 @@ class SidePanelTimeTrackingWidget extends StatelessWidget {
                     itemBuilder: (BuildContext context, int index) {
                       TimeTrackModel timeTracking =
                           timeTrackViewModel.timeTrackingsFromEmployee[index];
+
                       DateTime startTime = timeTracking.startTime!;
                       DateTime finishTime = timeTracking.finishTime!;
                       Duration duration = Duration(minutes: timeTracking.difference!);

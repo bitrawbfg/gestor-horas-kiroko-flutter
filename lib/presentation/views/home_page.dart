@@ -47,68 +47,70 @@ class _MyHomePageState extends State<MyHomePage> {
                 ) {
                   List<EmployeeModel> employees = employeeViewModel.employees;
 
-                  return MenuAnchor(
-                    menuChildren: employees
-                        .map(
-                          (EmployeeModel employee) => ListTile(
-                            leading: Text(employee.name),
-                            trailing: employee.currentTimeTrack?.startTime == null
-                                ? ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: const Size(80, 80),
-                                      foregroundColor: Colors.blue,
-                                    ),
-                                    onPressed: () async {
-                                      EmployeeModel? employeeWithTimeStart =
-                                          await timeTrackViewModel.addTimeStart(employee!);
-                                      await employeeViewModel.updateEmployee(
-                                        employeeWithTimeStart!,
-                                      );
-                                    },
-                                    child: const Icon(Icons.play_arrow),
-                                  )
-                                : ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: const Size(80, 80),
-                                      foregroundColor: Colors.red,
-                                    ),
-                                    onPressed: () async {
-                                      if (employee?.currentTimeTrack != null ||
-                                          employee?.currentTimeTrack?.startTime != null) {
-                                        int differenceBetweenTimes = DateTime.now()
-                                            .difference(employee!.currentTimeTrack!.startTime!)
-                                            .inMinutes;
+                  return SingleChildScrollView(
+                    child: MenuAnchor(
+                      menuChildren: employees
+                          .map(
+                            (EmployeeModel employee) => ListTile(
+                              leading: Text(employee.name),
+                              trailing: employee.currentTimeTrack?.startTime == null
+                                  ? ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: const Size(80, 80),
+                                        foregroundColor: Colors.blue,
+                                      ),
+                                      onPressed: () async {
+                                        EmployeeModel? employeeWithTimeStart =
+                                            await timeTrackViewModel.addTimeStart(employee!);
+                                        await employeeViewModel.updateEmployee(
+                                          employeeWithTimeStart!,
+                                        );
+                                      },
+                                      child: const Icon(Icons.play_arrow),
+                                    )
+                                  : ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: const Size(80, 80),
+                                        foregroundColor: Colors.red,
+                                      ),
+                                      onPressed: () async {
+                                        if (employee?.currentTimeTrack != null ||
+                                            employee?.currentTimeTrack?.startTime != null) {
+                                          int differenceBetweenTimes = DateTime.now()
+                                              .difference(employee!.currentTimeTrack!.startTime!)
+                                              .inMinutes;
 
-                                        if (differenceBetweenTimes != 0) {
-                                          await timeTrackViewModel.addTimeFinish(employee!);
-                                        } else {
-                                          await timeTrackViewModel.deleteTimeTrack(
-                                            employee!.currentTimeTrack!,
+                                          if (differenceBetweenTimes != 0) {
+                                            await timeTrackViewModel.addTimeFinish(employee!);
+                                          } else {
+                                            await timeTrackViewModel.deleteTimeTrack(
+                                              employee!.currentTimeTrack!,
+                                            );
+                                          }
+
+                                          employeeViewModel.updateEmployee(
+                                            employee.copyWith(currentTimeTrack: null),
                                           );
                                         }
-
-                                        employeeViewModel.updateEmployee(
-                                          employee.copyWith(currentTimeTrack: null),
-                                        );
-                                      }
-                                    },
-                                    child: const Icon(Icons.stop_circle),
-                                  ),
-                          ),
-                        )
-                        .toList(),
-                    builder: (BuildContext context, MenuController controller, Widget? child) {
-                      return ElevatedButton(
-                        onPressed: () {
-                          if (controller.isOpen) {
-                            controller.close();
-                          } else {
-                            controller.open();
-                          }
-                        },
-                        child: const Icon(Icons.person),
-                      );
-                    },
+                                      },
+                                      child: const Icon(Icons.stop_circle),
+                                    ),
+                            ),
+                          )
+                          .toList(),
+                      builder: (BuildContext context, MenuController controller, Widget? child) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            if (controller.isOpen) {
+                              controller.close();
+                            } else {
+                              controller.open();
+                            }
+                          },
+                          child: const Icon(Icons.person),
+                        );
+                      },
+                    ),
                   );
                 },
           ),
