@@ -96,14 +96,14 @@ class TimeTrackViewModel extends ChangeNotifier {
 
     await _repository.updateTimeTrack(employeeTimeTrack);
 
-    loadTimeTrackings();
+    await loadTimeTrackings();
     getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
   }
 
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
     await _repository.deleteTimeTrack(timeTrack);
 
-    loadTimeTrackings();
+    await loadTimeTrackings();
     getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
   }
 
