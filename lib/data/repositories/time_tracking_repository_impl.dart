@@ -2,19 +2,16 @@ import 'package:gestor_horas/core/database/database_helper.dart';
 import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 import 'package:gestor_horas/domain/repositories/time_tracking_repository.dart';
 
-class TimeTrackingRepositoryImpl
-    implements TimeTrackingRepository {
+class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   static const String timeTrackingTable = 'employee_time_tracking';
+  static const String registeredDateField = 'registered_date';
 
   @override
   Future<int> insertTimeTrack(TimeTrackModel timeTrack) async {
     final database = await _databaseHelper.database;
 
-    int id = await database.insert(
-      timeTrackingTable,
-      timeTrack.toJson(),
-    );
+    int id = await database.insert(timeTrackingTable, timeTrack.toJson());
     return id;
   }
 
@@ -34,16 +31,10 @@ class TimeTrackingRepositoryImpl
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
     final database = await _databaseHelper.database;
 
-    await database.delete(
-      timeTrackingTable,
-      where: 'id = ?',
-      whereArgs: [timeTrack.id],
-    );
+    await database.delete(timeTrackingTable, where: 'id = ?', whereArgs: [timeTrack.id]);
   }
 
-  Future<TimeTrackModel?> getLastTimeTrackingByEmployeeId(
-    int employeeId,
-  ) async {
+  Future<TimeTrackModel?> getLastTimeTrackingByEmployeeId(int employeeId) async {
     final database = await _databaseHelper.database;
 
     final List<Map<String, dynamic>> timeTrackingsMap = await database.rawQuery(
@@ -67,9 +58,7 @@ class TimeTrackingRepositoryImpl
   @override
   Future<List<TimeTrackModel>> getAllTimeTracking() async {
     final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> employees = await database.query(
-      timeTrackingTable,
-    );
+    final List<Map<String, dynamic>> employees = await database.query(timeTrackingTable);
 
     return List.generate(employees.length, (employee) {
       return TimeTrackModel.fromMap(employees[employee]);
@@ -81,19 +70,13 @@ class TimeTrackingRepositoryImpl
     DateTime finishDay,
   ) async {
     final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> timeTrackings = await database.query(
-      timeTrackingTable,
-      // where: 'registered_date >= ? AND registered_date <= ?',
-      // whereArgs: ['$startDay', '$finishDay'],
+    final List<Map<String, dynamic>> timeTrackings = await database.rawQuery(
+      'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ?',
+      ['$startDay', '$finishDay'],
     );
 
     List<TimeTrackModel> timeTrackingsList = timeTrackings
         .map((timeTrack) => TimeTrackModel.fromMap(timeTrack))
-        .where(
-          (timeTrack) =>
-              timeTrack.registeredDate!.isAfter(startDay) &&
-              timeTrack.registeredDate!.isBefore(finishDay),
-        )
         .toList();
 
     return timeTrackingsList;
@@ -105,19 +88,13 @@ class TimeTrackingRepositoryImpl
     int employeeId,
   ) async {
     final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> timeTrackings = await database.query(
-      timeTrackingTable,
-      where: 'employee_id = ?',
-      whereArgs: [employeeId],
+    final List<Map<String, dynamic>> timeTrackings = await database.rawQuery(
+      'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ? AND employee_id = ?',
+      ['$startDay', '$finishDay', employeeId],
     );
 
     List<TimeTrackModel> timeTrackingsList = timeTrackings
         .map((timeTrack) => TimeTrackModel.fromMap(timeTrack))
-        .where(
-          (timeTrack) =>
-              timeTrack.registeredDate!.isAfter(startDay) &&
-              timeTrack.registeredDate!.isBefore(finishDay),
-        )
         .toList();
 
     return timeTrackingsList;

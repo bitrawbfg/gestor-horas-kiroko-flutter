@@ -75,6 +75,7 @@ class TimeTrackViewModel extends ChangeNotifier {
     await _repository.updateTimeTrack(employeeTimeTrack);
 
     loadTimeTrackings();
+    getTimeTrackingsFromEmployee(employeeTimeTrack.employeeId, employeeTimeTrack.registeredDate!.day);
   }
 
   Future<void> editTimeTrack(
@@ -94,12 +95,14 @@ class TimeTrackViewModel extends ChangeNotifier {
     await _repository.updateTimeTrack(employeeTimeTrack);
 
     await loadTimeTrackings();
+    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
   }
 
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
     await _repository.deleteTimeTrack(timeTrack);
 
     await loadTimeTrackings();
+    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
   }
 
   Duration getDailyDurationForEmployee(int weekDateValue, int employeeId) {

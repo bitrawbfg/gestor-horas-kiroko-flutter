@@ -126,13 +126,9 @@ class DataTableEmployees extends StatelessWidget {
           return DataRow(
             cells: [
               DataCell(Text(employee.name)),
-              getDailyTimeWorkedByEmployee(0, employee.id!),
-              getDailyTimeWorkedByEmployee(1, employee.id!),
-              getDailyTimeWorkedByEmployee(2, employee.id!),
-              getDailyTimeWorkedByEmployee(3, employee.id!),
-              getDailyTimeWorkedByEmployee(4, employee.id!),
-              getDailyTimeWorkedByEmployee(5, employee.id!),
-              getDailyTimeWorkedByEmployee(6, employee.id!),
+              ...List<DataCell>.generate(7, (int index) {
+                return getDailyTimeWorkedByEmployee(index, employee.id!);
+              }),
               DataCell(
                 Text(
                   timeWorkedInWeek.inMinutes == 0
