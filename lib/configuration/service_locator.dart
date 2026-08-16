@@ -14,7 +14,5 @@ void setupLocator() {
   locator.registerLazySingleton<SidePanelViewModel>(() => SidePanelViewModel());
   locator.registerLazySingleton<SidePanelController>(() => SidePanelController());
 
-  locator.registerLazySingleton<TimeTrackViewModel>(
-    () => TimeTrackViewModel(locator<DateViewModel>()),
-  );
+  locator.registerLazySingleton<TimeTrackViewModel>(() => TimeTrackViewModel());
 }

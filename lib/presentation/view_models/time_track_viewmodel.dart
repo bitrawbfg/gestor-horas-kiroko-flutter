@@ -7,12 +7,11 @@ import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 
 class TimeTrackViewModel extends ChangeNotifier {
-  final DateViewModel _dateViewModel;
   final TimeTrackingRepositoryImpl _repository = TimeTrackingRepositoryImpl();
 
+  DateViewModel dateViewModel = locator<DateViewModel>();
   EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
 
-  TimeTrackViewModel(this._dateViewModel);
 
   List<TimeTrackModel> _timeTrackings = [];
   List<TimeTrackModel> _timeTrackingsFromEmployee = [];
@@ -24,8 +23,8 @@ class TimeTrackViewModel extends ChangeNotifier {
   Future<void> loadTimeTrackings({List<TimeTrackModel>? timeTrackings}) async {
     if (timeTrackings == null) {
       _timeTrackings = await _repository.getAllTimeTrackingFromDateToDate(
-        _dateViewModel.firstDayOfWeek,
-        _dateViewModel.lastDayOfWeek,
+        dateViewModel.firstDayOfWeek,
+        dateViewModel.lastDayOfWeek,
       );
     } else {
       _timeTrackings = timeTrackings;
@@ -103,11 +102,8 @@ class TimeTrackViewModel extends ChangeNotifier {
     await loadTimeTrackings();
   }
 
-  Duration getDailyDurationForEmployee(
-    int weekDateValue,
-    int employeeId,
-  ) {
-    int day = _dateViewModel.weekDates[weekDateValue].day;
+  Duration getDailyDurationForEmployee(int weekDateValue, int employeeId) {
+    int day = dateViewModel.weekDates[weekDateValue].day;
 
     List<TimeTrackModel> employeeTimeTrackings = timeTrackings
         .where((timeTrack) => employeeId == timeTrack.employeeId)
@@ -132,8 +128,8 @@ class TimeTrackViewModel extends ChangeNotifier {
         .where(
           (timeTrack) =>
               timeTrack.employeeId == employeeId &&
-              timeTrack.registeredDate!.isAfter(_dateViewModel.firstDayOfWeek) &&
-              timeTrack.registeredDate!.isBefore(_dateViewModel.lastDayOfWeek),
+              timeTrack.registeredDate!.isAfter(dateViewModel.firstDayOfWeek) &&
+              timeTrack.registeredDate!.isBefore(dateViewModel.lastDayOfWeek),
         )
         .toList();
 
