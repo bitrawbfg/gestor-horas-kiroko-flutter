@@ -12,7 +12,6 @@ class TimeTrackViewModel extends ChangeNotifier {
   DateViewModel dateViewModel = locator<DateViewModel>();
   EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
 
-
   List<TimeTrackModel> _timeTrackings = [];
   List<TimeTrackModel> _timeTrackingsFromEmployee = [];
 
@@ -75,7 +74,10 @@ class TimeTrackViewModel extends ChangeNotifier {
     await _repository.updateTimeTrack(employeeTimeTrack);
 
     loadTimeTrackings();
-    getTimeTrackingsFromEmployee(employeeTimeTrack.employeeId, employeeTimeTrack.registeredDate!.day);
+    getTimeTrackingsFromEmployee(
+      employeeTimeTrack.employeeId,
+      employeeTimeTrack.registeredDate!.day,
+    );
   }
 
   Future<void> editTimeTrack(
@@ -128,12 +130,7 @@ class TimeTrackViewModel extends ChangeNotifier {
 
   Duration getTimeWorkedInWeekByEmployee(int employeeId) {
     List<TimeTrackModel> timeTrackingsList = timeTrackings
-        .where(
-          (timeTrack) =>
-              timeTrack.employeeId == employeeId &&
-              timeTrack.registeredDate!.isAfter(dateViewModel.firstDayOfWeek) &&
-              timeTrack.registeredDate!.isBefore(dateViewModel.lastDayOfWeek),
-        )
+        .where((timeTrack) => timeTrack.employeeId == employeeId)
         .toList();
 
     int totalTime = 0;
