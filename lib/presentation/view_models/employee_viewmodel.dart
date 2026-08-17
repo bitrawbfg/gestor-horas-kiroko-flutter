@@ -65,8 +65,8 @@ class EmployeeViewModel extends ChangeNotifier {
     await loadEmployees(employees: employees);
   }
 
-  Future<void> addEmployee(String name) async {
-    await _employeesRepository.insertEmployee(EmployeeModel(name: name));
+  Future<void> addEmployee(EmployeeModel employee) async {
+    await _employeesRepository.insertEmployee(employee);
     await loadEmployees();
   }
 

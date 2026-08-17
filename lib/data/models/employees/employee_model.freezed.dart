@@ -23,6 +23,7 @@ EmployeeModel _$EmployeeModelFromJson(Map<String, dynamic> json) {
 mixin _$EmployeeModel {
   int? get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  bool get hasContract => throw _privateConstructorUsedError;
   @JsonKey(includeToJson: false, includeFromJson: false)
   TimeTrackModel? get currentTimeTrack => throw _privateConstructorUsedError;
 
@@ -46,6 +47,7 @@ abstract class $EmployeeModelCopyWith<$Res> {
   $Res call({
     int? id,
     String name,
+    bool hasContract,
     @JsonKey(includeToJson: false, includeFromJson: false)
     TimeTrackModel? currentTimeTrack,
   });
@@ -70,6 +72,7 @@ class _$EmployeeModelCopyWithImpl<$Res, $Val extends EmployeeModel>
   $Res call({
     Object? id = freezed,
     Object? name = null,
+    Object? hasContract = null,
     Object? currentTimeTrack = freezed,
   }) {
     return _then(
@@ -82,6 +85,10 @@ class _$EmployeeModelCopyWithImpl<$Res, $Val extends EmployeeModel>
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String,
+            hasContract: null == hasContract
+                ? _value.hasContract
+                : hasContract // ignore: cast_nullable_to_non_nullable
+                      as bool,
             currentTimeTrack: freezed == currentTimeTrack
                 ? _value.currentTimeTrack
                 : currentTimeTrack // ignore: cast_nullable_to_non_nullable
@@ -118,6 +125,7 @@ abstract class _$$EmployeeModelImplCopyWith<$Res>
   $Res call({
     int? id,
     String name,
+    bool hasContract,
     @JsonKey(includeToJson: false, includeFromJson: false)
     TimeTrackModel? currentTimeTrack,
   });
@@ -142,6 +150,7 @@ class __$$EmployeeModelImplCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? name = null,
+    Object? hasContract = null,
     Object? currentTimeTrack = freezed,
   }) {
     return _then(
@@ -154,6 +163,10 @@ class __$$EmployeeModelImplCopyWithImpl<$Res>
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
+        hasContract: null == hasContract
+            ? _value.hasContract
+            : hasContract // ignore: cast_nullable_to_non_nullable
+                  as bool,
         currentTimeTrack: freezed == currentTimeTrack
             ? _value.currentTimeTrack
             : currentTimeTrack // ignore: cast_nullable_to_non_nullable
@@ -165,13 +178,14 @@ class __$$EmployeeModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$EmployeeModelImpl implements _EmployeeModel {
+class _$EmployeeModelImpl extends _EmployeeModel {
   const _$EmployeeModelImpl({
     this.id,
     required this.name,
+    this.hasContract = false,
     @JsonKey(includeToJson: false, includeFromJson: false)
     this.currentTimeTrack,
-  });
+  }) : super._();
 
   factory _$EmployeeModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$EmployeeModelImplFromJson(json);
@@ -181,12 +195,15 @@ class _$EmployeeModelImpl implements _EmployeeModel {
   @override
   final String name;
   @override
+  @JsonKey()
+  final bool hasContract;
+  @override
   @JsonKey(includeToJson: false, includeFromJson: false)
   final TimeTrackModel? currentTimeTrack;
 
   @override
   String toString() {
-    return 'EmployeeModel(id: $id, name: $name, currentTimeTrack: $currentTimeTrack)';
+    return 'EmployeeModel(id: $id, name: $name, hasContract: $hasContract, currentTimeTrack: $currentTimeTrack)';
   }
 
   @override
@@ -196,13 +213,16 @@ class _$EmployeeModelImpl implements _EmployeeModel {
             other is _$EmployeeModelImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.hasContract, hasContract) ||
+                other.hasContract == hasContract) &&
             (identical(other.currentTimeTrack, currentTimeTrack) ||
                 other.currentTimeTrack == currentTimeTrack));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, currentTimeTrack);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, hasContract, currentTimeTrack);
 
   /// Create a copy of EmployeeModel
   /// with the given fields replaced by the non-null parameter values.
@@ -218,13 +238,15 @@ class _$EmployeeModelImpl implements _EmployeeModel {
   }
 }
 
-abstract class _EmployeeModel implements EmployeeModel {
+abstract class _EmployeeModel extends EmployeeModel {
   const factory _EmployeeModel({
     final int? id,
     required final String name,
+    final bool hasContract,
     @JsonKey(includeToJson: false, includeFromJson: false)
     final TimeTrackModel? currentTimeTrack,
   }) = _$EmployeeModelImpl;
+  const _EmployeeModel._() : super._();
 
   factory _EmployeeModel.fromJson(Map<String, dynamic> json) =
       _$EmployeeModelImpl.fromJson;
@@ -233,6 +255,8 @@ abstract class _EmployeeModel implements EmployeeModel {
   int? get id;
   @override
   String get name;
+  @override
+  bool get hasContract;
   @override
   @JsonKey(includeToJson: false, includeFromJson: false)
   TimeTrackModel? get currentTimeTrack;

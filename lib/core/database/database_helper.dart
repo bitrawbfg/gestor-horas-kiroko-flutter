@@ -25,7 +25,7 @@ class DatabaseHelper {
 
     return await databaseFactory.openDatabase(
       path,
-      options: OpenDatabaseOptions(version: 1, onCreate: _createDB),
+      options: OpenDatabaseOptions(version: 2, onCreate: _createDB, onUpgrade: _updateDB),
     );
   }
 
@@ -47,6 +47,12 @@ class DatabaseHelper {
       difference INTEGER DEFAULT 0,
       FOREIGN KEY(employee_id) REFERENCES employees(id)
     ) 
+    ''');
+  }
+
+  Future _updateDB(Database db, int version, int newVersion) async {
+    await db.execute('''
+    ALTER TABLE employees ADD COLUMN "has_contract"	BOOLEAN NOT NULL DEFAULT 0
     ''');
   }
 

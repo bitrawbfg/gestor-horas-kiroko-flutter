@@ -10,7 +10,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   Future<void> insertEmployee(EmployeeModel employee) async {
     final database = await _databaseHelper.database;
 
-    await database.insert(employeesTable, employee.toJson());
+    await database.insert(employeesTable, employee.toMap());
   }
 
   @override
@@ -19,7 +19,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
 
     await database.update(
       employeesTable,
-      employee.toJson(),
+      employee.toMap(),
       where: 'id = ?',
       whereArgs: [employee.id],
     );

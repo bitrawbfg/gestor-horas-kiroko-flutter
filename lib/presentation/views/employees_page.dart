@@ -20,29 +20,67 @@ class _EmployeesPageState extends State<EmployeesPage> {
     showDialog(
       context: context,
       builder: (context) {
+        bool hasContract = employee?.hasContract ?? false;
+
         return AlertDialog(
           title: Text(employee == null ? 'Añadir un nuevo empleado' : 'Editar empleado'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'Nombre'),
-              ),
-            ],
+          content: SizedBox(
+            width: 600,
+            height: 100,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        autofocus: true,
+                        controller: _nameController,
+                        decoration: InputDecoration(labelText: 'Nombre'),
+                      ),
+                    ),
+                    Expanded(
+                      child: StatefulBuilder(
+                        builder: (BuildContext context, void Function(void Function()) setState) {
+                          return CheckboxListTile(
+                            title: Text('Tiene contrato', overflow: TextOverflow.ellipsis, maxLines: 1,),
+                            value: hasContract,
+                            onChanged: (bool? value) => setState(() {
+                              hasContract = value!;
+                            }),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (employee == null) {
-                  locator<EmployeeViewModel>().addEmployee(_nameController.text);
-                } else {
-                  locator<EmployeeViewModel>().updateEmployee(
-                    EmployeeModel(id: employee.id, name: _nameController.text),
-                  );
-                }
+                if (_nameController.text.isNotEmpty){
+                  if (employee == null) {
+                    locator<EmployeeViewModel>().addEmployee(
+                      EmployeeModel(name: _nameController.text, hasContract: hasContract),
+                    );
+                  } else {
+                    locator<EmployeeViewModel>().updateEmployee(
+                      EmployeeModel(
+                        id: employee.id,
+                        name: _nameController.text,
+                        hasContract: hasContract,
+                      ),
+                    );
+                  }
 
-                Navigator.pop(context);
+                  Navigator.pop(context);
+                } else {
+                  // TODO: Añadir barra informativa sobre error al añadir empleado
+                }
               },
               child: Text(employee == null ? 'Añadir nuevo empleado' : 'Editar empleado'),
             ),
