@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -21,21 +20,39 @@ class DatabaseHelper {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
 
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, fileName);
+    final directory = await getDatabasesPath();
+    final path = join(directory, fileName);
 
     return await databaseFactory.openDatabase(
       path,
-      options: OpenDatabaseOptions(version: 1, onCreate: _createDB),
+      options: OpenDatabaseOptions(version: 2, onCreate: _createDB, onUpgrade: _updateDB),
     );
   }
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE employees (
+    CREATE TABLE IF NOT EXISTS employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       name TEXT NOT NULL
     )
+    ''');
+
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS employee_time_tracking (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      employee_id INTEGER NOT NULL,
+      start_time DATETIME,
+      finish_time DATETIME,
+      registered_date DATE,
+      difference INTEGER DEFAULT 0,
+      FOREIGN KEY(employee_id) REFERENCES employees(id)
+    ) 
+    ''');
+  }
+
+  Future _updateDB(Database db, int version, int newVersion) async {
+    await db.execute('''
+    ALTER TABLE employees ADD COLUMN "has_contract"	BOOLEAN NOT NULL DEFAULT 0
     ''');
   }
 

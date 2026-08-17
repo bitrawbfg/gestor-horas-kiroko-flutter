@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/data/models/employee_model.dart';
-import 'package:gestor_horas/presentation/viewmodels/employee_viewmodel.dart';
+import 'package:gestor_horas/configuration/service_locator.dart';
+import 'package:gestor_horas/data/models/employees/employee_model.dart';
+import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class EmployeesPage extends StatefulWidget {
@@ -13,56 +14,82 @@ class EmployeesPage extends StatefulWidget {
 class _EmployeesPageState extends State<EmployeesPage> {
   final TextEditingController _nameController = TextEditingController();
 
-  void _showForm(BuildContext, {EmployeeModel? employee}) {
+  void _showEmployeeForm(BuildContext context, {EmployeeModel? employee}) {
     _nameController.text = employee?.name ?? '';
 
     showDialog(
       context: context,
       builder: (context) {
+        bool hasContract = employee?.hasContract ?? false;
+
         return AlertDialog(
-          title: Text(
-            employee == null ? 'Añadir un nuevo empleado' : 'Editar empleado',
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'Nombre'),
-              ),
-            ],
+          title: Text(employee == null ? 'Añadir un nuevo empleado' : 'Editar empleado'),
+          content: SizedBox(
+            width: 600,
+            height: 100,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        autofocus: true,
+                        controller: _nameController,
+                        decoration: InputDecoration(labelText: 'Nombre'),
+                      ),
+                    ),
+                    Expanded(
+                      child: StatefulBuilder(
+                        builder: (BuildContext context, void Function(void Function()) setState) {
+                          return CheckboxListTile(
+                            title: Text('Tiene contrato', overflow: TextOverflow.ellipsis, maxLines: 1,),
+                            value: hasContract,
+                            onChanged: (bool? value) => setState(() {
+                              hasContract = value!;
+                            }),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (employee == null) {
-                  Provider.of<EmployeeViewModel>(
-                    context,
-                    listen: false,
-                  ).addEmployee(_nameController.text);
-                } else {
-                  Provider.of<EmployeeViewModel>(
-                    context,
-                    listen: false,
-                  ).updateEmployee(
-                    EmployeeModel(id: employee.id, name: _nameController.text),
-                  );
-                }
+                if (_nameController.text.isNotEmpty){
+                  if (employee == null) {
+                    locator<EmployeeViewModel>().addEmployee(
+                      EmployeeModel(name: _nameController.text, hasContract: hasContract),
+                    );
+                  } else {
+                    locator<EmployeeViewModel>().updateEmployee(
+                      EmployeeModel(
+                        id: employee.id,
+                        name: _nameController.text,
+                        hasContract: hasContract,
+                      ),
+                    );
+                  }
 
-                Navigator.pop(context);
+                  Navigator.pop(context);
+                } else {
+                  // TODO: Añadir barra informativa sobre error al añadir empleado
+                }
               },
-              child: Text(
-                employee == null ? 'Añadir nuevo empleado' : 'Editar empleado',
-              ),
+              child: Text(employee == null ? 'Añadir nuevo empleado' : 'Editar empleado'),
             ),
 
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.redAccent,
-              ),
+              style: ElevatedButton.styleFrom(foregroundColor: Colors.redAccent),
               child: Text('Cancelar'),
             ),
           ],
@@ -96,11 +123,9 @@ class _EmployeesPageState extends State<EmployeesPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _showForm(context);
+                      _showEmployeeForm(context);
                     },
-                    style: ButtonStyle(
-                      fixedSize: WidgetStateProperty.all<Size>(Size(200, 60)),
-                    ),
+                    style: ButtonStyle(fixedSize: WidgetStateProperty.all<Size>(Size(200, 60))),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [Icon(Icons.add), Text('Añadir empleado')],
@@ -122,12 +147,10 @@ class _EmployeesPageState extends State<EmployeesPage> {
                                 Text('Añade un nuevo empleado'),
                                 ElevatedButton(
                                   onPressed: () {
-                                    _showForm(context);
+                                    _showEmployeeForm(context);
                                   },
                                   style: ButtonStyle(
-                                    fixedSize: WidgetStateProperty.all<Size>(
-                                      Size(200, 60),
-                                    ),
+                                    fixedSize: WidgetStateProperty.all<Size>(Size(200, 60)),
                                   ),
                                   child: Text('Añadir'),
                                 ),
@@ -155,23 +178,15 @@ class _EmployeesPageState extends State<EmployeesPage> {
                           return Card(
                             child: ListTile(
                               leading: CircleAvatar(
-                                child: Text(
-                                  employee.name.substring(0, 1).toUpperCase(),
-                                ),
+                                child: Text(employee.name.substring(0, 1).toUpperCase()),
                               ),
                               title: Row(
                                 children: [
                                   Expanded(
-                                    child: Text(
-                                      employee.name,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                    child: Text(employee.name, overflow: TextOverflow.ellipsis),
                                   ),
                                   Expanded(
-                                    child: Text(
-                                      'asdf@gmail.com',
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                    child: Text(employee.name, overflow: TextOverflow.ellipsis),
                                   ),
                                 ],
                               ),
@@ -180,16 +195,13 @@ class _EmployeesPageState extends State<EmployeesPage> {
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      _showForm(context, employee: employee);
+                                      _showEmployeeForm(context, employee: employee);
                                     },
                                     icon: Icon(Icons.edit),
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      Provider.of<EmployeeViewModel>(
-                                        context,
-                                        listen: false,
-                                      ).deleteEmployee(employee);
+                                      locator<EmployeeViewModel>().deleteEmployee(employee);
                                     },
                                     icon: Icon(Icons.delete),
                                   ),

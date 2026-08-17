@@ -1,4 +1,4 @@
-import 'package:gestor_horas/data/models/employee_model.dart';
+import 'package:gestor_horas/data/models/employees/employee_model.dart';
 
 abstract class EmployeeRepository {
   Future<EmployeeModel> getEmployeeById(int id);
