@@ -25,7 +25,7 @@ class DatabaseHelper {
 
     return await databaseFactory.openDatabase(
       path,
-      options: OpenDatabaseOptions(version: 2, onCreate: _createDB, onUpgrade: _updateDB),
+      options: OpenDatabaseOptions(version: 4, onCreate: _createDB, onUpgrade: _updateDB),
     );
   }
 
@@ -54,20 +54,30 @@ class DatabaseHelper {
     await db.execute('''
     ALTER TABLE employees ADD COLUMN "has_contract"	BOOLEAN NOT NULL DEFAULT 0
     ''');
+
+    await db.execute('''
+    ALTER TABLE employees ADD COLUMN "hours_in_contract" INTEGER NOT NULL DEFAULT 0
+    ''');
+
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS schedules (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      start_time DATETIME NOT NULL,
+      finish_time DATETIME NOT NULL,
+      week INTEGER
+    )''');
+
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS employee_schedules (
+      id_employee INTEGER NOT NULL,
+      id_schedule INTEGER NOT NULL,
+      PRIMARY KEY (id_employee, id_schedule),
+      FOREIGN KEY(id_employee) REFERENCES employees(id),
+      FOREIGN KEY(id_schedule) REFERENCES schedules(id)
+    )
+    ''');
   }
 
   // https://medium.com/@jamshaidaslam/step-by-step-sqlite-offline-database-setup-in-flutter-with-jamshaid-malik-b81c2c98a8cf
   // https://medium.com/@CodeCraftMobile/flutter-clean-architecture-implement-local-storage-with-sqlite-freezed-using-sqflite-and-bloc-68b967c604fc
-
-  Future<void> addEmployee() async {
-    final db = await database;
-
-    await db.insert('employees', {});
-  }
-
-  Future<void> deleteEmployee() async {
-    final db = await database;
-
-    await db.delete('employees', where: 'id = ?', whereArgs: []);
-  }
 }
