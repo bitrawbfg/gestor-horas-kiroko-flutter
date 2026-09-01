@@ -22,4 +22,9 @@ class ScheduleViewModel extends ChangeNotifier {
     await _scheduleRepository.insertSchedule(schedule, employeeId);
     await loadSchedules();
   }
+
+  Future<void> updateSchedule(ScheduleModel schedule, int employeeId) async {
+    await _scheduleRepository.updateSchedule(schedule, employeeId);
+    await loadSchedules();
+  }
 }

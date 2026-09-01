@@ -18,12 +18,13 @@ class SchedulesPage extends StatefulWidget {
 
 class _SchedulesPageState extends State<SchedulesPage> {
   final List<ScheduleModel> _schedules = List.empty(growable: true);
-  final List<Appointment> _appointments = List.empty(growable: true);
-  late EmpleadosDataSource dataSource;
+  final List<Meeting> _appointments = List.empty(growable: true);
+  late final MeetingDataSource dataSource;
 
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await locator<ScheduleViewModel>().loadSchedules();
       _schedules.addAll(locator<ScheduleViewModel>().schedules);
@@ -33,17 +34,20 @@ class _SchedulesPageState extends State<SchedulesPage> {
 
   Future<void> loadAppointments() async {
     for (ScheduleModel schedule in _schedules) {
-      Appointment appointment = Appointment(
-        startTime: schedule.startFirstTurnTime,
-        endTime: schedule.finishFirstTurnTime,
-        subject: 'Turno',
+      Meeting appointment = Meeting(
+        recurrenceRule: 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,TU,WE,TH,FR',
+        from: schedule.startFirstTurnTime,
+        to: schedule.finishFirstTurnTime,
+        eventName: 'Turno',
+        schedule: schedule,
       );
+
+      print(WeekDays.monday.name.substring(0, 2));
 
       _appointments.add(appointment);
     }
 
-    dataSource = EmpleadosDataSource(source: _appointments);
-    print(_appointments);
+    dataSource = MeetingDataSource(_appointments);
   }
 
   void _showScheduleForm(BuildContext context, {ScheduleModel? schedule}) {
@@ -54,10 +58,15 @@ class _SchedulesPageState extends State<SchedulesPage> {
         WeekdaysEnum weekdayEnum = WeekdaysEnum.week1;
         EmployeeModel? selectedEmployee;
 
-        int startSelectedHour = DateTime.now().hour;
-        int startSelectedMinute = DateTime.now().minute;
-        int finishSelectedHour = DateTime.now().hour;
-        int finishSelectedMinute = DateTime.now().minute;
+        int startFirstShiftSelectedHour = schedule?.startFirstTurnTime.hour ?? 8;
+        int startFirstShiftSelectedMinute = schedule?.startFirstTurnTime.minute ?? 0;
+        int finishFirstShiftSelectedHour = schedule?.finishFirstTurnTime.hour ?? 15;
+        int finishFirstShiftSelectedMinute = schedule?.finishFirstTurnTime.minute ?? 0;
+
+        int startSecondShiftSelectedHour = 15;
+        int startSecondShiftSelectedMinute = 0;
+        int finishSecondShiftSelectedHour = 23;
+        int finishSecondShiftSelectedMinute = 0;
 
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setState) {
@@ -135,20 +144,20 @@ class _SchedulesPageState extends State<SchedulesPage> {
                         Row(
                           children: [
                             DropdownButton<int>(
-                              value: startSelectedHour,
+                              value: startFirstShiftSelectedHour,
                               onChanged: (int? newValue) {
                                 setState(() {
-                                  startSelectedHour = newValue!;
+                                  startFirstShiftSelectedHour = newValue!;
                                 });
                               },
                               items: List<DropdownMenuItem<int>>.generate(24, (int index) {
                                 return DropdownMenuItem<int>(
-                                  enabled: finishSelectedHour >= index,
+                                  enabled: finishFirstShiftSelectedHour >= index,
                                   value: index,
                                   child: Text(
                                     '$index',
                                     style: TextStyle(
-                                      color: (finishSelectedHour < index)
+                                      color: (finishFirstShiftSelectedHour < index)
                                           ? Colors.grey
                                           : Colors.black,
                                     ),
@@ -157,20 +166,20 @@ class _SchedulesPageState extends State<SchedulesPage> {
                               }),
                             ),
                             DropdownButton<int>(
-                              value: startSelectedMinute,
+                              value: startFirstShiftSelectedMinute,
                               onChanged: (int? newValue) {
                                 setState(() {
-                                  startSelectedMinute = newValue!;
+                                  startFirstShiftSelectedMinute = newValue!;
                                 });
                               },
                               items: List<DropdownMenuItem<int>>.generate(60, (int index) {
                                 return DropdownMenuItem<int>(
-                                  enabled: finishSelectedMinute >= index,
+                                  enabled: finishFirstShiftSelectedMinute >= index,
                                   value: index,
                                   child: Text(
                                     '$index',
                                     style: TextStyle(
-                                      color: (finishSelectedMinute < index)
+                                      color: (finishFirstShiftSelectedMinute < index)
                                           ? Colors.grey
                                           : Colors.black,
                                     ),
@@ -194,20 +203,20 @@ class _SchedulesPageState extends State<SchedulesPage> {
                             Row(
                               children: [
                                 DropdownButton<int>(
-                                  value: finishSelectedHour,
+                                  value: finishFirstShiftSelectedHour,
                                   onChanged: (int? newValue) {
                                     setState(() {
-                                      finishSelectedHour = newValue!;
+                                      finishFirstShiftSelectedHour = newValue!;
                                     });
                                   },
                                   items: List<DropdownMenuItem<int>>.generate(24, (int index) {
                                     return DropdownMenuItem<int>(
-                                      enabled: startSelectedHour <= index,
+                                      enabled: startFirstShiftSelectedHour <= index,
                                       value: index,
                                       child: Text(
                                         '$index',
                                         style: TextStyle(
-                                          color: (startSelectedHour > index)
+                                          color: (startFirstShiftSelectedHour > index)
                                               ? Colors.grey
                                               : Colors.black,
                                         ),
@@ -216,20 +225,20 @@ class _SchedulesPageState extends State<SchedulesPage> {
                                   }),
                                 ),
                                 DropdownButton<int>(
-                                  value: finishSelectedMinute,
+                                  value: finishFirstShiftSelectedMinute,
                                   onChanged: (int? newValue) {
                                     setState(() {
-                                      finishSelectedMinute = newValue!;
+                                      finishFirstShiftSelectedMinute = newValue!;
                                     });
                                   },
                                   items: List<DropdownMenuItem<int>>.generate(60, (int index) {
                                     return DropdownMenuItem<int>(
-                                      enabled: startSelectedMinute <= index,
+                                      enabled: startFirstShiftSelectedMinute <= index,
                                       value: index,
                                       child: Text(
                                         '$index',
                                         style: TextStyle(
-                                          color: (startSelectedMinute > index)
+                                          color: (startFirstShiftSelectedMinute > index)
                                               ? Colors.grey
                                               : Colors.black,
                                         ),
@@ -258,20 +267,20 @@ class _SchedulesPageState extends State<SchedulesPage> {
                               Row(
                                 children: [
                                   DropdownButton<int>(
-                                    value: startSelectedHour,
+                                    value: startSecondShiftSelectedHour,
                                     onChanged: (int? newValue) {
                                       setState(() {
-                                        startSelectedHour = newValue!;
+                                        startSecondShiftSelectedHour = newValue!;
                                       });
                                     },
                                     items: List<DropdownMenuItem<int>>.generate(24, (int index) {
                                       return DropdownMenuItem<int>(
-                                        enabled: finishSelectedHour >= index,
+                                        enabled: finishSecondShiftSelectedHour >= index,
                                         value: index,
                                         child: Text(
                                           '$index',
                                           style: TextStyle(
-                                            color: (finishSelectedHour < index)
+                                            color: (finishSecondShiftSelectedHour < index)
                                                 ? Colors.grey
                                                 : Colors.black,
                                           ),
@@ -280,20 +289,20 @@ class _SchedulesPageState extends State<SchedulesPage> {
                                     }),
                                   ),
                                   DropdownButton<int>(
-                                    value: startSelectedMinute,
+                                    value: startSecondShiftSelectedMinute,
                                     onChanged: (int? newValue) {
                                       setState(() {
-                                        startSelectedMinute = newValue!;
+                                        startSecondShiftSelectedMinute = newValue!;
                                       });
                                     },
                                     items: List<DropdownMenuItem<int>>.generate(60, (int index) {
                                       return DropdownMenuItem<int>(
-                                        enabled: finishSelectedMinute >= index,
+                                        enabled: finishSecondShiftSelectedMinute >= index,
                                         value: index,
                                         child: Text(
                                           '$index',
                                           style: TextStyle(
-                                            color: (finishSelectedMinute < index)
+                                            color: (finishSecondShiftSelectedMinute < index)
                                                 ? Colors.grey
                                                 : Colors.black,
                                           ),
@@ -317,22 +326,22 @@ class _SchedulesPageState extends State<SchedulesPage> {
                                   Row(
                                     children: [
                                       DropdownButton<int>(
-                                        value: finishSelectedHour,
+                                        value: finishSecondShiftSelectedHour,
                                         onChanged: (int? newValue) {
                                           setState(() {
-                                            finishSelectedHour = newValue!;
+                                            finishSecondShiftSelectedHour = newValue!;
                                           });
                                         },
                                         items: List<DropdownMenuItem<int>>.generate(24, (
                                           int index,
                                         ) {
                                           return DropdownMenuItem<int>(
-                                            enabled: startSelectedHour <= index,
+                                            enabled: startSecondShiftSelectedHour <= index,
                                             value: index,
                                             child: Text(
                                               '$index',
                                               style: TextStyle(
-                                                color: (startSelectedHour > index)
+                                                color: (startSecondShiftSelectedHour > index)
                                                     ? Colors.grey
                                                     : Colors.black,
                                               ),
@@ -341,22 +350,22 @@ class _SchedulesPageState extends State<SchedulesPage> {
                                         }),
                                       ),
                                       DropdownButton<int>(
-                                        value: finishSelectedMinute,
+                                        value: finishSecondShiftSelectedMinute,
                                         onChanged: (int? newValue) {
                                           setState(() {
-                                            finishSelectedMinute = newValue!;
+                                            finishSecondShiftSelectedMinute = newValue!;
                                           });
                                         },
                                         items: List<DropdownMenuItem<int>>.generate(60, (
                                           int index,
                                         ) {
                                           return DropdownMenuItem<int>(
-                                            enabled: startSelectedMinute <= index,
+                                            enabled: startSecondShiftSelectedMinute <= index,
                                             value: index,
                                             child: Text(
                                               '$index',
                                               style: TextStyle(
-                                                color: (startSelectedMinute > index)
+                                                color: (startSecondShiftSelectedMinute > index)
                                                     ? Colors.grey
                                                     : Colors.black,
                                               ),
@@ -378,29 +387,43 @@ class _SchedulesPageState extends State<SchedulesPage> {
                 ElevatedButton(
                   onPressed: () {
                     if (selectedEmployee != null) {
-                      DateTime startTime = DateTime.now().copyWith(
-                        hour: startSelectedHour,
-                        minute: startSelectedMinute,
-                        second: 0,
-                      );
-                      DateTime finishTime = DateTime.now().copyWith(
-                        hour: finishSelectedHour,
-                        minute: finishSelectedMinute,
-                        second: 0,
+                      ScheduleModel newSchedule = createNewSchedule(
+                        startFirstShiftSelectedHour,
+                        startFirstShiftSelectedMinute,
+                        finishFirstShiftSelectedHour,
+                        finishFirstShiftSelectedMinute,
                       );
 
-                      ScheduleModel schedule = ScheduleModel(
-                        startFirstTurnTime: startTime,
-                        finishFirstTurnTime: finishTime,
-                      );
-                      locator<ScheduleViewModel>().addSchedule(schedule, selectedEmployee!.id!);
+                      if (schedule == null) {
+                        locator<ScheduleViewModel>().addSchedule(
+                          newSchedule,
+                          selectedEmployee!.id!,
+                        );
+                      } else {
+                        locator<ScheduleViewModel>().updateSchedule(
+                          schedule.copyWith(startFirstTurnTime: newSchedule.startFirstTurnTime, finishFirstTurnTime: newSchedule.finishFirstTurnTime),
+                          selectedEmployee!.id!,
+                        );
+                      }
+
+                      if (isSplitShift) {
+                        ScheduleModel schedule = createNewSchedule(
+                          startSecondShiftSelectedHour,
+                          startSecondShiftSelectedMinute,
+                          finishSecondShiftSelectedHour,
+                          finishSecondShiftSelectedMinute,
+                        );
+                        locator<ScheduleViewModel>().addSchedule(schedule, selectedEmployee!.id!);
+                      }
+
+
 
                       Navigator.pop(context);
                     } else {
                       // TODO: Añadir barra informativa sobre error al añadir empleado
                     }
                   },
-                  child: Text(schedule == null ? 'Añadir nuevo empleado' : 'Editar empleado'),
+                  child: Text(schedule == null ? 'Añadir nuevo turno' : 'Editar turno'),
                 ),
 
                 ElevatedButton(
@@ -416,6 +439,30 @@ class _SchedulesPageState extends State<SchedulesPage> {
         );
       },
     );
+  }
+
+  ScheduleModel createNewSchedule(
+    int startFirstShiftSelectedHour,
+    int startFirstShiftSelectedMinute,
+    int finishFirstShiftSelectedHour,
+    int finishFirstShiftSelectedMinute,
+  ) {
+    DateTime startTime = DateTime.now().copyWith(
+      hour: startFirstShiftSelectedHour,
+      minute: startFirstShiftSelectedMinute,
+      second: 0,
+    );
+    DateTime finishTime = DateTime.now().copyWith(
+      hour: finishFirstShiftSelectedHour,
+      minute: finishFirstShiftSelectedMinute,
+      second: 0,
+    );
+
+    ScheduleModel schedule = ScheduleModel(
+      startFirstTurnTime: startTime,
+      finishFirstTurnTime: finishTime,
+    );
+    return schedule;
   }
 
   @override
@@ -438,50 +485,17 @@ class _SchedulesPageState extends State<SchedulesPage> {
             child: SfCalendar(
               timeSlotViewSettings: TimeSlotViewSettings(startHour: 6, endHour: 24),
               onTap: (CalendarTapDetails nepe) {
-                _showScheduleForm(context);
+                Meeting? appointment = nepe.appointments?.first;
+                if (appointment != null) {
+                  _showScheduleForm(context, schedule: appointment.schedule);
+                }
               },
               firstDayOfWeek: 1,
               allowViewNavigation: false,
               view: CalendarView.week,
               dataSource: dataSource,
-              allowDragAndDrop: true,
-              allowAppointmentResize: true,
-              onDragEnd: (AppointmentDragEndDetails detalles) {
-                final Appointment? turnoModificado = detalles.appointment as Appointment?;
-                final DateTime? nuevaHoraInicio = detalles.droppingTime;
-
-                if (turnoModificado != null && nuevaHoraInicio != null) {
-                  // Calcular la duración original del turno para mantenerla al moverlo
-                  final DateTime horaInicioAjustada = redondearA30Minutos(nuevaHoraInicio);
-                  final Duration duracionOriginal = turnoModificado.endTime.difference(
-                    turnoModificado.startTime,
-                  );
-
-                  setState(() {
-                    turnoModificado.startTime = horaInicioAjustada;
-                    // Mantenemos la duración original partiendo desde la hora ajustada
-                    turnoModificado.endTime = horaInicioAjustada.add(duracionOriginal);
-                  });
-                  // Notificar al origen de datos que la lista cambió
-                  dataSource.notifyListeners(CalendarDataSourceAction.reset, _appointments);
-                }
-              },
-
-              // SOLUCIÓN AL PROBLEMA 1 (CONTINUACIÓN): Capturar el final del redimensionamiento
-              onAppointmentResizeEnd: (AppointmentResizeEndDetails detalles) {
-                final Appointment? turnoModificado = detalles.appointment as Appointment?;
-
-                if (turnoModificado != null) {
-                  setState(() {
-                    // Asignamos las horas exactas calculadas por el widget al estirarlo
-                    turnoModificado.startTime = redondearA30Minutos(detalles.startTime!);
-                    turnoModificado.endTime = redondearA30Minutos(detalles.endTime!);
-                  });
-
-                  // Forzar al calendario a redibujarse correctamente con los nuevos datos
-                  dataSource.notifyListeners(CalendarDataSourceAction.reset, _appointments);
-                }
-              },
+              allowDragAndDrop: false,
+              allowAppointmentResize: false,
             ),
           );
         },
@@ -490,26 +504,96 @@ class _SchedulesPageState extends State<SchedulesPage> {
   }
 }
 
-// Clase obligatoria para enlazar los datos con Syncfusion
-class EmpleadosDataSource extends CalendarDataSource {
-  EmpleadosDataSource({required List<Appointment> source}) {
-    appointments = source;
-  }
+class Meeting {
+  Object? id;
+  String? eventName;
+  DateTime from;
+  DateTime to;
+  Color? background;
+  bool? isAllDay;
+  ScheduleModel schedule;
+  String? recurrenceRule;
+  Object? recurrenceId;
+  List<DateTime>? exceptionDates;
+
+  Meeting({
+    this.id,
+    this.eventName,
+    required this.from,
+    required this.to,
+    this.background,
+    this.isAllDay,
+    required this.schedule,
+    this.recurrenceRule,
+    this.recurrenceId,
+    this.exceptionDates,
+  });
 }
 
-DateTime redondearA30Minutos(DateTime fechaOriginal) {
-  int minutos = fechaOriginal.minute;
-  int hora = fechaOriginal.hour;
-  DateTime dia = DateTime(fechaOriginal.year, fechaOriginal.month, fechaOriginal.day);
-
-  if (minutos < 15) {
-    minutos = 0;
-  } else if (minutos >= 15 && minutos < 45) {
-    minutos = 30;
-  } else {
-    minutos = 0;
-    hora += 1;
+class MeetingDataSource extends CalendarDataSource<Meeting> {
+  MeetingDataSource(List<Meeting> source) {
+    appointments = source;
   }
 
-  return dia.add(Duration(hours: hora, minutes: minutos));
+  @override
+  DateTime getStartTime(int index) {
+    return appointments![index].from;
+  }
+
+  @override
+  DateTime getEndTime(int index) {
+    return appointments![index].to;
+  }
+
+  @override
+  Object? getId(int index) {
+    return appointments![index].id;
+  }
+
+  @override
+  Object? getRecurrenceId(int index) {
+    return appointments![index].recurrenceId as Object?;
+  }
+
+  @override
+  Color getColor(int index) {
+    return appointments![index].background ?? Colors.blue;
+  }
+
+  @override
+  List<DateTime>? getRecurrenceExceptionDates(int index) {
+    return appointments![index].exceptionDates as List<DateTime>?;
+  }
+
+  @override
+  String? getRecurrenceRule(int index) {
+    return appointments![index].recurrenceRule;
+  }
+
+  @override
+  String getSubject(int index) {
+    return appointments![index].eventName as String;
+  }
+
+  @override
+  bool isAllDay(int index) {
+    return appointments![index].isAllDay == null ? false : appointments![index].isAllDay as bool;
+  }
+
+  @override
+  Meeting? convertAppointmentToObject(Meeting? customData, Appointment appointment) {
+    // TODO: implement convertAppointmentToObject
+    return Meeting(
+      from: appointment.startTime,
+      to: appointment.endTime,
+      eventName: appointment.subject,
+      background: appointment.color,
+      isAllDay: appointment.isAllDay,
+      id: appointment.id,
+      recurrenceRule: appointment.recurrenceRule,
+      recurrenceId: appointment.recurrenceId,
+      exceptionDates: appointment.recurrenceExceptionDates,
+      schedule: customData!.schedule,
+    );
+  }
 }
