@@ -373,3 +373,5 @@ hs_err_pid*
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
+/windows/flutter/ephemeral/.plugin_symlinks/flutter_localization/example/linux/flutter/generated_plugin_registrant.cc
+/windows/flutter/generated_plugins.cmake
