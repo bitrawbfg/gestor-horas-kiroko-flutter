@@ -1,3 +1,4 @@
+import 'package:gestor_horas/presentation/view_models/schedule_view_model.dart';
 import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:get_it/get_it.dart';
@@ -13,6 +14,6 @@ void setupLocator() {
   locator.registerLazySingleton<EmployeeViewModel>(() => EmployeeViewModel());
   locator.registerLazySingleton<SidePanelViewModel>(() => SidePanelViewModel());
   locator.registerLazySingleton<SidePanelController>(() => SidePanelController());
-
+  locator.registerLazySingleton<ScheduleViewModel>(() => ScheduleViewModel());
   locator.registerLazySingleton<TimeTrackViewModel>(() => TimeTrackViewModel());
 }

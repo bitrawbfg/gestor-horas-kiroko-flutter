@@ -4,6 +4,7 @@ import 'package:gestor_horas/configuration/service_locator.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
+import 'package:gestor_horas/presentation/views/schedules_page.dart';
 import 'package:gestor_horas/presentation/views/time_track_page.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[const TimeTrackPage(), const EmployeesPage()];
+  static final List<Widget> _widgetOptions = <Widget>[const TimeTrackPage(), const EmployeesPage(), const SchedulesPage()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -61,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                       onPressed: () async {
                                         EmployeeModel? employeeWithTimeStart =
-                                            await timeTrackViewModel.addTimeStart(employee!);
+                                            await timeTrackViewModel.addTimeStart(employee);
                                         await employeeViewModel.updateEmployee(
                                           employeeWithTimeStart!,
                                         );
@@ -74,17 +75,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                         foregroundColor: Colors.red,
                                       ),
                                       onPressed: () async {
-                                        if (employee?.currentTimeTrack != null ||
-                                            employee?.currentTimeTrack?.startTime != null) {
+                                        if (employee.currentTimeTrack != null ||
+                                            employee.currentTimeTrack?.startTime != null) {
                                           int differenceBetweenTimes = DateTime.now()
-                                              .difference(employee!.currentTimeTrack!.startTime!)
+                                              .difference(employee.currentTimeTrack!.startTime!)
                                               .inMinutes;
 
                                           if (differenceBetweenTimes != 0) {
-                                            await timeTrackViewModel.addTimeFinish(employee!);
+                                            await timeTrackViewModel.addTimeFinish(employee);
                                           } else {
                                             await timeTrackViewModel.deleteTimeTrack(
-                                              employee!.currentTimeTrack!,
+                                              employee.currentTimeTrack!,
                                             );
                                           }
 
@@ -136,6 +137,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   title: 'Empleados',
                   icon: const Icon(Icons.people),
+                ),
+                SideMenuItemDataTile(
+                  isSelected: false,
+                  onTap: () {
+                    _onItemTapped(2);
+                  },
+                  title: 'Horarios',
+                  icon: const Icon(Icons.schedule),
                 ),
               ],
             ),

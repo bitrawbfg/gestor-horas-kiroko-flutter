@@ -25,8 +25,6 @@ mixin _$ScheduleModel {
   bool get isSplitShift => throw _privateConstructorUsedError;
   DateTime get startFirstTurnTime => throw _privateConstructorUsedError;
   DateTime get finishFirstTurnTime => throw _privateConstructorUsedError;
-  DateTime? get startSecondTurnTime => throw _privateConstructorUsedError;
-  DateTime? get finishSecondTurnTime => throw _privateConstructorUsedError;
 
   /// Serializes this ScheduleModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,8 +48,6 @@ abstract class $ScheduleModelCopyWith<$Res> {
     bool isSplitShift,
     DateTime startFirstTurnTime,
     DateTime finishFirstTurnTime,
-    DateTime? startSecondTurnTime,
-    DateTime? finishSecondTurnTime,
   });
 }
 
@@ -74,8 +70,6 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
     Object? isSplitShift = null,
     Object? startFirstTurnTime = null,
     Object? finishFirstTurnTime = null,
-    Object? startSecondTurnTime = freezed,
-    Object? finishSecondTurnTime = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -95,14 +89,6 @@ class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
                 ? _value.finishFirstTurnTime
                 : finishFirstTurnTime // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            startSecondTurnTime: freezed == startSecondTurnTime
-                ? _value.startSecondTurnTime
-                : startSecondTurnTime // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            finishSecondTurnTime: freezed == finishSecondTurnTime
-                ? _value.finishSecondTurnTime
-                : finishSecondTurnTime // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
           )
           as $Val,
     );
@@ -123,8 +109,6 @@ abstract class _$$ScheduleModelImplCopyWith<$Res>
     bool isSplitShift,
     DateTime startFirstTurnTime,
     DateTime finishFirstTurnTime,
-    DateTime? startSecondTurnTime,
-    DateTime? finishSecondTurnTime,
   });
 }
 
@@ -146,8 +130,6 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
     Object? isSplitShift = null,
     Object? startFirstTurnTime = null,
     Object? finishFirstTurnTime = null,
-    Object? startSecondTurnTime = freezed,
-    Object? finishSecondTurnTime = freezed,
   }) {
     return _then(
       _$ScheduleModelImpl(
@@ -167,14 +149,6 @@ class __$$ScheduleModelImplCopyWithImpl<$Res>
             ? _value.finishFirstTurnTime
             : finishFirstTurnTime // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        startSecondTurnTime: freezed == startSecondTurnTime
-            ? _value.startSecondTurnTime
-            : startSecondTurnTime // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        finishSecondTurnTime: freezed == finishSecondTurnTime
-            ? _value.finishSecondTurnTime
-            : finishSecondTurnTime // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
       ),
     );
   }
@@ -188,8 +162,6 @@ class _$ScheduleModelImpl extends _ScheduleModel {
     this.isSplitShift = false,
     required this.startFirstTurnTime,
     required this.finishFirstTurnTime,
-    this.startSecondTurnTime,
-    this.finishSecondTurnTime,
   }) : super._();
 
   factory _$ScheduleModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -204,14 +176,10 @@ class _$ScheduleModelImpl extends _ScheduleModel {
   final DateTime startFirstTurnTime;
   @override
   final DateTime finishFirstTurnTime;
-  @override
-  final DateTime? startSecondTurnTime;
-  @override
-  final DateTime? finishSecondTurnTime;
 
   @override
   String toString() {
-    return 'ScheduleModel(id: $id, isSplitShift: $isSplitShift, startFirstTurnTime: $startFirstTurnTime, finishFirstTurnTime: $finishFirstTurnTime, startSecondTurnTime: $startSecondTurnTime, finishSecondTurnTime: $finishSecondTurnTime)';
+    return 'ScheduleModel(id: $id, isSplitShift: $isSplitShift, startFirstTurnTime: $startFirstTurnTime, finishFirstTurnTime: $finishFirstTurnTime)';
   }
 
   @override
@@ -225,11 +193,7 @@ class _$ScheduleModelImpl extends _ScheduleModel {
             (identical(other.startFirstTurnTime, startFirstTurnTime) ||
                 other.startFirstTurnTime == startFirstTurnTime) &&
             (identical(other.finishFirstTurnTime, finishFirstTurnTime) ||
-                other.finishFirstTurnTime == finishFirstTurnTime) &&
-            (identical(other.startSecondTurnTime, startSecondTurnTime) ||
-                other.startSecondTurnTime == startSecondTurnTime) &&
-            (identical(other.finishSecondTurnTime, finishSecondTurnTime) ||
-                other.finishSecondTurnTime == finishSecondTurnTime));
+                other.finishFirstTurnTime == finishFirstTurnTime));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -240,8 +204,6 @@ class _$ScheduleModelImpl extends _ScheduleModel {
     isSplitShift,
     startFirstTurnTime,
     finishFirstTurnTime,
-    startSecondTurnTime,
-    finishSecondTurnTime,
   );
 
   /// Create a copy of ScheduleModel
@@ -264,8 +226,6 @@ abstract class _ScheduleModel extends ScheduleModel {
     final bool isSplitShift,
     required final DateTime startFirstTurnTime,
     required final DateTime finishFirstTurnTime,
-    final DateTime? startSecondTurnTime,
-    final DateTime? finishSecondTurnTime,
   }) = _$ScheduleModelImpl;
   const _ScheduleModel._() : super._();
 
@@ -280,10 +240,6 @@ abstract class _ScheduleModel extends ScheduleModel {
   DateTime get startFirstTurnTime;
   @override
   DateTime get finishFirstTurnTime;
-  @override
-  DateTime? get startSecondTurnTime;
-  @override
-  DateTime? get finishSecondTurnTime;
 
   /// Create a copy of ScheduleModel
   /// with the given fields replaced by the non-null parameter values.
