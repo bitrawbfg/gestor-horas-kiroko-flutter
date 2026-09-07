@@ -27,6 +27,11 @@ abstract class EmployeeModel with _$EmployeeModel {
   }
 
   Map<String, dynamic> toMap() {
-    return {if (id != null) 'id': id, 'name': name, 'has_contract': hasContract ? 1 : 0, 'hours_in_contract': hoursInContract};
+    return {
+      if (id != null) 'id': id,
+      'name': name,
+      'has_contract': hoursInContract > 0 ? 1 : 0,
+      'hours_in_contract': hoursInContract,
+    };
   }
 }
