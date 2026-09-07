@@ -2,12 +2,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'time_track_model.freezed.dart';
 
-part 'time_track_model.g.dart';
-
 // Tutorial para crear modelos con @freezed
 // https://medium.com/@CodeCraftMobile/flutter-clean-architecture-implement-local-storage-with-sqlite-freezed-using-sqflite-and-bloc-68b967c604fc
 @freezed
-class TimeTrackModel with _$TimeTrackModel {
+abstract class TimeTrackModel with _$TimeTrackModel {
   const factory TimeTrackModel({
     int? id,
     required int employeeId,
@@ -17,9 +15,6 @@ class TimeTrackModel with _$TimeTrackModel {
     int? difference,
     @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   }) = _TimeTrackModel;
-
-  factory TimeTrackModel.fromJson(Map<String, dynamic> json) =>
-      _$TimeTrackModelFromJson(json);
 
   factory TimeTrackModel.fromMap(Map<String, dynamic> map) {
     final startTime = map['start_time'] as String?;
