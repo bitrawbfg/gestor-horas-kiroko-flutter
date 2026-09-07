@@ -69,10 +69,10 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
     DateTime startDay,
     DateTime finishDay,
   ) async {
-    final database = await _databaseHelper.database;
+    final database  = await _databaseHelper.database;
     final List<Map<String, dynamic>> timeTrackings = await database.rawQuery(
       'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ?',
-      ['$startDay', '$finishDay'],
+      [(startDay.toString().split(' ')[0].toString()), (finishDay.toString().split(' ')[0].toString())],
     );
 
     List<TimeTrackModel> timeTrackingsList = timeTrackings
