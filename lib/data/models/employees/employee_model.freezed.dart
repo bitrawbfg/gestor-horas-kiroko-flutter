@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EmployeeModel {
 
- int? get id; String get name; bool get hasContract; int get hoursInContract;@JsonKey(includeToJson: false, includeFromJson: false) TimeTrackModel? get currentTimeTrack;
+ int? get id; String get name; bool get hasContract; int get hoursInContract; List<ScheduleModel>? get schedules;@JsonKey(includeToJson: false, includeFromJson: false) TimeTrackModel? get currentTimeTrack;
 /// Create a copy of EmployeeModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $EmployeeModelCopyWith<EmployeeModel> get copyWith => _$EmployeeModelCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as EmployeeModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmployeeModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.hasContract, _this.hasContract) || other.hasContract == _this.hasContract)&&(identical(other.hoursInContract, _this.hoursInContract) || other.hoursInContract == _this.hoursInContract)&&(identical(other.currentTimeTrack, _this.currentTimeTrack) || other.currentTimeTrack == _this.currentTimeTrack));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmployeeModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.hasContract, _this.hasContract) || other.hasContract == _this.hasContract)&&(identical(other.hoursInContract, _this.hoursInContract) || other.hoursInContract == _this.hoursInContract)&&const DeepCollectionEquality().equals(other.schedules, _this.schedules)&&(identical(other.currentTimeTrack, _this.currentTimeTrack) || other.currentTimeTrack == _this.currentTimeTrack));
 }
 
 
 @override
 int get hashCode {
   final _this = this as EmployeeModel;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.hasContract,_this.hoursInContract,_this.currentTimeTrack);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.hasContract,_this.hoursInContract,const DeepCollectionEquality().hash(_this.schedules),_this.currentTimeTrack);
 }
 
 @override
 String toString() {
   final _this = this as EmployeeModel;
-  return 'EmployeeModel(id: ${_this.id}, name: ${_this.name}, hasContract: ${_this.hasContract}, hoursInContract: ${_this.hoursInContract}, currentTimeTrack: ${_this.currentTimeTrack})';
+  return 'EmployeeModel(id: ${_this.id}, name: ${_this.name}, hasContract: ${_this.hasContract}, hoursInContract: ${_this.hoursInContract}, schedules: ${_this.schedules}, currentTimeTrack: ${_this.currentTimeTrack})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $EmployeeModelCopyWith<$Res>  {
   factory $EmployeeModelCopyWith(EmployeeModel value, $Res Function(EmployeeModel) _then) = _$EmployeeModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, String name, bool hasContract, int hoursInContract,@JsonKey(includeToJson: false, includeFromJson: false) TimeTrackModel? currentTimeTrack
+ int? id, String name, bool hasContract, int hoursInContract, List<ScheduleModel>? schedules,@JsonKey(includeToJson: false, includeFromJson: false) TimeTrackModel? currentTimeTrack
 });
 
 
@@ -68,13 +68,14 @@ class _$EmployeeModelCopyWithImpl<$Res>
 
 /// Create a copy of EmployeeModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? hasContract = null,Object? hoursInContract = null,Object? currentTimeTrack = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? hasContract = null,Object? hoursInContract = null,Object? schedules = freezed,Object? currentTimeTrack = freezed,}) {
   return _then(EmployeeModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,hasContract: null == hasContract ? _self.hasContract : hasContract // ignore: cast_nullable_to_non_nullable
 as bool,hoursInContract: null == hoursInContract ? _self.hoursInContract : hoursInContract // ignore: cast_nullable_to_non_nullable
-as int,currentTimeTrack: freezed == currentTimeTrack ? _self.currentTimeTrack : currentTimeTrack // ignore: cast_nullable_to_non_nullable
+as int,schedules: freezed == schedules ? _self.schedules : schedules // ignore: cast_nullable_to_non_nullable
+as List<ScheduleModel>?,currentTimeTrack: freezed == currentTimeTrack ? _self.currentTimeTrack : currentTimeTrack // ignore: cast_nullable_to_non_nullable
 as TimeTrackModel?,
   ));
 }
@@ -172,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name,  bool hasContract,  int hoursInContract, @JsonKey(includeToJson: false, includeFromJson: false)  TimeTrackModel? currentTimeTrack)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name,  bool hasContract,  int hoursInContract,  List<ScheduleModel>? schedules, @JsonKey(includeToJson: false, includeFromJson: false)  TimeTrackModel? currentTimeTrack)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EmployeeModel() when $default != null:
-return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_that.currentTimeTrack);case _:
+return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_that.schedules,_that.currentTimeTrack);case _:
   return orElse();
 
 }
@@ -193,10 +194,10 @@ return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name,  bool hasContract,  int hoursInContract, @JsonKey(includeToJson: false, includeFromJson: false)  TimeTrackModel? currentTimeTrack)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name,  bool hasContract,  int hoursInContract,  List<ScheduleModel>? schedules, @JsonKey(includeToJson: false, includeFromJson: false)  TimeTrackModel? currentTimeTrack)  $default,) {final _that = this;
 switch (_that) {
 case _EmployeeModel():
-return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_that.currentTimeTrack);case _:
+return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_that.schedules,_that.currentTimeTrack);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -213,10 +214,10 @@ return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name,  bool hasContract,  int hoursInContract, @JsonKey(includeToJson: false, includeFromJson: false)  TimeTrackModel? currentTimeTrack)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name,  bool hasContract,  int hoursInContract,  List<ScheduleModel>? schedules, @JsonKey(includeToJson: false, includeFromJson: false)  TimeTrackModel? currentTimeTrack)?  $default,) {final _that = this;
 switch (_that) {
 case _EmployeeModel() when $default != null:
-return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_that.currentTimeTrack);case _:
+return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_that.schedules,_that.currentTimeTrack);case _:
   return null;
 
 }
@@ -228,13 +229,22 @@ return $default(_that.id,_that.name,_that.hasContract,_that.hoursInContract,_tha
 
 
 class _EmployeeModel extends EmployeeModel {
-  const _EmployeeModel({this.id, required this.name, this.hasContract = false, this.hoursInContract = 0, @JsonKey(includeToJson: false, includeFromJson: false) this.currentTimeTrack}): super._();
+  const _EmployeeModel({this.id, required this.name, this.hasContract = false, this.hoursInContract = 0,  List<ScheduleModel>? schedules, @JsonKey(includeToJson: false, includeFromJson: false) this.currentTimeTrack}): _schedules = schedules,super._();
   
 
 @override final  int? id;
 @override final  String name;
 @override@JsonKey() final  bool hasContract;
 @override@JsonKey() final  int hoursInContract;
+ final  List<ScheduleModel>? _schedules;
+@override List<ScheduleModel>? get schedules {
+  final value = _schedules;
+  if (value == null) return null;
+  if (_schedules is EqualUnmodifiableListView) return _schedules;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
 @override@JsonKey(includeToJson: false, includeFromJson: false) final  TimeTrackModel? currentTimeTrack;
 
 /// Create a copy of EmployeeModel
@@ -247,18 +257,18 @@ _$EmployeeModelCopyWith<_EmployeeModel> get copyWith => __$EmployeeModelCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmployeeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hasContract, hasContract) || other.hasContract == hasContract)&&(identical(other.hoursInContract, hoursInContract) || other.hoursInContract == hoursInContract)&&(identical(other.currentTimeTrack, currentTimeTrack) || other.currentTimeTrack == currentTimeTrack));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmployeeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hasContract, hasContract) || other.hasContract == hasContract)&&(identical(other.hoursInContract, hoursInContract) || other.hoursInContract == hoursInContract)&&const DeepCollectionEquality().equals(other.schedules, _schedules)&&(identical(other.currentTimeTrack, currentTimeTrack) || other.currentTimeTrack == currentTimeTrack));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,hasContract,hoursInContract,currentTimeTrack);
+    return Object.hash(runtimeType,id,name,hasContract,hoursInContract,const DeepCollectionEquality().hash(_schedules),currentTimeTrack);
 }
 
 @override
 String toString() {
-    return 'EmployeeModel(id: $id, name: $name, hasContract: $hasContract, hoursInContract: $hoursInContract, currentTimeTrack: $currentTimeTrack)';
+    return 'EmployeeModel(id: $id, name: $name, hasContract: $hasContract, hoursInContract: $hoursInContract, schedules: $schedules, currentTimeTrack: $currentTimeTrack)';
 }
 
 
@@ -269,7 +279,7 @@ abstract mixin class _$EmployeeModelCopyWith<$Res> implements $EmployeeModelCopy
   factory _$EmployeeModelCopyWith(_EmployeeModel value, $Res Function(_EmployeeModel) _then) = __$EmployeeModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String name, bool hasContract, int hoursInContract,@JsonKey(includeToJson: false, includeFromJson: false) TimeTrackModel? currentTimeTrack
+ int? id, String name, bool hasContract, int hoursInContract, List<ScheduleModel>? schedules,@JsonKey(includeToJson: false, includeFromJson: false) TimeTrackModel? currentTimeTrack
 });
 
 
@@ -286,13 +296,14 @@ class __$EmployeeModelCopyWithImpl<$Res>
 
 /// Create a copy of EmployeeModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? hasContract = null,Object? hoursInContract = null,Object? currentTimeTrack = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? hasContract = null,Object? hoursInContract = null,Object? schedules = freezed,Object? currentTimeTrack = freezed,}) {
   return _then(_EmployeeModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,hasContract: null == hasContract ? _self.hasContract : hasContract // ignore: cast_nullable_to_non_nullable
 as bool,hoursInContract: null == hoursInContract ? _self.hoursInContract : hoursInContract // ignore: cast_nullable_to_non_nullable
-as int,currentTimeTrack: freezed == currentTimeTrack ? _self.currentTimeTrack : currentTimeTrack // ignore: cast_nullable_to_non_nullable
+as int,schedules: freezed == schedules ? _self._schedules : schedules // ignore: cast_nullable_to_non_nullable
+as List<ScheduleModel>?,currentTimeTrack: freezed == currentTimeTrack ? _self.currentTimeTrack : currentTimeTrack // ignore: cast_nullable_to_non_nullable
 as TimeTrackModel?,
   ));
 }

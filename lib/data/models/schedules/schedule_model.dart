@@ -18,7 +18,7 @@ abstract class ScheduleModel with _$ScheduleModel {
     final finishFirstTurnTime = map['finish_time'] as String;
 
     return ScheduleModel(
-      id: map['id'],
+      id: map['id_schedule'] ?? map['id'],
       //isSplitShift: map['is_split_shift'] == 1 ? true : false,
       startFirstTurnTime: DateTime.parse(startFirstTurnTime),
       finishFirstTurnTime: DateTime.parse(finishFirstTurnTime),

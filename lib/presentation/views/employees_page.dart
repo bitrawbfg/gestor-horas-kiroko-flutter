@@ -228,7 +228,14 @@ class _EmployeesPageState extends State<EmployeesPage> {
                                     child: Text(
                                       employee.hoursInContract == 0
                                           ? ''
-                                          :  '${employee.hoursInContract} horas/semana',
+                                          : '${employee.hoursInContract} horas/semana',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      '${employee.schedules?.length}',
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),

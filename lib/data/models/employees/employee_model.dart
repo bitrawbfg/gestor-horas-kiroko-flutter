@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:gestor_horas/data/models/schedules/schedule_model.dart';
 import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 
 part 'employee_model.freezed.dart';
@@ -14,15 +15,20 @@ abstract class EmployeeModel with _$EmployeeModel {
     required String name,
     @Default(false) bool hasContract,
     @Default(0) int hoursInContract,
+    List<ScheduleModel>? schedules,
     @JsonKey(includeToJson: false, includeFromJson: false) TimeTrackModel? currentTimeTrack,
   }) = _EmployeeModel;
 
-  factory EmployeeModel.fromMap(Map<String, dynamic> map) {
+  factory EmployeeModel.fromMap(
+    Map<String, dynamic> map, {
+    List<ScheduleModel> schedules = const [],
+  }) {
     return EmployeeModel(
-      id: map['id'],
+      id: map['employee_id'] ?? map['id'],
       name: map['name'],
       hasContract: map['has_contract'] == 1 ? true : false,
       hoursInContract: map['hours_in_contract'],
+      schedules: schedules,
     );
   }
 
