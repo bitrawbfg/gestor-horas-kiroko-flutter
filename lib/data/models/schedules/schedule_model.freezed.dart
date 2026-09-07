@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'schedule_model.dart';
@@ -9,242 +9,280 @@ part of 'schedule_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-ScheduleModel _$ScheduleModelFromJson(Map<String, dynamic> json) {
-  return _ScheduleModel.fromJson(json);
-}
-
 /// @nodoc
 mixin _$ScheduleModel {
-  int? get id => throw _privateConstructorUsedError;
-  bool get isSplitShift => throw _privateConstructorUsedError;
-  DateTime get startFirstTurnTime => throw _privateConstructorUsedError;
-  DateTime get finishFirstTurnTime => throw _privateConstructorUsedError;
 
-  /// Serializes this ScheduleModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+ int? get id; bool get isSplitShift; DateTime get startFirstTurnTime; DateTime get finishFirstTurnTime;
+/// Create a copy of ScheduleModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ScheduleModelCopyWith<ScheduleModel> get copyWith => _$ScheduleModelCopyWithImpl<ScheduleModel>(this as ScheduleModel, _$identity);
 
-  /// Create a copy of ScheduleModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ScheduleModelCopyWith<ScheduleModel> get copyWith =>
-      throw _privateConstructorUsedError;
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as ScheduleModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ScheduleModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.isSplitShift, _this.isSplitShift) || other.isSplitShift == _this.isSplitShift)&&(identical(other.startFirstTurnTime, _this.startFirstTurnTime) || other.startFirstTurnTime == _this.startFirstTurnTime)&&(identical(other.finishFirstTurnTime, _this.finishFirstTurnTime) || other.finishFirstTurnTime == _this.finishFirstTurnTime));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as ScheduleModel;
+  return Object.hash(runtimeType,_this.id,_this.isSplitShift,_this.startFirstTurnTime,_this.finishFirstTurnTime);
+}
+
+@override
+String toString() {
+  final _this = this as ScheduleModel;
+  return 'ScheduleModel(id: ${_this.id}, isSplitShift: ${_this.isSplitShift}, startFirstTurnTime: ${_this.startFirstTurnTime}, finishFirstTurnTime: ${_this.finishFirstTurnTime})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ScheduleModelCopyWith<$Res> {
-  factory $ScheduleModelCopyWith(
-    ScheduleModel value,
-    $Res Function(ScheduleModel) then,
-  ) = _$ScheduleModelCopyWithImpl<$Res, ScheduleModel>;
-  @useResult
-  $Res call({
-    int? id,
-    bool isSplitShift,
-    DateTime startFirstTurnTime,
-    DateTime finishFirstTurnTime,
-  });
-}
+abstract mixin class $ScheduleModelCopyWith<$Res>  {
+  factory $ScheduleModelCopyWith(ScheduleModel value, $Res Function(ScheduleModel) _then) = _$ScheduleModelCopyWithImpl;
+@useResult
+$Res call({
+ int? id, bool isSplitShift, DateTime startFirstTurnTime, DateTime finishFirstTurnTime
+});
 
+
+
+
+}
 /// @nodoc
-class _$ScheduleModelCopyWithImpl<$Res, $Val extends ScheduleModel>
+class _$ScheduleModelCopyWithImpl<$Res>
     implements $ScheduleModelCopyWith<$Res> {
-  _$ScheduleModelCopyWithImpl(this._value, this._then);
+  _$ScheduleModelCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ScheduleModel _self;
+  final $Res Function(ScheduleModel) _then;
 
-  /// Create a copy of ScheduleModel
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = freezed,
-    Object? isSplitShift = null,
-    Object? startFirstTurnTime = null,
-    Object? finishFirstTurnTime = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            id: freezed == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            isSplitShift: null == isSplitShift
-                ? _value.isSplitShift
-                : isSplitShift // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            startFirstTurnTime: null == startFirstTurnTime
-                ? _value.startFirstTurnTime
-                : startFirstTurnTime // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            finishFirstTurnTime: null == finishFirstTurnTime
-                ? _value.finishFirstTurnTime
-                : finishFirstTurnTime // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of ScheduleModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? isSplitShift = null,Object? startFirstTurnTime = null,Object? finishFirstTurnTime = null,}) {
+  return _then(ScheduleModel(
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int?,isSplitShift: null == isSplitShift ? _self.isSplitShift : isSplitShift // ignore: cast_nullable_to_non_nullable
+as bool,startFirstTurnTime: null == startFirstTurnTime ? _self.startFirstTurnTime : startFirstTurnTime // ignore: cast_nullable_to_non_nullable
+as DateTime,finishFirstTurnTime: null == finishFirstTurnTime ? _self.finishFirstTurnTime : finishFirstTurnTime // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ScheduleModel].
+extension ScheduleModelPatterns on ScheduleModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ScheduleModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ScheduleModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ScheduleModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _ScheduleModel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ScheduleModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ScheduleModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ScheduleModel() when $default != null:
+return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime)  $default,) {final _that = this;
+switch (_that) {
+case _ScheduleModel():
+return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime)?  $default,) {final _that = this;
+switch (_that) {
+case _ScheduleModel() when $default != null:
+return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$ScheduleModelImplCopyWith<$Res>
-    implements $ScheduleModelCopyWith<$Res> {
-  factory _$$ScheduleModelImplCopyWith(
-    _$ScheduleModelImpl value,
-    $Res Function(_$ScheduleModelImpl) then,
-  ) = __$$ScheduleModelImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    int? id,
-    bool isSplitShift,
-    DateTime startFirstTurnTime,
-    DateTime finishFirstTurnTime,
-  });
+
+
+class _ScheduleModel extends ScheduleModel {
+  const _ScheduleModel({this.id, this.isSplitShift = false, required this.startFirstTurnTime, required this.finishFirstTurnTime}): super._();
+  
+
+@override final  int? id;
+@override@JsonKey() final  bool isSplitShift;
+@override final  DateTime startFirstTurnTime;
+@override final  DateTime finishFirstTurnTime;
+
+/// Create a copy of ScheduleModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ScheduleModelCopyWith<_ScheduleModel> get copyWith => __$ScheduleModelCopyWithImpl<_ScheduleModel>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ScheduleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.isSplitShift, isSplitShift) || other.isSplitShift == isSplitShift)&&(identical(other.startFirstTurnTime, startFirstTurnTime) || other.startFirstTurnTime == startFirstTurnTime)&&(identical(other.finishFirstTurnTime, finishFirstTurnTime) || other.finishFirstTurnTime == finishFirstTurnTime));
 }
 
-/// @nodoc
-class __$$ScheduleModelImplCopyWithImpl<$Res>
-    extends _$ScheduleModelCopyWithImpl<$Res, _$ScheduleModelImpl>
-    implements _$$ScheduleModelImplCopyWith<$Res> {
-  __$$ScheduleModelImplCopyWithImpl(
-    _$ScheduleModelImpl _value,
-    $Res Function(_$ScheduleModelImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of ScheduleModel
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = freezed,
-    Object? isSplitShift = null,
-    Object? startFirstTurnTime = null,
-    Object? finishFirstTurnTime = null,
-  }) {
-    return _then(
-      _$ScheduleModelImpl(
-        id: freezed == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        isSplitShift: null == isSplitShift
-            ? _value.isSplitShift
-            : isSplitShift // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        startFirstTurnTime: null == startFirstTurnTime
-            ? _value.startFirstTurnTime
-            : startFirstTurnTime // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        finishFirstTurnTime: null == finishFirstTurnTime
-            ? _value.finishFirstTurnTime
-            : finishFirstTurnTime // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,id,isSplitShift,startFirstTurnTime,finishFirstTurnTime);
 }
 
-/// @nodoc
-@JsonSerializable()
-class _$ScheduleModelImpl extends _ScheduleModel {
-  const _$ScheduleModelImpl({
-    this.id,
-    this.isSplitShift = false,
-    required this.startFirstTurnTime,
-    required this.finishFirstTurnTime,
-  }) : super._();
-
-  factory _$ScheduleModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ScheduleModelImplFromJson(json);
-
-  @override
-  final int? id;
-  @override
-  @JsonKey()
-  final bool isSplitShift;
-  @override
-  final DateTime startFirstTurnTime;
-  @override
-  final DateTime finishFirstTurnTime;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'ScheduleModel(id: $id, isSplitShift: $isSplitShift, startFirstTurnTime: $startFirstTurnTime, finishFirstTurnTime: $finishFirstTurnTime)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ScheduleModelImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.isSplitShift, isSplitShift) ||
-                other.isSplitShift == isSplitShift) &&
-            (identical(other.startFirstTurnTime, startFirstTurnTime) ||
-                other.startFirstTurnTime == startFirstTurnTime) &&
-            (identical(other.finishFirstTurnTime, finishFirstTurnTime) ||
-                other.finishFirstTurnTime == finishFirstTurnTime));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    isSplitShift,
-    startFirstTurnTime,
-    finishFirstTurnTime,
-  );
-
-  /// Create a copy of ScheduleModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ScheduleModelImplCopyWith<_$ScheduleModelImpl> get copyWith =>
-      __$$ScheduleModelImplCopyWithImpl<_$ScheduleModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ScheduleModelImplToJson(this);
-  }
 }
 
-abstract class _ScheduleModel extends ScheduleModel {
-  const factory _ScheduleModel({
-    final int? id,
-    final bool isSplitShift,
-    required final DateTime startFirstTurnTime,
-    required final DateTime finishFirstTurnTime,
-  }) = _$ScheduleModelImpl;
-  const _ScheduleModel._() : super._();
 
-  factory _ScheduleModel.fromJson(Map<String, dynamic> json) =
-      _$ScheduleModelImpl.fromJson;
-
-  @override
-  int? get id;
-  @override
-  bool get isSplitShift;
-  @override
-  DateTime get startFirstTurnTime;
-  @override
-  DateTime get finishFirstTurnTime;
-
-  /// Create a copy of ScheduleModel
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ScheduleModelImplCopyWith<_$ScheduleModelImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$ScheduleModelCopyWith<$Res> implements $ScheduleModelCopyWith<$Res> {
+  factory _$ScheduleModelCopyWith(_ScheduleModel value, $Res Function(_ScheduleModel) _then) = __$ScheduleModelCopyWithImpl;
+@override @useResult
+$Res call({
+ int? id, bool isSplitShift, DateTime startFirstTurnTime, DateTime finishFirstTurnTime
+});
+
+
+
+
+}
+/// @nodoc
+class __$ScheduleModelCopyWithImpl<$Res>
+    implements _$ScheduleModelCopyWith<$Res> {
+  __$ScheduleModelCopyWithImpl(this._self, this._then);
+
+  final _ScheduleModel _self;
+  final $Res Function(_ScheduleModel) _then;
+
+/// Create a copy of ScheduleModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? isSplitShift = null,Object? startFirstTurnTime = null,Object? finishFirstTurnTime = null,}) {
+  return _then(_ScheduleModel(
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int?,isSplitShift: null == isSplitShift ? _self.isSplitShift : isSplitShift // ignore: cast_nullable_to_non_nullable
+as bool,startFirstTurnTime: null == startFirstTurnTime ? _self.startFirstTurnTime : startFirstTurnTime // ignore: cast_nullable_to_non_nullable
+as DateTime,finishFirstTurnTime: null == finishFirstTurnTime ? _self.finishFirstTurnTime : finishFirstTurnTime // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+
+}
+
+// dart format on

@@ -6,8 +6,8 @@ part of 'time_track_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TimeTrackModelImpl _$$TimeTrackModelImplFromJson(Map<String, dynamic> json) =>
-    _$TimeTrackModelImpl(
+_TimeTrackModel _$TimeTrackModelFromJson(Map<String, dynamic> json) =>
+    _TimeTrackModel(
       id: (json['id'] as num?)?.toInt(),
       employeeId: (json['employee_id'] as num).toInt(),
       startTime: json['start_time'] == null
@@ -22,13 +22,12 @@ _$TimeTrackModelImpl _$$TimeTrackModelImplFromJson(Map<String, dynamic> json) =>
       difference: (json['difference'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$$TimeTrackModelImplToJson(
-  _$TimeTrackModelImpl instance,
-) => <String, dynamic>{
-  'id': instance.id,
-  'employee_id': instance.employeeId,
-  'start_time': instance.startTime?.toIso8601String(),
-  'finish_time': instance.finishTime?.toIso8601String(),
-  'registered_date': instance.registeredDate?.toIso8601String(),
-  'difference': instance.difference,
-};
+Map<String, dynamic> _$TimeTrackModelToJson(_TimeTrackModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'employee_id': instance.employeeId,
+      'start_time': instance.startTime?.toIso8601String(),
+      'finish_time': instance.finishTime?.toIso8601String(),
+      'registered_date': instance.registeredDate?.toIso8601String(),
+      'difference': instance.difference,
+    };

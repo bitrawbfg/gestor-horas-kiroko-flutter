@@ -2,10 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'schedule_model.freezed.dart';
 
-part 'schedule_model.g.dart';
-
 @freezed
-class ScheduleModel with _$ScheduleModel {
+abstract class ScheduleModel with _$ScheduleModel {
   const ScheduleModel._();
 
   const factory ScheduleModel({
@@ -14,8 +12,6 @@ class ScheduleModel with _$ScheduleModel {
     required DateTime startFirstTurnTime,
     required DateTime finishFirstTurnTime,
   }) = _ScheduleModel;
-
-  factory ScheduleModel.fromJson(Map<String, dynamic> json) => _$ScheduleModelFromJson(json);
 
   factory ScheduleModel.fromMap(Map<String, dynamic> map) {
     final startFirstTurnTime = map['start_time'] as String;
