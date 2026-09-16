@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gestor_horas/data/models/employee_selection_data.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/models/schedules/schedule_model.dart';
-import 'package:gestor_horas/data/models/weekdays_enum.dart';
+import 'package:gestor_horas/data/models/shift_time_data.dart';
+import 'package:gestor_horas/presentation/widgets/employee_selection_widget.dart';
+import 'package:gestor_horas/presentation/widgets/time_selection_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../configuration/service_locator.dart';
-import '../view_models/employee_viewmodel.dart';
 import '../view_models/schedule_view_model.dart';
 
 class SchedulesPage extends StatefulWidget {
@@ -50,12 +52,15 @@ class _SchedulesPageState extends State<SchedulesPage> {
     dataSource = MeetingDataSource(_appointments);
   }
 
+  Widget hourSelectionWidget({List<Widget>? widgets}) {
+    return Placeholder();
+  }
+
   void _showScheduleForm(BuildContext context, {ScheduleModel? schedule}) {
     showDialog(
       context: context,
       builder: (context) {
         bool isSplitShift = schedule?.isSplitShift ?? false;
-        WeekdaysEnum weekdayEnum = WeekdaysEnum.week1;
         EmployeeModel? selectedEmployee;
 
         int startFirstShiftSelectedHour = schedule?.startFirstTurnTime.hour ?? 8;
@@ -68,324 +73,121 @@ class _SchedulesPageState extends State<SchedulesPage> {
         int finishSecondShiftSelectedHour = 23;
         int finishSecondShiftSelectedMinute = 0;
 
+        ShiftTimeData shiftTimeData = selectedEmployee != null ? ShiftTimeData(startHour: selectedEmployee.schedules![0].startFirstTurnTime.hour) : ShiftTimeData();
+
+        List<ShiftTimeData> shiftsData = [shiftTimeData];
+        List<EmployeeSelectionData> employeeWidgets = [EmployeeSelectionData()];
+
+        final ScrollController scrollController = ScrollController();
+
+        List<bool?> controllers = List.filled(7, false);
+        List<String> weekDaysName = [
+          'Lunes',
+          'Martes',
+          'Miércoles',
+          'Jueves',
+          'Viernes',
+          'Sábado',
+          'Domingo',
+        ];
+
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setState) {
             return AlertDialog(
               title: Text(schedule == null ? 'Añadir un nuevo horario' : 'Editar horario'),
               content: SizedBox(
-                width: 800,
-                height: 200,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                width: 600,
+                height: 600,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                          child: DropdownButton<EmployeeModel>(
-                            hint: Text('Selecciona a un empleado'),
-                            items: locator<EmployeeViewModel>().employees.map((
-                              EmployeeModel employee,
-                            ) {
-                              return DropdownMenuItem(value: employee, child: Text(employee.name));
-                            }).toList(),
-                            onChanged: (EmployeeModel? employee) {
+                        Text('Selecciona un horario', style: TextStyle(fontSize: 20)),
+                        const SizedBox(height: 4),
+                        ...shiftsData.map((data) => TimeSelectionWidget(shiftTimeData: data)),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (shiftsData.length < 2) {
                               setState(() {
-                                {
-                                  selectedEmployee = employee!;
-                                }
+                                shiftsData.add(ShiftTimeData());
                               });
-                            },
-                            value: selectedEmployee,
-                          ),
-                        ),
-                        Expanded(
-                          child: DropdownButton<WeekdaysEnum>(
-                            items: WeekdaysEnum.values.map((WeekdaysEnum weekday) {
-                              return DropdownMenuItem(value: weekday, child: Text(weekday.value));
-                            }).toList(),
-                            onChanged: (WeekdaysEnum? weekday) {
+                            } else {
                               setState(() {
-                                {
-                                  weekdayEnum = weekday!;
-                                }
+                                shiftsData.removeLast();
                               });
-                            },
-                            value: weekdayEnum,
-                          ),
+                            }
+                          },
+                          child: Icon(shiftsData.length < 2 ? Icons.add : Icons.remove),
                         ),
-                        Expanded(
-                          child: CheckboxListTile(
-                            title: Text(
-                              'Es turno partido',
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
+                        Divider(height: 32),
+
+                        Text('Selecciona los días de la semana', style: TextStyle(fontSize: 20)),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Scrollbar(
+                            controller: scrollController,
+                            thumbVisibility: true,
+                            child: SingleChildScrollView(
+                              controller: scrollController,
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: List.generate(weekDaysName.length, (index) {
+                                  return SizedBox(
+                                    width: 140,
+                                    height: 70,
+                                    child: CheckboxListTile(
+                                      controlAffinity: ListTileControlAffinity.leading,
+                                      contentPadding: const EdgeInsets.all(6),
+                                      title: Text(weekDaysName[index]),
+                                      value: controllers[index],
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          controllers[index] = value;
+                                        });
+                                      },
+                                    ),
+                                  );
+                                }),
+                              ),
                             ),
-                            value: isSplitShift,
-                            onChanged: (bool? value) => setState(() {
-                              isSplitShift = value!;
-                            }),
                           ),
+                        ),
+                        Divider(height: 32),
+
+                        Text('Asigna empleados', style: TextStyle(fontSize: 20)),
+                        ...employeeWidgets.map(
+                          (data) => EmployeeSelectionWidget(
+                            employeeSelectionData: data,
+                            onDelete: employeeWidgets.length > 1
+                                ? () => setState(() => employeeWidgets.remove(data))
+                                : null,
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (employeeWidgets.length < 4) {
+                              setState(() {
+                                employeeWidgets.add(EmployeeSelectionData());
+                              });
+                            }
+                          },
+                          child: Icon(Icons.add),
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                          'Hora de entrada',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Row(
-                          children: [
-                            DropdownButton<int>(
-                              value: startFirstShiftSelectedHour,
-                              onChanged: (int? newValue) {
-                                setState(() {
-                                  startFirstShiftSelectedHour = newValue!;
-                                });
-                              },
-                              items: List<DropdownMenuItem<int>>.generate(24, (int index) {
-                                return DropdownMenuItem<int>(
-                                  enabled: finishFirstShiftSelectedHour >= index,
-                                  value: index,
-                                  child: Text(
-                                    '$index',
-                                    style: TextStyle(
-                                      color: (finishFirstShiftSelectedHour < index)
-                                          ? Colors.grey
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                );
-                              }),
-                            ),
-                            DropdownButton<int>(
-                              value: startFirstShiftSelectedMinute,
-                              onChanged: (int? newValue) {
-                                setState(() {
-                                  startFirstShiftSelectedMinute = newValue!;
-                                });
-                              },
-                              items: List<DropdownMenuItem<int>>.generate(60, (int index) {
-                                return DropdownMenuItem<int>(
-                                  enabled: finishFirstShiftSelectedMinute >= index,
-                                  value: index,
-                                  child: Text(
-                                    '$index',
-                                    style: TextStyle(
-                                      color: (finishFirstShiftSelectedMinute < index)
-                                          ? Colors.grey
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                );
-                              }),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                              'Hora de salida',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Row(
-                              children: [
-                                DropdownButton<int>(
-                                  value: finishFirstShiftSelectedHour,
-                                  onChanged: (int? newValue) {
-                                    setState(() {
-                                      finishFirstShiftSelectedHour = newValue!;
-                                    });
-                                  },
-                                  items: List<DropdownMenuItem<int>>.generate(24, (int index) {
-                                    return DropdownMenuItem<int>(
-                                      enabled: startFirstShiftSelectedHour <= index,
-                                      value: index,
-                                      child: Text(
-                                        '$index',
-                                        style: TextStyle(
-                                          color: (startFirstShiftSelectedHour > index)
-                                              ? Colors.grey
-                                              : Colors.black,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ),
-                                DropdownButton<int>(
-                                  value: finishFirstShiftSelectedMinute,
-                                  onChanged: (int? newValue) {
-                                    setState(() {
-                                      finishFirstShiftSelectedMinute = newValue!;
-                                    });
-                                  },
-                                  items: List<DropdownMenuItem<int>>.generate(60, (int index) {
-                                    return DropdownMenuItem<int>(
-                                      enabled: startFirstShiftSelectedMinute <= index,
-                                      value: index,
-                                      child: Text(
-                                        '$index',
-                                        style: TextStyle(
-                                          color: (startFirstShiftSelectedMinute > index)
-                                              ? Colors.grey
-                                              : Colors.black,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    isSplitShift
-                        ? Row(
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                                'Hora de entrada',
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Row(
-                                children: [
-                                  DropdownButton<int>(
-                                    value: startSecondShiftSelectedHour,
-                                    onChanged: (int? newValue) {
-                                      setState(() {
-                                        startSecondShiftSelectedHour = newValue!;
-                                      });
-                                    },
-                                    items: List<DropdownMenuItem<int>>.generate(24, (int index) {
-                                      return DropdownMenuItem<int>(
-                                        enabled: finishSecondShiftSelectedHour >= index,
-                                        value: index,
-                                        child: Text(
-                                          '$index',
-                                          style: TextStyle(
-                                            color: (finishSecondShiftSelectedHour < index)
-                                                ? Colors.grey
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                  DropdownButton<int>(
-                                    value: startSecondShiftSelectedMinute,
-                                    onChanged: (int? newValue) {
-                                      setState(() {
-                                        startSecondShiftSelectedMinute = newValue!;
-                                      });
-                                    },
-                                    items: List<DropdownMenuItem<int>>.generate(60, (int index) {
-                                      return DropdownMenuItem<int>(
-                                        enabled: finishSecondShiftSelectedMinute >= index,
-                                        value: index,
-                                        child: Text(
-                                          '$index',
-                                          style: TextStyle(
-                                            color: (finishSecondShiftSelectedMinute < index)
-                                                ? Colors.grey
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    ),
-                                    'Hora de salida',
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Row(
-                                    children: [
-                                      DropdownButton<int>(
-                                        value: finishSecondShiftSelectedHour,
-                                        onChanged: (int? newValue) {
-                                          setState(() {
-                                            finishSecondShiftSelectedHour = newValue!;
-                                          });
-                                        },
-                                        items: List<DropdownMenuItem<int>>.generate(24, (
-                                          int index,
-                                        ) {
-                                          return DropdownMenuItem<int>(
-                                            enabled: startSecondShiftSelectedHour <= index,
-                                            value: index,
-                                            child: Text(
-                                              '$index',
-                                              style: TextStyle(
-                                                color: (startSecondShiftSelectedHour > index)
-                                                    ? Colors.grey
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                          );
-                                        }),
-                                      ),
-                                      DropdownButton<int>(
-                                        value: finishSecondShiftSelectedMinute,
-                                        onChanged: (int? newValue) {
-                                          setState(() {
-                                            finishSecondShiftSelectedMinute = newValue!;
-                                          });
-                                        },
-                                        items: List<DropdownMenuItem<int>>.generate(60, (
-                                          int index,
-                                        ) {
-                                          return DropdownMenuItem<int>(
-                                            enabled: startSecondShiftSelectedMinute <= index,
-                                            value: index,
-                                            child: Text(
-                                              '$index',
-                                              style: TextStyle(
-                                                color: (startSecondShiftSelectedMinute > index)
-                                                    ? Colors.grey
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                          );
-                                        }),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-                        : SizedBox(),
-                  ],
+                  ),
                 ),
               ),
               actions: [
                 ElevatedButton(
                   onPressed: () {
+                    for (int i = 0; i < 7; i++) {
+                      print('${controllers[i]} ${weekDaysName[i]}');
+                    }
+
                     if (selectedEmployee != null) {
                       ScheduleModel newSchedule = createNewSchedule(
                         startFirstShiftSelectedHour,
@@ -401,7 +203,10 @@ class _SchedulesPageState extends State<SchedulesPage> {
                         );
                       } else {
                         locator<ScheduleViewModel>().updateSchedule(
-                          schedule.copyWith(startFirstTurnTime: newSchedule.startFirstTurnTime, finishFirstTurnTime: newSchedule.finishFirstTurnTime),
+                          schedule.copyWith(
+                            startFirstTurnTime: newSchedule.startFirstTurnTime,
+                            finishFirstTurnTime: newSchedule.finishFirstTurnTime,
+                          ),
                           selectedEmployee!.id!,
                         );
                       }
@@ -415,8 +220,6 @@ class _SchedulesPageState extends State<SchedulesPage> {
                         );
                         locator<ScheduleViewModel>().addSchedule(schedule, selectedEmployee!.id!);
                       }
-
-
 
                       Navigator.pop(context);
                     } else {
