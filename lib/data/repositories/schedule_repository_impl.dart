@@ -4,6 +4,7 @@ import 'package:gestor_horas/domain/repositories/schedule_repository.dart';
 
 class ScheduleRepositoryImpl implements ScheduleRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
+
   static const String schedulesTable = 'schedules';
   static const String employeeScheduleTable = 'employee_schedules';
 
@@ -58,6 +59,41 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
     final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> schedules = await database.query(schedulesTable);
 
+    /*
+    * TODO: Para obtener todos los datos se puede hacer esto a la inversa más o menos
+    *
+    await database.transaction((transaction) async {
+      final int scheduleId = await transaction.insert(schedulesTable, schedule.toMap());
+
+      final batch = transaction.batch();
+
+      for (var assignment in assignations) {
+        final Map<String, dynamic> rowToInsert = Map.from(assignment);
+        rowToInsert['id_schedule'] = scheduleId;
+
+        batch.insert(employeeScheduleTable, rowToInsert);
+      }
+
+      await batch.commit(noResult: true);
+    });
+    */
+
+    /*
+    * Esto no lo tengo tan claro
+    *
+    final List<Map<String, dynamic>> employeeScheduleAssignments = [];
+    for (EmployeeSelectionData employeeData in employeesData) {
+      if (employeeData.weekdayEnum != null && employeeData.selectedEmployee != null) {
+        for (String selectedDay in selectedDays) {
+          employeeScheduleAssignments.add({
+            'id_employee': employeeData.selectedEmployee?.id,
+            'weekday': selectedDay,
+            'assigned_week': employeeData.weekdayEnum?.value,
+          });
+        }
+      }
+    }*/
+
     return List.generate(schedules.length, (schedule) {
       return ScheduleModel.fromMap(schedules[schedule]);
     });
@@ -74,6 +110,28 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
 
     return List.generate(schedules.length, (schedule) {
       return ScheduleModel.fromMap(schedules[schedule]);
+    });
+  }
+
+  Future<void> insertScheduleWithAssignment({
+    required ScheduleModel schedule,
+    required List<Map<String, dynamic>> assignations,
+  }) async {
+    final database = await _databaseHelper.database;
+
+    await database.transaction((transaction) async {
+      final int scheduleId = await transaction.insert(schedulesTable, schedule.toMap());
+
+      final batch = transaction.batch();
+
+      for (var assignment in assignations) {
+        final Map<String, dynamic> rowToInsert = Map.from(assignment);
+        rowToInsert['id_schedule'] = scheduleId;
+
+        batch.insert(employeeScheduleTable, rowToInsert);
+      }
+
+      await batch.commit(noResult: true);
     });
   }
 }
