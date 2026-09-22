@@ -25,7 +25,7 @@ class DatabaseHelper {
 
     return await databaseFactory.openDatabase(
       path,
-      options: OpenDatabaseOptions(version: 4, onCreate: _createDB, onUpgrade: _updateDB),
+      options: OpenDatabaseOptions(version: 1, onCreate: _createDB, onUpgrade: _updateDB),
     );
   }
 
@@ -33,7 +33,9 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE IF NOT EXISTS employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
-      name TEXT NOT NULL
+      name TEXT NOT NULL,
+      has_contract BOOLEAN NOT NULL DEFAULT 0,
+      hours_in_contract INTEGER NOT NULL DEFAULT 0
     )
     ''');
 
@@ -48,34 +50,32 @@ class DatabaseHelper {
       FOREIGN KEY(employee_id) REFERENCES employees(id)
     ) 
     ''');
-  }
-
-  Future _updateDB(Database db, int version, int newVersion) async {
-    await db.execute('''
-    ALTER TABLE employees ADD COLUMN "has_contract"	BOOLEAN NOT NULL DEFAULT 0
-    ''');
-
-    await db.execute('''
-    ALTER TABLE employees ADD COLUMN "hours_in_contract" INTEGER NOT NULL DEFAULT 0
-    ''');
 
     await db.execute('''
     CREATE TABLE IF NOT EXISTS schedules (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       start_time DATETIME NOT NULL,
       finish_time DATETIME NOT NULL,
-      week INTEGER
+      start_second_time DATETIME,
+      finish_second_time DATETIME,
+      is_split_shift STRING
     )''');
 
     await db.execute('''
     CREATE TABLE IF NOT EXISTS employee_schedules (
       id_employee INTEGER NOT NULL,
       id_schedule INTEGER NOT NULL,
-      PRIMARY KEY (id_employee, id_schedule),
+      weekday STRING,
+      assigned_week STRING,
+      PRIMARY KEY (id_employee, id_schedule, weekday),
       FOREIGN KEY(id_employee) REFERENCES employees(id),
       FOREIGN KEY(id_schedule) REFERENCES schedules(id)
     )
     ''');
+  }
+
+  Future _updateDB(Database db, int version, int newVersion) async {
+
   }
 
   // https://medium.com/@jamshaidaslam/step-by-step-sqlite-offline-database-setup-in-flutter-with-jamshaid-malik-b81c2c98a8cf
