@@ -8,7 +8,7 @@ part 'time_track_model.g.dart';
 abstract class TimeTrackModel with _$TimeTrackModel {
   const factory TimeTrackModel({
     int? id,
-    required int employeeId,
+    required int idEmployee,
     DateTime? startTime,
     DateTime? finishTime,
     DateTime? registeredDate,
@@ -26,7 +26,7 @@ abstract class TimeTrackModel with _$TimeTrackModel {
 
     return TimeTrackModel(
       id: map['id'],
-      employeeId: map['employee_id'],
+      idEmployee: map['id_employee'],
       startTime: startTime == null ? null : DateTime.tryParse(startTime),
       finishTime: finishTime == null ? null : DateTime.tryParse(finishTime),
       registeredDate: registeredDate == null

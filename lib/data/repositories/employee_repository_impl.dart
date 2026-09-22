@@ -51,7 +51,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   Future<List<EmployeeModel>> getEmployees() async {
     final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> employees = await database.rawQuery(
-      '''SELECT *, E.id AS employee_id FROM employees as E 
+      '''SELECT *, E.id AS id_employee FROM employees as E 
           LEFT JOIN employee_schedules AS ES ON E.id = ES.id_employee 
           LEFT JOIN schedules AS S ON S.id = ES.id_schedule''',
     );
@@ -60,7 +60,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     final Map<int, List<ScheduleModel>> schedulesPerEmployee = <int, List<ScheduleModel>>{};
 
     for (final Map<String, dynamic> employeeRow in employees) {
-      int employeeId = employeeRow['employee_id'];
+      int employeeId = employeeRow['id_employee'];
 
       employeesData[employeeId] = employeeRow;
       if (employeeRow['id_schedule'] != null) {

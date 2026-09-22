@@ -34,7 +34,7 @@ class TimeTrackViewModel extends ChangeNotifier {
 
   void getTimeTrackingsFromEmployee(int employeeId, int day) {
     List<TimeTrackModel> timeTrackingsThatMatch = timeTrackings
-        .where((timeTrack) => employeeId == timeTrack.employeeId && timeTrack.difference! > 0)
+        .where((timeTrack) => employeeId == timeTrack.idEmployee && timeTrack.difference! > 0)
         .where((timeTrack) => timeTrack.registeredDate?.day == day)
         .toList();
 
@@ -45,7 +45,7 @@ class TimeTrackViewModel extends ChangeNotifier {
   Future<EmployeeModel?> addTimeStart(EmployeeModel employee) async {
     if (employee.currentTimeTrack == null) {
       TimeTrackModel employeeTimeTrack = TimeTrackModel(
-        employeeId: employee.id!,
+        idEmployee: employee.id!,
         startTime: DateTime.now(),
         registeredDate: DateTime.now(),
       );
@@ -75,7 +75,7 @@ class TimeTrackViewModel extends ChangeNotifier {
 
     loadTimeTrackings();
     getTimeTrackingsFromEmployee(
-      employeeTimeTrack.employeeId,
+      employeeTimeTrack.idEmployee,
       employeeTimeTrack.registeredDate!.day,
     );
   }
@@ -97,21 +97,21 @@ class TimeTrackViewModel extends ChangeNotifier {
     await _repository.updateTimeTrack(employeeTimeTrack);
 
     await loadTimeTrackings();
-    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
+    getTimeTrackingsFromEmployee(timeTrack.idEmployee, timeTrack.registeredDate!.day);
   }
 
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
     await _repository.deleteTimeTrack(timeTrack);
 
     await loadTimeTrackings();
-    getTimeTrackingsFromEmployee(timeTrack.employeeId, timeTrack.registeredDate!.day);
+    getTimeTrackingsFromEmployee(timeTrack.idEmployee, timeTrack.registeredDate!.day);
   }
 
   Duration getDailyDurationForEmployee(int weekDateValue, int employeeId) {
     int day = dateViewModel.weekDates[weekDateValue].day;
 
     List<TimeTrackModel> employeeTimeTrackings = timeTrackings
-        .where((timeTrack) => employeeId == timeTrack.employeeId)
+        .where((timeTrack) => employeeId == timeTrack.idEmployee)
         .toList();
 
     List<TimeTrackModel> timeTrackingsThatMatchDay = employeeTimeTrackings
@@ -130,7 +130,7 @@ class TimeTrackViewModel extends ChangeNotifier {
 
   Duration getTimeWorkedInWeekByEmployee(int employeeId) {
     List<TimeTrackModel> timeTrackingsList = timeTrackings
-        .where((timeTrack) => timeTrack.employeeId == employeeId)
+        .where((timeTrack) => timeTrack.idEmployee == employeeId)
         .toList();
 
     int totalTime = 0;

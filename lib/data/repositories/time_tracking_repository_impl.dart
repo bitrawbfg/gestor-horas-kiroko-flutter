@@ -38,7 +38,7 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
     final database = await _databaseHelper.database;
 
     final List<Map<String, dynamic>> timeTrackingsMap = await database.rawQuery(
-      'SELECT * FROM $timeTrackingTable WHERE ROWID IN (SELECT max(ROWID) FROM $timeTrackingTable WHERE employee_id = ? AND finish_time IS NULL AND start_time IS NOT NULL);',
+      'SELECT * FROM $timeTrackingTable WHERE ROWID IN (SELECT max(ROWID) FROM $timeTrackingTable WHERE id_employee = ? AND finish_time IS NULL AND start_time IS NOT NULL);',
       [employeeId],
     );
 
@@ -89,7 +89,7 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
   ) async {
     final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> timeTrackings = await database.rawQuery(
-      'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ? AND employee_id = ?',
+      'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ? AND id_employee = ?',
       ['$startDay', '$finishDay', employeeId],
     );
 

@@ -24,7 +24,7 @@ abstract class EmployeeModel with _$EmployeeModel {
     List<ScheduleModel> schedules = const [],
   }) {
     return EmployeeModel(
-      id: map['employee_id'] ?? map['id'],
+      id: map['id_employee'] ?? map['id'],
       name: map['name'],
       hasContract: map['has_contract'] == 1 ? true : false,
       hoursInContract: map['hours_in_contract'],
