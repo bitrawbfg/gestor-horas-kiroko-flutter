@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../configuration/service_locator.dart';
+import '../../data/models/weekdays_enum.dart';
 import '../view_models/schedule_view_model.dart';
 
 class SchedulesPage extends StatefulWidget {
@@ -37,7 +38,7 @@ class _SchedulesPageState extends State<SchedulesPage> {
   Future<void> loadAppointments() async {
     for (ScheduleModel schedule in _schedules) {
       Meeting appointment = Meeting(
-        recurrenceRule: 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,TU,WE,TH,FR',
+        recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR', // TODO: Aquí añadiré los días de la semana
         from: schedule.startFirstTurnTime,
         to: schedule.finishFirstTurnTime,
         eventName: 'Turno',
@@ -60,35 +61,30 @@ class _SchedulesPageState extends State<SchedulesPage> {
     showDialog(
       context: context,
       builder: (context) {
-        bool isSplitShift = schedule?.isSplitShift ?? false;
         EmployeeModel? selectedEmployee;
-
-        int startFirstShiftSelectedHour = schedule?.startFirstTurnTime.hour ?? 8;
-        int startFirstShiftSelectedMinute = schedule?.startFirstTurnTime.minute ?? 0;
-        int finishFirstShiftSelectedHour = schedule?.finishFirstTurnTime.hour ?? 15;
-        int finishFirstShiftSelectedMinute = schedule?.finishFirstTurnTime.minute ?? 0;
-
-        int startSecondShiftSelectedHour = 15;
-        int startSecondShiftSelectedMinute = 0;
-        int finishSecondShiftSelectedHour = 23;
-        int finishSecondShiftSelectedMinute = 0;
-
-        ShiftTimeData shiftTimeData = selectedEmployee != null ? ShiftTimeData(startHour: selectedEmployee.schedules![0].startFirstTurnTime.hour) : ShiftTimeData();
+        ShiftTimeData shiftTimeData = selectedEmployee != null
+            ? ShiftTimeData(
+                startHour: selectedEmployee.schedules![0].startFirstTurnTime.hour,
+                startMinute: selectedEmployee.schedules![0].startFirstTurnTime.minute,
+                endHour: selectedEmployee.schedules![0].finishFirstTurnTime.hour,
+                endMinute: selectedEmployee.schedules![0].finishFirstTurnTime.minute,
+              )
+            : ShiftTimeData();
 
         List<ShiftTimeData> shiftsData = [shiftTimeData];
-        List<EmployeeSelectionData> employeeWidgets = [EmployeeSelectionData()];
+        List<EmployeeSelectionData> employeesData = [EmployeeSelectionData()];
 
         final ScrollController scrollController = ScrollController();
 
-        List<bool?> controllers = List.filled(7, false);
-        List<String> weekDaysName = [
-          'Lunes',
-          'Martes',
-          'Miércoles',
-          'Jueves',
-          'Viernes',
-          'Sábado',
-          'Domingo',
+        List<bool?> weekDayControllers = List.filled(7, false);
+        List<Map<String, String>> weekDaysName = [
+          {'Lunes': 'Mo'},
+          {'Martes': 'Tu'},
+          {'Miércoles': 'We'},
+          {'Jueves': 'Th'},
+          {'Viernes': 'Fr'},
+          {'Sábado': 'Sa'},
+          {'Domingo': 'Su'},
         ];
 
         return StatefulBuilder(
@@ -141,11 +137,11 @@ class _SchedulesPageState extends State<SchedulesPage> {
                                     child: CheckboxListTile(
                                       controlAffinity: ListTileControlAffinity.leading,
                                       contentPadding: const EdgeInsets.all(6),
-                                      title: Text(weekDaysName[index]),
-                                      value: controllers[index],
+                                      title: Text(weekDaysName[index].keys.first),
+                                      value: weekDayControllers[index],
                                       onChanged: (bool? value) {
                                         setState(() {
-                                          controllers[index] = value;
+                                          weekDayControllers[index] = value;
                                         });
                                       },
                                     ),
@@ -158,19 +154,19 @@ class _SchedulesPageState extends State<SchedulesPage> {
                         Divider(height: 32),
 
                         Text('Asigna empleados', style: TextStyle(fontSize: 20)),
-                        ...employeeWidgets.map(
+                        ...employeesData.map(
                           (data) => EmployeeSelectionWidget(
                             employeeSelectionData: data,
-                            onDelete: employeeWidgets.length > 1
-                                ? () => setState(() => employeeWidgets.remove(data))
+                            onDelete: employeesData.length > 1
+                                ? () => setState(() => employeesData.remove(data))
                                 : null,
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            if (employeeWidgets.length < 4) {
+                            if (employeesData.length < 4) {
                               setState(() {
-                                employeeWidgets.add(EmployeeSelectionData());
+                                employeesData.add(EmployeeSelectionData());
                               });
                             }
                           },
@@ -184,48 +180,45 @@ class _SchedulesPageState extends State<SchedulesPage> {
               actions: [
                 ElevatedButton(
                   onPressed: () {
-                    for (int i = 0; i < 7; i++) {
-                      print('${controllers[i]} ${weekDaysName[i]}');
+                    final DateTime now = DateTime(2000, 1, 1);
+                    final ShiftTimeData shiftData = shiftsData[0];
+
+                    final bool isSplitShift = shiftsData.length > 1;
+                    final schedule = ScheduleModel(
+                      isSplitShift: isSplitShift,
+                      startFirstTurnTime: DateTime(now.year, now.month, now.day, shiftData.startHour, shiftData.startMinute),
+                      finishFirstTurnTime: DateTime(now.year, now.month, now.day, shiftData.endHour, shiftData.endMinute),
+                      startSecondTurnTime: isSplitShift
+                          ? DateTime(shiftsData[1].startHour, shiftsData[1].startMinute)
+                          : null,
+                      finishSecondTurnTime: isSplitShift
+                          ? DateTime(shiftsData[1].endHour, shiftsData[1].endMinute)
+                          : null,
+                    );
+
+                    final List<String> selectedDays = [];
+                    for (int i = 0; i < weekDayControllers.length; i++) {
+                      if (weekDayControllers[i] == true) selectedDays.add(weekDaysName[i].values.first);
                     }
 
-                    if (selectedEmployee != null) {
-                      ScheduleModel newSchedule = createNewSchedule(
-                        startFirstShiftSelectedHour,
-                        startFirstShiftSelectedMinute,
-                        finishFirstShiftSelectedHour,
-                        finishFirstShiftSelectedMinute,
-                      );
-
-                      if (schedule == null) {
-                        locator<ScheduleViewModel>().addSchedule(
-                          newSchedule,
-                          selectedEmployee!.id!,
-                        );
-                      } else {
-                        locator<ScheduleViewModel>().updateSchedule(
-                          schedule.copyWith(
-                            startFirstTurnTime: newSchedule.startFirstTurnTime,
-                            finishFirstTurnTime: newSchedule.finishFirstTurnTime,
-                          ),
-                          selectedEmployee!.id!,
-                        );
+                    final List<Map<String, dynamic>> employeeScheduleAssignments = [];
+                    for (EmployeeSelectionData employeeData in employeesData) {
+                      if (employeeData.weekdayEnum != null && employeeData.selectedEmployee != null) {
+                        for (String selectedDay in selectedDays) {
+                          employeeScheduleAssignments.add({
+                            'id_employee': employeeData.selectedEmployee?.id,
+                            'weekday': selectedDay,
+                            'assigned_week': employeeData.weekdayEnum?.value,
+                          });
+                        }
                       }
-
-                      if (isSplitShift) {
-                        ScheduleModel schedule = createNewSchedule(
-                          startSecondShiftSelectedHour,
-                          startSecondShiftSelectedMinute,
-                          finishSecondShiftSelectedHour,
-                          finishSecondShiftSelectedMinute,
-                        );
-                        locator<ScheduleViewModel>().addSchedule(schedule, selectedEmployee!.id!);
-                      }
-
-                      Navigator.pop(context);
-                    } else {
-                      // TODO: Añadir barra informativa sobre error al añadir empleado
                     }
+
+                    locator<ScheduleViewModel>().addScheduleWithAssignments(schedule: schedule, assignations: employeeScheduleAssignments);
+
+                    Navigator.pop(context);
                   },
+
                   child: Text(schedule == null ? 'Añadir nuevo turno' : 'Editar turno'),
                 ),
 
@@ -242,30 +235,6 @@ class _SchedulesPageState extends State<SchedulesPage> {
         );
       },
     );
-  }
-
-  ScheduleModel createNewSchedule(
-    int startFirstShiftSelectedHour,
-    int startFirstShiftSelectedMinute,
-    int finishFirstShiftSelectedHour,
-    int finishFirstShiftSelectedMinute,
-  ) {
-    DateTime startTime = DateTime.now().copyWith(
-      hour: startFirstShiftSelectedHour,
-      minute: startFirstShiftSelectedMinute,
-      second: 0,
-    );
-    DateTime finishTime = DateTime.now().copyWith(
-      hour: finishFirstShiftSelectedHour,
-      minute: finishFirstShiftSelectedMinute,
-      second: 0,
-    );
-
-    ScheduleModel schedule = ScheduleModel(
-      startFirstTurnTime: startTime,
-      finishFirstTurnTime: finishTime,
-    );
-    return schedule;
   }
 
   @override
@@ -287,8 +256,8 @@ class _SchedulesPageState extends State<SchedulesPage> {
           return Expanded(
             child: SfCalendar(
               timeSlotViewSettings: TimeSlotViewSettings(startHour: 6, endHour: 24),
-              onTap: (CalendarTapDetails nepe) {
-                Meeting? appointment = nepe.appointments?.first;
+              onTap: (CalendarTapDetails details) {
+                Meeting? appointment = details.appointments?.first;
                 if (appointment != null) {
                   _showScheduleForm(context, schedule: appointment.schedule);
                 }
