@@ -13,6 +13,7 @@ abstract class ScheduleModel with _$ScheduleModel {
     required DateTime finishFirstTurnTime,
     DateTime? startSecondTurnTime,
     DateTime? finishSecondTurnTime,
+    required List<String> weekdays,
   }) = _ScheduleModel;
 
   factory ScheduleModel.fromMap(Map<String, dynamic> map) {
@@ -22,6 +23,8 @@ abstract class ScheduleModel with _$ScheduleModel {
     final startSecondTurnTime = map['start_second_time'] as String?;
     final finishSecondTurnTime = map['finish_second_time'] as String?;
 
+    final List<String> weekdaysList = map['weekdays'].split(',');
+
     return ScheduleModel(
       id: map['id_schedule'] ?? map['id'],
       isSplitShift: map['is_split_shift'] == 1,
@@ -29,6 +32,7 @@ abstract class ScheduleModel with _$ScheduleModel {
       finishFirstTurnTime: DateTime.parse(finishFirstTurnTime),
       startSecondTurnTime: startSecondTurnTime != null ? DateTime.parse(startSecondTurnTime) : null,
       finishSecondTurnTime: finishSecondTurnTime != null ? DateTime.parse(finishSecondTurnTime) : null,
+      weekdays: weekdaysList,
     );
   }
 
@@ -40,6 +44,7 @@ abstract class ScheduleModel with _$ScheduleModel {
       'finish_time': finishFirstTurnTime.toIso8601String(),
       if (startSecondTurnTime != null) 'start_second_time': startSecondTurnTime!.toIso8601String(),
       if (finishSecondTurnTime != null) 'finish_second_time': finishSecondTurnTime!.toIso8601String(),
+      'weekdays': weekdays.join(','),
     };
   }
 }

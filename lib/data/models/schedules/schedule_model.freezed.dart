@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ScheduleModel {
 
- int? get id; bool get isSplitShift; DateTime get startFirstTurnTime; DateTime get finishFirstTurnTime; DateTime? get startSecondTurnTime; DateTime? get finishSecondTurnTime;
+ int? get id; bool get isSplitShift; DateTime get startFirstTurnTime; DateTime get finishFirstTurnTime; DateTime? get startSecondTurnTime; DateTime? get finishSecondTurnTime; List<String> get weekdays;
 /// Create a copy of ScheduleModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $ScheduleModelCopyWith<ScheduleModel> get copyWith => _$ScheduleModelCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as ScheduleModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ScheduleModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.isSplitShift, _this.isSplitShift) || other.isSplitShift == _this.isSplitShift)&&(identical(other.startFirstTurnTime, _this.startFirstTurnTime) || other.startFirstTurnTime == _this.startFirstTurnTime)&&(identical(other.finishFirstTurnTime, _this.finishFirstTurnTime) || other.finishFirstTurnTime == _this.finishFirstTurnTime)&&(identical(other.startSecondTurnTime, _this.startSecondTurnTime) || other.startSecondTurnTime == _this.startSecondTurnTime)&&(identical(other.finishSecondTurnTime, _this.finishSecondTurnTime) || other.finishSecondTurnTime == _this.finishSecondTurnTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ScheduleModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.isSplitShift, _this.isSplitShift) || other.isSplitShift == _this.isSplitShift)&&(identical(other.startFirstTurnTime, _this.startFirstTurnTime) || other.startFirstTurnTime == _this.startFirstTurnTime)&&(identical(other.finishFirstTurnTime, _this.finishFirstTurnTime) || other.finishFirstTurnTime == _this.finishFirstTurnTime)&&(identical(other.startSecondTurnTime, _this.startSecondTurnTime) || other.startSecondTurnTime == _this.startSecondTurnTime)&&(identical(other.finishSecondTurnTime, _this.finishSecondTurnTime) || other.finishSecondTurnTime == _this.finishSecondTurnTime)&&const DeepCollectionEquality().equals(other.weekdays, _this.weekdays));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ScheduleModel;
-  return Object.hash(runtimeType,_this.id,_this.isSplitShift,_this.startFirstTurnTime,_this.finishFirstTurnTime,_this.startSecondTurnTime,_this.finishSecondTurnTime);
+  return Object.hash(runtimeType,_this.id,_this.isSplitShift,_this.startFirstTurnTime,_this.finishFirstTurnTime,_this.startSecondTurnTime,_this.finishSecondTurnTime,const DeepCollectionEquality().hash(_this.weekdays));
 }
 
 @override
 String toString() {
   final _this = this as ScheduleModel;
-  return 'ScheduleModel(id: ${_this.id}, isSplitShift: ${_this.isSplitShift}, startFirstTurnTime: ${_this.startFirstTurnTime}, finishFirstTurnTime: ${_this.finishFirstTurnTime}, startSecondTurnTime: ${_this.startSecondTurnTime}, finishSecondTurnTime: ${_this.finishSecondTurnTime})';
+  return 'ScheduleModel(id: ${_this.id}, isSplitShift: ${_this.isSplitShift}, startFirstTurnTime: ${_this.startFirstTurnTime}, finishFirstTurnTime: ${_this.finishFirstTurnTime}, startSecondTurnTime: ${_this.startSecondTurnTime}, finishSecondTurnTime: ${_this.finishSecondTurnTime}, weekdays: ${_this.weekdays})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $ScheduleModelCopyWith<$Res>  {
   factory $ScheduleModelCopyWith(ScheduleModel value, $Res Function(ScheduleModel) _then) = _$ScheduleModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, bool isSplitShift, DateTime startFirstTurnTime, DateTime finishFirstTurnTime, DateTime? startSecondTurnTime, DateTime? finishSecondTurnTime
+ int? id, bool isSplitShift, DateTime startFirstTurnTime, DateTime finishFirstTurnTime, DateTime? startSecondTurnTime, DateTime? finishSecondTurnTime, List<String> weekdays
 });
 
 
@@ -68,7 +68,7 @@ class _$ScheduleModelCopyWithImpl<$Res>
 
 /// Create a copy of ScheduleModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? isSplitShift = null,Object? startFirstTurnTime = null,Object? finishFirstTurnTime = null,Object? startSecondTurnTime = freezed,Object? finishSecondTurnTime = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? isSplitShift = null,Object? startFirstTurnTime = null,Object? finishFirstTurnTime = null,Object? startSecondTurnTime = freezed,Object? finishSecondTurnTime = freezed,Object? weekdays = null,}) {
   return _then(ScheduleModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,isSplitShift: null == isSplitShift ? _self.isSplitShift : isSplitShift // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,8 @@ as bool,startFirstTurnTime: null == startFirstTurnTime ? _self.startFirstTurnTim
 as DateTime,finishFirstTurnTime: null == finishFirstTurnTime ? _self.finishFirstTurnTime : finishFirstTurnTime // ignore: cast_nullable_to_non_nullable
 as DateTime,startSecondTurnTime: freezed == startSecondTurnTime ? _self.startSecondTurnTime : startSecondTurnTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,finishSecondTurnTime: freezed == finishSecondTurnTime ? _self.finishSecondTurnTime : finishSecondTurnTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,weekdays: null == weekdays ? _self.weekdays : weekdays // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
@@ -161,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime,  DateTime? startSecondTurnTime,  DateTime? finishSecondTurnTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime,  DateTime? startSecondTurnTime,  DateTime? finishSecondTurnTime,  List<String> weekdays)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ScheduleModel() when $default != null:
-return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime,_that.startSecondTurnTime,_that.finishSecondTurnTime);case _:
+return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime,_that.startSecondTurnTime,_that.finishSecondTurnTime,_that.weekdays);case _:
   return orElse();
 
 }
@@ -182,10 +183,10 @@ return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finis
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime,  DateTime? startSecondTurnTime,  DateTime? finishSecondTurnTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime,  DateTime? startSecondTurnTime,  DateTime? finishSecondTurnTime,  List<String> weekdays)  $default,) {final _that = this;
 switch (_that) {
 case _ScheduleModel():
-return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime,_that.startSecondTurnTime,_that.finishSecondTurnTime);case _:
+return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime,_that.startSecondTurnTime,_that.finishSecondTurnTime,_that.weekdays);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +203,10 @@ return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finis
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime,  DateTime? startSecondTurnTime,  DateTime? finishSecondTurnTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  bool isSplitShift,  DateTime startFirstTurnTime,  DateTime finishFirstTurnTime,  DateTime? startSecondTurnTime,  DateTime? finishSecondTurnTime,  List<String> weekdays)?  $default,) {final _that = this;
 switch (_that) {
 case _ScheduleModel() when $default != null:
-return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime,_that.startSecondTurnTime,_that.finishSecondTurnTime);case _:
+return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finishFirstTurnTime,_that.startSecondTurnTime,_that.finishSecondTurnTime,_that.weekdays);case _:
   return null;
 
 }
@@ -217,7 +218,7 @@ return $default(_that.id,_that.isSplitShift,_that.startFirstTurnTime,_that.finis
 
 
 class _ScheduleModel extends ScheduleModel {
-  const _ScheduleModel({this.id, this.isSplitShift = false, required this.startFirstTurnTime, required this.finishFirstTurnTime, this.startSecondTurnTime, this.finishSecondTurnTime}): super._();
+  const _ScheduleModel({this.id, this.isSplitShift = false, required this.startFirstTurnTime, required this.finishFirstTurnTime, this.startSecondTurnTime, this.finishSecondTurnTime, required  List<String> weekdays}): _weekdays = weekdays,super._();
   
 
 @override final  int? id;
@@ -226,6 +227,13 @@ class _ScheduleModel extends ScheduleModel {
 @override final  DateTime finishFirstTurnTime;
 @override final  DateTime? startSecondTurnTime;
 @override final  DateTime? finishSecondTurnTime;
+ final  List<String> _weekdays;
+@override List<String> get weekdays {
+  if (_weekdays is EqualUnmodifiableListView) return _weekdays;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_weekdays);
+}
+
 
 /// Create a copy of ScheduleModel
 /// with the given fields replaced by the non-null parameter values.
@@ -237,18 +245,18 @@ _$ScheduleModelCopyWith<_ScheduleModel> get copyWith => __$ScheduleModelCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ScheduleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.isSplitShift, isSplitShift) || other.isSplitShift == isSplitShift)&&(identical(other.startFirstTurnTime, startFirstTurnTime) || other.startFirstTurnTime == startFirstTurnTime)&&(identical(other.finishFirstTurnTime, finishFirstTurnTime) || other.finishFirstTurnTime == finishFirstTurnTime)&&(identical(other.startSecondTurnTime, startSecondTurnTime) || other.startSecondTurnTime == startSecondTurnTime)&&(identical(other.finishSecondTurnTime, finishSecondTurnTime) || other.finishSecondTurnTime == finishSecondTurnTime));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ScheduleModel&&(identical(other.id, id) || other.id == id)&&(identical(other.isSplitShift, isSplitShift) || other.isSplitShift == isSplitShift)&&(identical(other.startFirstTurnTime, startFirstTurnTime) || other.startFirstTurnTime == startFirstTurnTime)&&(identical(other.finishFirstTurnTime, finishFirstTurnTime) || other.finishFirstTurnTime == finishFirstTurnTime)&&(identical(other.startSecondTurnTime, startSecondTurnTime) || other.startSecondTurnTime == startSecondTurnTime)&&(identical(other.finishSecondTurnTime, finishSecondTurnTime) || other.finishSecondTurnTime == finishSecondTurnTime)&&const DeepCollectionEquality().equals(other.weekdays, _weekdays));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,isSplitShift,startFirstTurnTime,finishFirstTurnTime,startSecondTurnTime,finishSecondTurnTime);
+    return Object.hash(runtimeType,id,isSplitShift,startFirstTurnTime,finishFirstTurnTime,startSecondTurnTime,finishSecondTurnTime,const DeepCollectionEquality().hash(_weekdays));
 }
 
 @override
 String toString() {
-    return 'ScheduleModel(id: $id, isSplitShift: $isSplitShift, startFirstTurnTime: $startFirstTurnTime, finishFirstTurnTime: $finishFirstTurnTime, startSecondTurnTime: $startSecondTurnTime, finishSecondTurnTime: $finishSecondTurnTime)';
+    return 'ScheduleModel(id: $id, isSplitShift: $isSplitShift, startFirstTurnTime: $startFirstTurnTime, finishFirstTurnTime: $finishFirstTurnTime, startSecondTurnTime: $startSecondTurnTime, finishSecondTurnTime: $finishSecondTurnTime, weekdays: $weekdays)';
 }
 
 
@@ -259,7 +267,7 @@ abstract mixin class _$ScheduleModelCopyWith<$Res> implements $ScheduleModelCopy
   factory _$ScheduleModelCopyWith(_ScheduleModel value, $Res Function(_ScheduleModel) _then) = __$ScheduleModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, bool isSplitShift, DateTime startFirstTurnTime, DateTime finishFirstTurnTime, DateTime? startSecondTurnTime, DateTime? finishSecondTurnTime
+ int? id, bool isSplitShift, DateTime startFirstTurnTime, DateTime finishFirstTurnTime, DateTime? startSecondTurnTime, DateTime? finishSecondTurnTime, List<String> weekdays
 });
 
 
@@ -276,7 +284,7 @@ class __$ScheduleModelCopyWithImpl<$Res>
 
 /// Create a copy of ScheduleModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? isSplitShift = null,Object? startFirstTurnTime = null,Object? finishFirstTurnTime = null,Object? startSecondTurnTime = freezed,Object? finishSecondTurnTime = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? isSplitShift = null,Object? startFirstTurnTime = null,Object? finishFirstTurnTime = null,Object? startSecondTurnTime = freezed,Object? finishSecondTurnTime = freezed,Object? weekdays = null,}) {
   return _then(_ScheduleModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,isSplitShift: null == isSplitShift ? _self.isSplitShift : isSplitShift // ignore: cast_nullable_to_non_nullable
@@ -284,7 +292,8 @@ as bool,startFirstTurnTime: null == startFirstTurnTime ? _self.startFirstTurnTim
 as DateTime,finishFirstTurnTime: null == finishFirstTurnTime ? _self.finishFirstTurnTime : finishFirstTurnTime // ignore: cast_nullable_to_non_nullable
 as DateTime,startSecondTurnTime: freezed == startSecondTurnTime ? _self.startSecondTurnTime : startSecondTurnTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,finishSecondTurnTime: freezed == finishSecondTurnTime ? _self.finishSecondTurnTime : finishSecondTurnTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,weekdays: null == weekdays ? _self._weekdays : weekdays // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 

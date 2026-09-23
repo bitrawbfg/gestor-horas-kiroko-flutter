@@ -58,16 +58,16 @@ class DatabaseHelper {
       finish_time DATETIME NOT NULL,
       start_second_time DATETIME,
       finish_second_time DATETIME,
-      is_split_shift STRING
+      is_split_shift STRING,
+      weekdays STRING NOT NULL
     )''');
 
     await db.execute('''
     CREATE TABLE IF NOT EXISTS employee_schedules (
       id_employee INTEGER NOT NULL,
       id_schedule INTEGER NOT NULL,
-      weekday STRING,
       assigned_week STRING,
-      PRIMARY KEY (id_employee, id_schedule, weekday),
+      PRIMARY KEY (id_employee, id_schedule, assigned_week),
       FOREIGN KEY(id_employee) REFERENCES employees(id),
       FOREIGN KEY(id_schedule) REFERENCES schedules(id)
     )
