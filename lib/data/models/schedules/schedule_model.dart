@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:gestor_horas/data/models/employee_selection_data.dart';
 
 part 'schedule_model.freezed.dart';
 
@@ -14,6 +15,9 @@ abstract class ScheduleModel with _$ScheduleModel {
     DateTime? startSecondTurnTime,
     DateTime? finishSecondTurnTime,
     required List<String> weekdays,
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    @Default([])
+    List<EmployeeSelectionData> employeeWeekAssignments,
   }) = _ScheduleModel;
 
   factory ScheduleModel.fromMap(Map<String, dynamic> map) {
@@ -31,8 +35,11 @@ abstract class ScheduleModel with _$ScheduleModel {
       startFirstTurnTime: DateTime.parse(startFirstTurnTime),
       finishFirstTurnTime: DateTime.parse(finishFirstTurnTime),
       startSecondTurnTime: startSecondTurnTime != null ? DateTime.parse(startSecondTurnTime) : null,
-      finishSecondTurnTime: finishSecondTurnTime != null ? DateTime.parse(finishSecondTurnTime) : null,
+      finishSecondTurnTime: finishSecondTurnTime != null
+          ? DateTime.parse(finishSecondTurnTime)
+          : null,
       weekdays: weekdaysList,
+      employeeWeekAssignments: [],
     );
   }
 
@@ -43,7 +50,8 @@ abstract class ScheduleModel with _$ScheduleModel {
       'start_time': startFirstTurnTime.toIso8601String(),
       'finish_time': finishFirstTurnTime.toIso8601String(),
       if (startSecondTurnTime != null) 'start_second_time': startSecondTurnTime!.toIso8601String(),
-      if (finishSecondTurnTime != null) 'finish_second_time': finishSecondTurnTime!.toIso8601String(),
+      if (finishSecondTurnTime != null)
+        'finish_second_time': finishSecondTurnTime!.toIso8601String(),
       'weekdays': weekdays.join(','),
     };
   }

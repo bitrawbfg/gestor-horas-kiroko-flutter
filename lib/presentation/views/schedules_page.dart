@@ -70,7 +70,11 @@ class _SchedulesPageState extends State<SchedulesPage> {
             : ShiftTimeData();
 
         List<ShiftTimeData> shiftsData = [shiftTimeData];
-        List<EmployeeSelectionData> employeesData = [EmployeeSelectionData()];
+
+        List<EmployeeSelectionData> employeesData =
+            schedule != null && schedule.employeeWeekAssignments.isNotEmpty
+            ? schedule.employeeWeekAssignments.toList()
+            : [EmployeeSelectionData()];
 
         final ScrollController scrollController = ScrollController();
 
@@ -212,32 +216,37 @@ class _SchedulesPageState extends State<SchedulesPage> {
                     }
 
                     final bool isSplitShift = shiftsData.length > 1;
-                    final scheduleToInsert = schedule ?? ScheduleModel(
-                      isSplitShift: isSplitShift,
-                      startFirstTurnTime: DateTime(
-                        now.year,
-                        now.month,
-                        now.day,
-                        shiftData.startHour,
-                        shiftData.startMinute,
-                      ),
-                      finishFirstTurnTime: DateTime(
-                        now.year,
-                        now.month,
-                        now.day,
-                        shiftData.endHour,
-                        shiftData.endMinute,
-                      ),
-                      startSecondTurnTime: isSplitShift
-                          ? DateTime(shiftsData[1].startHour, shiftsData[1].startMinute)
-                          : null,
-                      finishSecondTurnTime: isSplitShift
-                          ? DateTime(shiftsData[1].endHour, shiftsData[1].endMinute)
-                          : null,
-                      weekdays: selectedDays,
-                    );
+                    final scheduleToInsert =
+                        schedule ??
+                        ScheduleModel(
+                          isSplitShift: isSplitShift,
+                          startFirstTurnTime: DateTime(
+                            now.year,
+                            now.month,
+                            now.day,
+                            shiftData.startHour,
+                            shiftData.startMinute,
+                          ),
+                          finishFirstTurnTime: DateTime(
+                            now.year,
+                            now.month,
+                            now.day,
+                            shiftData.endHour,
+                            shiftData.endMinute,
+                          ),
+                          startSecondTurnTime: isSplitShift
+                              ? DateTime(shiftsData[1].startHour, shiftsData[1].startMinute)
+                              : null,
+                          finishSecondTurnTime: isSplitShift
+                              ? DateTime(shiftsData[1].endHour, shiftsData[1].endMinute)
+                              : null,
+                          weekdays: selectedDays,
+                        );
 
-                    locator<ScheduleViewModel>().addScheduleForEmployee(scheduleToInsert, employeesData);
+                    locator<ScheduleViewModel>().addScheduleForEmployee(
+                      scheduleToInsert,
+                      employeesData,
+                    );
                     /*final List<Map<String, dynamic>> employeeScheduleAssignments = [];
                     for (EmployeeSelectionData employeeData in employeesData) {
                       if (employeeData.weekdayEnum != null && employeeData.selectedEmployee != null) {
