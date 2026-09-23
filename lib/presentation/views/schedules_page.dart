@@ -75,17 +75,28 @@ class _SchedulesPageState extends State<SchedulesPage> {
     showDialog(
       context: context,
       builder: (context) {
-        EmployeeModel? selectedEmployee;
-        ShiftTimeData shiftTimeData = selectedEmployee != null
+        ShiftTimeData shiftTimeData = schedule != null
             ? ShiftTimeData(
-                startHour: selectedEmployee.schedules![0].startFirstTurnTime.hour,
-                startMinute: selectedEmployee.schedules![0].startFirstTurnTime.minute,
-                endHour: selectedEmployee.schedules![0].finishFirstTurnTime.hour,
-                endMinute: selectedEmployee.schedules![0].finishFirstTurnTime.minute,
+                startHour: schedule.startFirstTurnTime.hour,
+                startMinute: schedule.startFirstTurnTime.minute,
+                endHour: schedule.finishFirstTurnTime.hour,
+                endMinute: schedule.finishFirstTurnTime.minute,
               )
             : ShiftTimeData();
 
+        ShiftTimeData? secondShiftTimeData = schedule != null && schedule.isSplitShift
+            ? ShiftTimeData(
+                startHour: schedule.startSecondTurnTime!.hour,
+                startMinute: schedule.startSecondTurnTime!.minute,
+                endHour: schedule.finishSecondTurnTime!.hour,
+                endMinute: schedule.finishSecondTurnTime!.minute,
+              )
+            : null;
+
         List<ShiftTimeData> shiftsData = [shiftTimeData];
+        if (secondShiftTimeData != null) {
+          shiftsData.add(secondShiftTimeData);
+        }
 
         List<EmployeeSelectionData> employeesData =
             schedule != null && schedule.employeeWeekAssignments.isNotEmpty
