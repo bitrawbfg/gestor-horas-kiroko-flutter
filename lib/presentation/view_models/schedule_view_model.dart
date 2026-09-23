@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestor_horas/data/models/employee_selection_data.dart';
 import 'package:gestor_horas/data/models/schedules/schedule_model.dart';
 import 'package:gestor_horas/data/repositories/schedule_repository_impl.dart';
 
@@ -19,8 +20,18 @@ class ScheduleViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addSchedule(ScheduleModel schedule, int employeeId) async {
-    await _scheduleRepository.insertSchedule(schedule, employeeId);
+  Future<void> addSchedule(ScheduleModel schedule) async {
+    await _scheduleRepository.insertSchedule(schedule);
+    await loadSchedules();
+  }
+
+  Future<void> assignScheduleToEmployee(int employeeId, int scheduleId, String assignedWeek) async {
+    await _scheduleRepository.assignScheduleToEmployee(employeeId, scheduleId, assignedWeek);
+    await loadSchedules();
+  }
+
+  Future<void> addScheduleForEmployee(ScheduleModel schedule, List<EmployeeSelectionData> employeeAssignations) async {
+    await _scheduleRepository.insertScheduleForEmployee(schedule, employeeAssignations);
     await loadSchedules();
   }
 

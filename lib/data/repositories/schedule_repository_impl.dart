@@ -1,6 +1,9 @@
 import 'package:gestor_horas/core/database/database_helper.dart';
+import 'package:gestor_horas/data/models/employee_selection_data.dart';
 import 'package:gestor_horas/data/models/schedules/schedule_model.dart';
+import 'package:gestor_horas/data/models/weekdays_enum.dart';
 import 'package:gestor_horas/domain/repositories/schedule_repository.dart';
+import 'package:sqflite/sqflite.dart';
 
 class ScheduleRepositoryImpl implements ScheduleRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
@@ -9,16 +12,49 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   static const String employeeScheduleTable = 'employee_schedules';
 
   @override
-  Future<int> insertSchedule(ScheduleModel schedule, int employeeId) async {
+  Future<int> insertSchedule(ScheduleModel schedule, {DatabaseExecutor? executor}) async {
+    final database = executor ?? await _databaseHelper.database;
+
+    return await database.insert(schedulesTable, schedule.toMap());
+  }
+
+  Future<void> assignScheduleToEmployee(
+    int employeeId,
+    int scheduleId,
+    String assignedWeek, {
+    DatabaseExecutor? executor,
+  }) async {
+    final database = executor ?? await _databaseHelper.database;
+
+    await database.insert(employeeScheduleTable, {
+      'id_employee': employeeId,
+      'id_schedule': scheduleId,
+      'assigned_week': assignedWeek,
+    });
+  }
+
+  Future<int> insertScheduleForEmployee(
+    ScheduleModel schedule,
+    List<EmployeeSelectionData> employeeAssignations,
+  ) async {
     final database = await _databaseHelper.database;
 
-    int scheduleId = await database.insert(schedulesTable, schedule.toMap());
-    await database.rawQuery(
-      'INSERT INTO $employeeScheduleTable (id_employee, id_schedule) VALUES (?, ?);',
-      [employeeId, scheduleId],
-    );
+    return await database.transaction((transaction) async {
+      int scheduleId = await insertSchedule(schedule, executor: transaction);
 
-    return scheduleId;
+      for (EmployeeSelectionData assignation in employeeAssignations) {
+        // TODO: Gestionar con exceptiones si el empleado o la semana son nulos
+
+        await assignScheduleToEmployee(
+          assignation.selectedEmployee!.id!,
+          scheduleId,
+          assignation.weekdayEnum!.value,
+          executor: transaction,
+        );
+      }
+
+      return scheduleId;
+    });
   }
 
   @override
@@ -58,41 +94,6 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   Future<List<ScheduleModel>> getAllSchedules() async {
     final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> schedules = await database.query(schedulesTable);
-
-    /*
-    * TODO: Para obtener todos los datos se puede hacer esto a la inversa más o menos
-    *
-    await database.transaction((transaction) async {
-      final int scheduleId = await transaction.insert(schedulesTable, schedule.toMap());
-
-      final batch = transaction.batch();
-
-      for (var assignment in assignations) {
-        final Map<String, dynamic> rowToInsert = Map.from(assignment);
-        rowToInsert['id_schedule'] = scheduleId;
-
-        batch.insert(employeeScheduleTable, rowToInsert);
-      }
-
-      await batch.commit(noResult: true);
-    });
-    */
-
-    /*
-    * Esto no lo tengo tan claro
-    *
-    final List<Map<String, dynamic>> employeeScheduleAssignments = [];
-    for (EmployeeSelectionData employeeData in employeesData) {
-      if (employeeData.weekdayEnum != null && employeeData.selectedEmployee != null) {
-        for (String selectedDay in selectedDays) {
-          employeeScheduleAssignments.add({
-            'id_employee': employeeData.selectedEmployee?.id,
-            'weekday': selectedDay,
-            'assigned_week': employeeData.weekdayEnum?.value,
-          });
-        }
-      }
-    }*/
 
     return List.generate(schedules.length, (schedule) {
       return ScheduleModel.fromMap(schedules[schedule]);
