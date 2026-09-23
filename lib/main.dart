@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gestor_horas/configuration/service_locator.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
+import 'package:gestor_horas/presentation/view_models/schedule_view_model.dart';
 import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/side_panel_view_model.dart';
@@ -14,11 +15,10 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => locator<EmployeeViewModel>()..loadEmployees()),
-        ChangeNotifierProvider(
-          create: (_) => locator<TimeTrackViewModel>()..loadTimeTrackings(),
-        ),
+        ChangeNotifierProvider(create: (_) => locator<TimeTrackViewModel>()..loadTimeTrackings()),
         ChangeNotifierProvider(create: (_) => locator<DateViewModel>()),
         ChangeNotifierProvider(create: (_) => locator<SidePanelViewModel>()),
+        ChangeNotifierProvider(create: (_) => locator<ScheduleViewModel>()..loadSchedules()),
       ],
       child: const MyApp(),
     ),

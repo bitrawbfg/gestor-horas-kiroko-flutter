@@ -25,7 +25,7 @@ class DatabaseHelper {
 
     return await databaseFactory.openDatabase(
       path,
-      options: OpenDatabaseOptions(version: 2, onCreate: _createDB, onUpgrade: _updateDB),
+      options: OpenDatabaseOptions(version: 1, onCreate: _createDB, onUpgrade: _updateDB),
     );
   }
 
@@ -33,41 +33,51 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE IF NOT EXISTS employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
-      name TEXT NOT NULL
+      name TEXT NOT NULL,
+      has_contract BOOLEAN NOT NULL DEFAULT 0,
+      hours_in_contract INTEGER NOT NULL DEFAULT 0
     )
     ''');
 
     await db.execute('''
     CREATE TABLE IF NOT EXISTS employee_time_tracking (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      employee_id INTEGER NOT NULL,
+      id_employee INTEGER NOT NULL,
       start_time DATETIME,
       finish_time DATETIME,
       registered_date DATE,
       difference INTEGER DEFAULT 0,
-      FOREIGN KEY(employee_id) REFERENCES employees(id)
+      FOREIGN KEY(id_employee) REFERENCES employees(id)
     ) 
+    ''');
+
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS schedules (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      start_time DATETIME NOT NULL,
+      finish_time DATETIME NOT NULL,
+      start_second_time DATETIME,
+      finish_second_time DATETIME,
+      is_split_shift STRING,
+      weekdays STRING NOT NULL
+    )''');
+
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS employee_schedules (
+      id_employee INTEGER NOT NULL,
+      id_schedule INTEGER NOT NULL,
+      assigned_week STRING,
+      PRIMARY KEY (id_employee, id_schedule, assigned_week),
+      FOREIGN KEY(id_employee) REFERENCES employees(id),
+      FOREIGN KEY(id_schedule) REFERENCES schedules(id)
+    )
     ''');
   }
 
   Future _updateDB(Database db, int version, int newVersion) async {
-    await db.execute('''
-    ALTER TABLE employees ADD COLUMN "has_contract"	BOOLEAN NOT NULL DEFAULT 0
-    ''');
+
   }
 
   // https://medium.com/@jamshaidaslam/step-by-step-sqlite-offline-database-setup-in-flutter-with-jamshaid-malik-b81c2c98a8cf
   // https://medium.com/@CodeCraftMobile/flutter-clean-architecture-implement-local-storage-with-sqlite-freezed-using-sqflite-and-bloc-68b967c604fc
-
-  Future<void> addEmployee() async {
-    final db = await database;
-
-    await db.insert('employees', {});
-  }
-
-  Future<void> deleteEmployee() async {
-    final db = await database;
-
-    await db.delete('employees', where: 'id = ?', whereArgs: []);
-  }
 }

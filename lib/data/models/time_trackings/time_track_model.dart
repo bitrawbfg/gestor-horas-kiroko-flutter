@@ -4,13 +4,11 @@ part 'time_track_model.freezed.dart';
 
 part 'time_track_model.g.dart';
 
-// Tutorial para crear modelos con @freezed
-// https://medium.com/@CodeCraftMobile/flutter-clean-architecture-implement-local-storage-with-sqlite-freezed-using-sqflite-and-bloc-68b967c604fc
 @freezed
-class TimeTrackModel with _$TimeTrackModel {
+abstract class TimeTrackModel with _$TimeTrackModel {
   const factory TimeTrackModel({
     int? id,
-    required int employeeId,
+    required int idEmployee,
     DateTime? startTime,
     DateTime? finishTime,
     DateTime? registeredDate,
@@ -28,7 +26,7 @@ class TimeTrackModel with _$TimeTrackModel {
 
     return TimeTrackModel(
       id: map['id'],
-      employeeId: map['employee_id'],
+      idEmployee: map['id_employee'],
       startTime: startTime == null ? null : DateTime.tryParse(startTime),
       finishTime: finishTime == null ? null : DateTime.tryParse(finishTime),
       registeredDate: registeredDate == null

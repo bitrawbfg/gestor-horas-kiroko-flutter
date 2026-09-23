@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gestor_horas/configuration/service_locator.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
+import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class EmployeesPage extends StatefulWidget {
@@ -13,9 +15,15 @@ class EmployeesPage extends StatefulWidget {
 
 class _EmployeesPageState extends State<EmployeesPage> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _hoursInContractController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   void _showEmployeeForm(BuildContext context, {EmployeeModel? employee}) {
     _nameController.text = employee?.name ?? '';
+    _hoursInContractController.text =
+        employee?.hoursInContract == null || employee?.hoursInContract == 0
+        ? ''
+        : '${employee?.hoursInContract}';
 
     showDialog(
       context: context,
@@ -27,61 +35,86 @@ class _EmployeesPageState extends State<EmployeesPage> {
           content: SizedBox(
             width: 600,
             height: 100,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        autofocus: true,
-                        controller: _nameController,
-                        decoration: InputDecoration(labelText: 'Nombre'),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          autofocus: true,
+                          controller: _nameController,
+                          decoration: InputDecoration(labelText: 'Nombre'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Inserta un nombre por favor';
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: StatefulBuilder(
-                        builder: (BuildContext context, void Function(void Function()) setState) {
-                          return CheckboxListTile(
-                            title: Text('Tiene contrato', overflow: TextOverflow.ellipsis, maxLines: 1,),
-                            value: hasContract,
-                            onChanged: (bool? value) => setState(() {
-                              hasContract = value!;
-                            }),
-                          );
-                        },
+                      SizedBox(width: 50),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _hoursInContractController,
+                          decoration: InputDecoration(labelText: 'Horas por contrato'),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return null;
+                            }
+
+                            int hours = int.parse(value);
+
+                            if (hours < 0 || hours > 40) {
+                              return 'Debe estar entre 1 y 40 horas semanales';
+                            }
+
+                            return null;
+                          },
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (_nameController.text.isNotEmpty){
+                if (_formKey.currentState!.validate()) {
+                  String name = _nameController.text;
+                  String hours = _hoursInContractController.text;
+                  int hoursInContract = hours.isEmpty ? 0 : int.parse(hours);
+
+                  EmployeeModel currentEmployee =
+                      employee?.copyWith(name: name, hoursInContract: hoursInContract) ??
+                      EmployeeModel(name: name, hoursInContract: hoursInContract);
+
                   if (employee == null) {
-                    locator<EmployeeViewModel>().addEmployee(
-                      EmployeeModel(name: _nameController.text, hasContract: hasContract),
-                    );
+                    locator<EmployeeViewModel>().addEmployee(currentEmployee);
                   } else {
-                    locator<EmployeeViewModel>().updateEmployee(
-                      EmployeeModel(
-                        id: employee.id,
-                        name: _nameController.text,
-                        hasContract: hasContract,
-                      ),
-                    );
+                    locator<EmployeeViewModel>().updateEmployee(currentEmployee);
                   }
 
                   Navigator.pop(context);
-                } else {
-                  // TODO: Añadir barra informativa sobre error al añadir empleado
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(employee == null ? 'Empleado añadido' : 'Empleado actualizado'),
+                    ),
+                  );
                 }
               },
+              style: ElevatedButton.styleFrom(foregroundColor: Colors.green),
               child: Text(employee == null ? 'Añadir nuevo empleado' : 'Editar empleado'),
             ),
 
@@ -89,7 +122,10 @@ class _EmployeesPageState extends State<EmployeesPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              style: ElevatedButton.styleFrom(foregroundColor: Colors.redAccent),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.redAccent,
+                backgroundColor: Colors.redAccent[50],
+              ),
               child: Text('Cancelar'),
             ),
           ],
@@ -181,12 +217,27 @@ class _EmployeesPageState extends State<EmployeesPage> {
                                 child: Text(employee.name.substring(0, 1).toUpperCase()),
                               ),
                               title: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Expanded(
+                                    flex: 1,
                                     child: Text(employee.name, overflow: TextOverflow.ellipsis),
                                   ),
                                   Expanded(
-                                    child: Text(employee.name, overflow: TextOverflow.ellipsis),
+                                    flex: 2,
+                                    child: Text(
+                                      employee.hoursInContract == 0
+                                          ? ''
+                                          : '${employee.hoursInContract} horas/semana',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      '${employee.schedules?.length}',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
