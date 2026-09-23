@@ -38,14 +38,12 @@ class _SchedulesPageState extends State<SchedulesPage> {
   Future<void> loadAppointments() async {
     for (ScheduleModel schedule in _schedules) {
       Meeting appointment = Meeting(
-        recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR', // TODO: Aquí añadiré los días de la semana
+        recurrenceRule: 'FREQ=WEEKLY;BYDAY=${schedule.weekdays.join(',').toUpperCase()}',
         from: schedule.startFirstTurnTime,
         to: schedule.finishFirstTurnTime,
         eventName: 'Turno',
         schedule: schedule,
       );
-
-      print(WeekDays.monday.name.substring(0, 2));
 
       _appointments.add(appointment);
     }
@@ -76,7 +74,6 @@ class _SchedulesPageState extends State<SchedulesPage> {
 
         final ScrollController scrollController = ScrollController();
 
-        List<bool?> weekDayControllers = List.filled(7, false);
         List<Map<String, String>> weekDaysName = [
           {'Lunes': 'Mo'},
           {'Martes': 'Tu'},
@@ -86,6 +83,30 @@ class _SchedulesPageState extends State<SchedulesPage> {
           {'Sábado': 'Sa'},
           {'Domingo': 'Su'},
         ];
+
+        // Checks if the schedule has days selected
+        final List<int> selectedDays = [];
+        if (schedule != null) {
+          for (int i = 0; i < weekDaysName.length; i++) {
+            for (String weekday in schedule.weekdays) {
+              if (weekDaysName[i].containsValue(weekday)) {
+                selectedDays.add(i);
+              }
+            }
+          }
+        }
+
+        // If the schedule has days selected, add a true value to the controller
+        List<bool?> weekDayControllers = List.filled(7, false);
+        if (selectedDays.isNotEmpty) {
+          for (int selectedDay in selectedDays) {
+            for (int i = 0; i < weekDayControllers.length; i++) {
+              if (selectedDay == i) {
+                weekDayControllers[i] = true;
+              }
+            }
+          }
+        }
 
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setState) {
@@ -183,25 +204,41 @@ class _SchedulesPageState extends State<SchedulesPage> {
                     final DateTime now = DateTime(2000, 1, 1);
                     final ShiftTimeData shiftData = shiftsData[0];
 
+                    final List<String> selectedDays = [];
+                    for (int i = 0; i < weekDayControllers.length; i++) {
+                      if (weekDayControllers[i] == true) {
+                        selectedDays.add(weekDaysName[i].values.first);
+                      }
+                    }
+
                     final bool isSplitShift = shiftsData.length > 1;
-                    final schedule = ScheduleModel(
+                    final scheduleToInsert = schedule ?? ScheduleModel(
                       isSplitShift: isSplitShift,
-                      startFirstTurnTime: DateTime(now.year, now.month, now.day, shiftData.startHour, shiftData.startMinute),
-                      finishFirstTurnTime: DateTime(now.year, now.month, now.day, shiftData.endHour, shiftData.endMinute),
+                      startFirstTurnTime: DateTime(
+                        now.year,
+                        now.month,
+                        now.day,
+                        shiftData.startHour,
+                        shiftData.startMinute,
+                      ),
+                      finishFirstTurnTime: DateTime(
+                        now.year,
+                        now.month,
+                        now.day,
+                        shiftData.endHour,
+                        shiftData.endMinute,
+                      ),
                       startSecondTurnTime: isSplitShift
                           ? DateTime(shiftsData[1].startHour, shiftsData[1].startMinute)
                           : null,
                       finishSecondTurnTime: isSplitShift
                           ? DateTime(shiftsData[1].endHour, shiftsData[1].endMinute)
                           : null,
+                      weekdays: selectedDays,
                     );
 
-                    final List<String> selectedDays = [];
-                    for (int i = 0; i < weekDayControllers.length; i++) {
-                      if (weekDayControllers[i] == true) selectedDays.add(weekDaysName[i].values.first);
-                    }
-
-                    final List<Map<String, dynamic>> employeeScheduleAssignments = [];
+                    locator<ScheduleViewModel>().addScheduleForEmployee(scheduleToInsert, employeesData);
+                    /*final List<Map<String, dynamic>> employeeScheduleAssignments = [];
                     for (EmployeeSelectionData employeeData in employeesData) {
                       if (employeeData.weekdayEnum != null && employeeData.selectedEmployee != null) {
                         for (String selectedDay in selectedDays) {
@@ -214,7 +251,7 @@ class _SchedulesPageState extends State<SchedulesPage> {
                       }
                     }
 
-                    locator<ScheduleViewModel>().addScheduleWithAssignments(schedule: schedule, assignations: employeeScheduleAssignments);
+                    locator<ScheduleViewModel>().addScheduleWithAssignments(schedule: schedule, assignations: employeeScheduleAssignments);*/
 
                     Navigator.pop(context);
                   },
