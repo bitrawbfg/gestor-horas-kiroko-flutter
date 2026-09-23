@@ -37,6 +37,8 @@ class _SchedulesPageState extends State<SchedulesPage> {
 
   Future<void> loadAppointments() async {
     for (ScheduleModel schedule in _schedules) {
+      bool isSplitShift = schedule.isSplitShift;
+
       Meeting appointment = Meeting(
         recurrenceRule: 'FREQ=WEEKLY;BYDAY=${schedule.weekdays.join(',').toUpperCase()}',
         from: schedule.startFirstTurnTime,
@@ -46,6 +48,20 @@ class _SchedulesPageState extends State<SchedulesPage> {
       );
 
       _appointments.add(appointment);
+
+      if (isSplitShift) {
+        ScheduleModel scheduleModel = schedule;
+
+        Meeting appointment = Meeting(
+          recurrenceRule: 'FREQ=WEEKLY;BYDAY=${schedule.weekdays.join(',').toUpperCase()}',
+          from: schedule.startSecondTurnTime!,
+          to: schedule.finishSecondTurnTime!,
+          eventName: 'Turno',
+          schedule: scheduleModel,
+        );
+
+        _appointments.add(appointment);
+      }
     }
 
     dataSource = MeetingDataSource(_appointments);
@@ -235,10 +251,22 @@ class _SchedulesPageState extends State<SchedulesPage> {
                             shiftData.endMinute,
                           ),
                           startSecondTurnTime: isSplitShift
-                              ? DateTime(shiftsData[1].startHour, shiftsData[1].startMinute)
+                              ? DateTime(
+                                  now.year,
+                                  now.month,
+                                  now.day,
+                                  shiftsData[1].startHour,
+                                  shiftsData[1].startMinute,
+                                )
                               : null,
                           finishSecondTurnTime: isSplitShift
-                              ? DateTime(shiftsData[1].endHour, shiftsData[1].endMinute)
+                              ? DateTime(
+                                  now.year,
+                                  now.month,
+                                  now.day,
+                                  shiftsData[1].endHour,
+                                  shiftsData[1].endMinute,
+                                )
                               : null,
                           weekdays: selectedDays,
                         );
