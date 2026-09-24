@@ -34,18 +34,15 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
     });
   }
 
-  Future<int> insertScheduleForEmployee(
-    ScheduleModel schedule,
-    List<EmployeeSelectionData> employeeAssignations,
-  ) async {
+  Future<int> insertScheduleForEmployee(ScheduleModel schedule) async {
     final database = await _databaseHelper.database;
+
+    List<EmployeeSelectionData> employeeAssignations = schedule.employeeWeekAssignments;
 
     return await database.transaction((transaction) async {
       int scheduleId = await insertSchedule(schedule, executor: transaction);
 
       for (EmployeeSelectionData assignation in employeeAssignations) {
-        // TODO: Gestionar con exceptiones si el empleado o la semana son nulos
-
         await assignScheduleToEmployee(
           assignation.selectedEmployee!.id!,
           scheduleId,
@@ -59,15 +56,37 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   }
 
   @override
-  Future<void> updateSchedule(ScheduleModel schedule, int employeeId) async {
+  Future<void> updateSchedule(ScheduleModel schedule) async {
     final database = await _databaseHelper.database;
 
-    await database.update(
-      schedulesTable,
-      schedule.toMap(),
-      where: 'id = ?',
-      whereArgs: [schedule.id],
-    );
+    List<EmployeeSelectionData> employeeWeekAssignments = schedule.employeeWeekAssignments;
+
+    await database.transaction((transaction) async {
+      await transaction.update(
+        schedulesTable,
+        schedule.toMap(),
+        where: 'id = ?',
+        whereArgs: [schedule.id],
+      );
+
+      await transaction.delete(
+        'employee_schedules',
+        where: 'id_schedule = ?',
+        whereArgs: [schedule.id],
+      );
+
+      for (EmployeeSelectionData employeeWeekAssignment in employeeWeekAssignments) {
+        if (employeeWeekAssignment.selectedEmployee != null &&
+            employeeWeekAssignment.weekdayEnum != null) {
+          assignScheduleToEmployee(
+            employeeWeekAssignment.selectedEmployee!.id!,
+            schedule.id!,
+            employeeWeekAssignment.weekdayEnum!.value,
+            executor: transaction,
+          );
+        }
+      }
+    });
   }
 
   @override
@@ -130,7 +149,10 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
         schedules[scheduleId] = currentSchedules.copyWith(
           employeeWeekAssignments: [
             ...currentSchedules.employeeWeekAssignments,
-            EmployeeSelectionData(selectedEmployee: employee, weekdayEnum: WeekdaysEnumExtension.fromValue(weekAssigned)),
+            EmployeeSelectionData(
+              selectedEmployee: employee,
+              weekdayEnum: WeekdaysEnumExtension.fromValue(weekAssigned),
+            ),
           ],
         );
       }

@@ -49,9 +49,8 @@ abstract class ScheduleModel with _$ScheduleModel {
       'is_split_shift': isSplitShift ? 1 : 0,
       'start_time': startFirstTurnTime.toIso8601String(),
       'finish_time': finishFirstTurnTime.toIso8601String(),
-      if (startSecondTurnTime != null) 'start_second_time': startSecondTurnTime!.toIso8601String(),
-      if (finishSecondTurnTime != null)
-        'finish_second_time': finishSecondTurnTime!.toIso8601String(),
+      'start_second_time': startSecondTurnTime?.toIso8601String(),
+      'finish_second_time': finishSecondTurnTime?.toIso8601String(),
       'weekdays': weekdays.join(','),
     };
   }

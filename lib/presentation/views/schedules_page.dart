@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:gestor_horas/data/models/employee_selection_data.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
@@ -98,7 +100,7 @@ class _SchedulesPageState extends State<SchedulesPage> {
           shiftsData.add(secondShiftTimeData);
         }
 
-        List<EmployeeSelectionData> employeesData =
+        List<EmployeeSelectionData> employeeWeekAssignments =
             schedule != null && schedule.employeeWeekAssignments.isNotEmpty
             ? schedule.employeeWeekAssignments.toList()
             : [EmployeeSelectionData()];
@@ -206,19 +208,17 @@ class _SchedulesPageState extends State<SchedulesPage> {
                         Divider(height: 32),
 
                         Text('Asigna empleados', style: TextStyle(fontSize: 20)),
-                        ...employeesData.map(
+                        ...employeeWeekAssignments.map(
                           (data) => EmployeeSelectionWidget(
                             employeeSelectionData: data,
-                            onDelete: employeesData.length > 1
-                                ? () => setState(() => employeesData.remove(data))
-                                : null,
+                            onDelete: () => setState(() => employeeWeekAssignments.remove(data)),
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            if (employeesData.length < 4) {
+                            if (employeeWeekAssignments.length < 4) {
                               setState(() {
-                                employeesData.add(EmployeeSelectionData());
+                                employeeWeekAssignments.add(EmployeeSelectionData());
                               });
                             }
                           },
@@ -243,63 +243,50 @@ class _SchedulesPageState extends State<SchedulesPage> {
                     }
 
                     final bool isSplitShift = shiftsData.length > 1;
-                    final scheduleToInsert =
-                        schedule ??
-                        ScheduleModel(
-                          isSplitShift: isSplitShift,
-                          startFirstTurnTime: DateTime(
-                            now.year,
-                            now.month,
-                            now.day,
-                            shiftData.startHour,
-                            shiftData.startMinute,
-                          ),
-                          finishFirstTurnTime: DateTime(
-                            now.year,
-                            now.month,
-                            now.day,
-                            shiftData.endHour,
-                            shiftData.endMinute,
-                          ),
-                          startSecondTurnTime: isSplitShift
-                              ? DateTime(
-                                  now.year,
-                                  now.month,
-                                  now.day,
-                                  shiftsData[1].startHour,
-                                  shiftsData[1].startMinute,
-                                )
-                              : null,
-                          finishSecondTurnTime: isSplitShift
-                              ? DateTime(
-                                  now.year,
-                                  now.month,
-                                  now.day,
-                                  shiftsData[1].endHour,
-                                  shiftsData[1].endMinute,
-                                )
-                              : null,
-                          weekdays: selectedDays,
-                        );
-
-                    locator<ScheduleViewModel>().addScheduleForEmployee(
-                      scheduleToInsert,
-                      employeesData,
+                    final scheduleToInsert = ScheduleModel(
+                      isSplitShift: isSplitShift,
+                      startFirstTurnTime: DateTime(
+                        now.year,
+                        now.month,
+                        now.day,
+                        shiftData.startHour,
+                        shiftData.startMinute,
+                      ),
+                      finishFirstTurnTime: DateTime(
+                        now.year,
+                        now.month,
+                        now.day,
+                        shiftData.endHour,
+                        shiftData.endMinute,
+                      ),
+                      startSecondTurnTime: isSplitShift
+                          ? DateTime(
+                              now.year,
+                              now.month,
+                              now.day,
+                              shiftsData[1].startHour,
+                              shiftsData[1].startMinute,
+                            )
+                          : null,
+                      finishSecondTurnTime: isSplitShift
+                          ? DateTime(
+                              now.year,
+                              now.month,
+                              now.day,
+                              shiftsData[1].endHour,
+                              shiftsData[1].endMinute,
+                            )
+                          : null,
+                      weekdays: selectedDays,
+                      employeeWeekAssignments: employeeWeekAssignments,
                     );
-                    /*final List<Map<String, dynamic>> employeeScheduleAssignments = [];
-                    for (EmployeeSelectionData employeeData in employeesData) {
-                      if (employeeData.weekdayEnum != null && employeeData.selectedEmployee != null) {
-                        for (String selectedDay in selectedDays) {
-                          employeeScheduleAssignments.add({
-                            'id_employee': employeeData.selectedEmployee?.id,
-                            'weekday': selectedDay,
-                            'assigned_week': employeeData.weekdayEnum?.value,
-                          });
-                        }
-                      }
-                    }
 
-                    locator<ScheduleViewModel>().addScheduleWithAssignments(schedule: schedule, assignations: employeeScheduleAssignments);*/
+                    if (schedule == null) {
+                      locator<ScheduleViewModel>().addScheduleForEmployee(scheduleToInsert);
+                    } else {
+                      ScheduleModel updatedSchedule = scheduleToInsert.copyWith(id: schedule.id);
+                      locator<ScheduleViewModel>().updateSchedule(updatedSchedule);
+                    }
 
                     Navigator.pop(context);
                   },
@@ -414,7 +401,7 @@ class MeetingDataSource extends CalendarDataSource<Meeting> {
 
   @override
   Color getColor(int index) {
-    return appointments![index].background ?? Colors.blue;
+    return appointments![index].background ?? Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
   }
 
   @override
