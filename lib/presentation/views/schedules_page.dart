@@ -149,7 +149,23 @@ class _SchedulesPageState extends State<SchedulesPage> {
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setState) {
             return AlertDialog(
-              title: Text(schedule == null ? 'Añadir un nuevo horario' : 'Editar horario'),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(schedule == null ? 'Añadir un nuevo horario' : 'Editar horario'),
+                  ?schedule == null
+                      ? null
+                      : ElevatedButton(
+                          onPressed: () {
+                            locator<ScheduleViewModel>().removeSchedule(schedule);
+
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(foregroundColor: Colors.redAccent),
+                          child: Text('Eliminar'),
+                        ),
+                ],
+              ),
               content: SizedBox(
                 width: 600,
                 height: 600,
@@ -244,7 +260,6 @@ class _SchedulesPageState extends State<SchedulesPage> {
                             ),
                           ],
                         ),
-
                       ],
                     ),
                   ),

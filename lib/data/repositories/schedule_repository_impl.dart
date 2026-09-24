@@ -71,11 +71,7 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
         whereArgs: [schedule.id],
       );
 
-      await transaction.delete(
-        'employee_schedules',
-        where: 'id_schedule = ?',
-        whereArgs: [schedule.id],
-      );
+      await deleteEmployeeAssignmentsFromSchedule(transaction, schedule);
 
       for (EmployeeSelectionData employeeWeekAssignment in employeeWeekAssignments) {
         if (employeeWeekAssignment.selectedEmployee != null &&
@@ -91,11 +87,26 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
     });
   }
 
+  Future<void> deleteEmployeeAssignmentsFromSchedule(
+    Transaction transaction,
+    ScheduleModel schedule,
+  ) async {
+    await transaction.delete(
+      'employee_schedules',
+      where: 'id_schedule = ?',
+      whereArgs: [schedule.id],
+    );
+  }
+
   @override
-  Future<void> deleteSchedule(ScheduleModel schedule, int employeeId) async {
+  Future<void> deleteSchedule(ScheduleModel schedule) async {
     final database = await _databaseHelper.database;
 
-    await database.delete(schedulesTable, where: 'id = ?', whereArgs: [schedule.id]);
+    await database.transaction((transaction) async {
+      await deleteEmployeeAssignmentsFromSchedule(transaction, schedule);
+
+      await transaction.delete(schedulesTable, where: 'id = ?', whereArgs: [schedule.id]);
+    });
   }
 
   @override

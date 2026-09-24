@@ -40,6 +40,11 @@ class ScheduleViewModel extends ChangeNotifier {
     await loadSchedules();
   }
 
+  Future<void> removeSchedule(ScheduleModel schedule) async {
+    await _scheduleRepository.deleteSchedule(schedule);
+    await loadSchedules();
+  }
+
   Future<void> addScheduleWithAssignments({
     required ScheduleModel schedule,
     required List<Map<String, dynamic>> assignations,

@@ -8,5 +8,5 @@ abstract class ScheduleRepository {
 
   Future<int> insertSchedule(ScheduleModel schedule, {DatabaseExecutor? executor});
   Future<void> updateSchedule(ScheduleModel schedule);
-  Future<void> deleteSchedule(ScheduleModel schedule, int employeeId);
+  Future<void> deleteSchedule(ScheduleModel schedule);
 }
