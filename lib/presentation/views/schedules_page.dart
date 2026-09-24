@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gestor_horas/data/models/employee_selection_data.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
@@ -47,6 +48,7 @@ class _SchedulesPageState extends State<SchedulesPage> {
         to: schedule.finishFirstTurnTime,
         eventName: 'Turno',
         schedule: schedule,
+        background: schedule.color,
       );
 
       _appointments.add(appointment);
@@ -60,6 +62,7 @@ class _SchedulesPageState extends State<SchedulesPage> {
           to: schedule.finishSecondTurnTime!,
           eventName: 'Turno',
           schedule: scheduleModel,
+          background: schedule.color,
         );
 
         _appointments.add(appointment);
@@ -140,6 +143,8 @@ class _SchedulesPageState extends State<SchedulesPage> {
             }
           }
         }
+
+        Color selectedColor = schedule?.color ?? Colors.orangeAccent;
 
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setState) {
@@ -224,6 +229,22 @@ class _SchedulesPageState extends State<SchedulesPage> {
                           },
                           child: Icon(Icons.add),
                         ),
+
+                        Divider(height: 32),
+                        ExpansionTile(
+                          title: Text('Selecciona un color', style: TextStyle(fontSize: 20)),
+                          children: [
+                            ColorPicker(
+                              color: selectedColor,
+                              onColorChanged: (color) {
+                                setState(() {
+                                  selectedColor = color;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+
                       ],
                     ),
                   ),
@@ -279,6 +300,7 @@ class _SchedulesPageState extends State<SchedulesPage> {
                           : null,
                       weekdays: selectedDays,
                       employeeWeekAssignments: employeeWeekAssignments,
+                      color: selectedColor,
                     );
 
                     if (schedule == null) {
@@ -401,7 +423,8 @@ class MeetingDataSource extends CalendarDataSource<Meeting> {
 
   @override
   Color getColor(int index) {
-    return appointments![index].background ?? Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+    return appointments![index].background ??
+        Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
   }
 
   @override
@@ -431,7 +454,7 @@ class MeetingDataSource extends CalendarDataSource<Meeting> {
       from: appointment.startTime,
       to: appointment.endTime,
       eventName: appointment.subject,
-      background: appointment.color,
+      background: customData!.schedule.color,
       isAllDay: appointment.isAllDay,
       id: appointment.id,
       recurrenceRule: appointment.recurrenceRule,

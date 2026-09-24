@@ -59,7 +59,8 @@ class DatabaseHelper {
       start_second_time DATETIME,
       finish_second_time DATETIME,
       is_split_shift STRING,
-      weekdays STRING NOT NULL
+      weekdays STRING NOT NULL,
+      color STRING NOT NULL
     )''');
 
     await db.execute('''

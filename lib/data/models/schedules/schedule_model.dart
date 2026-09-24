@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:gestor_horas/data/models/employee_selection_data.dart';
 
@@ -18,6 +19,8 @@ abstract class ScheduleModel with _$ScheduleModel {
     @JsonKey(includeFromJson: false, includeToJson: false)
     @Default([])
     List<EmployeeSelectionData> employeeWeekAssignments,
+    @Default(Color(0xFFFF9000))
+    Color color,
   }) = _ScheduleModel;
 
   factory ScheduleModel.fromMap(Map<String, dynamic> map) {
@@ -26,6 +29,8 @@ abstract class ScheduleModel with _$ScheduleModel {
 
     final startSecondTurnTime = map['start_second_time'] as String?;
     final finishSecondTurnTime = map['finish_second_time'] as String?;
+
+    final int? color = map['color'] as int?;
 
     final List<String> weekdaysList = map['weekdays'].split(',');
 
@@ -40,6 +45,7 @@ abstract class ScheduleModel with _$ScheduleModel {
           : null,
       weekdays: weekdaysList,
       employeeWeekAssignments: [],
+      color: Color(color ?? Colors.blue.toARGB32()),
     );
   }
 
@@ -52,6 +58,7 @@ abstract class ScheduleModel with _$ScheduleModel {
       'start_second_time': startSecondTurnTime?.toIso8601String(),
       'finish_second_time': finishSecondTurnTime?.toIso8601String(),
       'weekdays': weekdays.join(','),
+      'color': color.toARGB32(),
     };
   }
 }

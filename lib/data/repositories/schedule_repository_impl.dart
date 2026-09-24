@@ -43,12 +43,14 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       int scheduleId = await insertSchedule(schedule, executor: transaction);
 
       for (EmployeeSelectionData assignation in employeeAssignations) {
-        await assignScheduleToEmployee(
-          assignation.selectedEmployee!.id!,
-          scheduleId,
-          assignation.weekdayEnum!.value,
-          executor: transaction,
-        );
+        if (assignation.selectedEmployee != null && assignation.weekdayEnum != null) {
+          await assignScheduleToEmployee(
+            assignation.selectedEmployee!.id!,
+            scheduleId,
+            assignation.weekdayEnum!.value,
+            executor: transaction,
+          );
+        }
       }
 
       return scheduleId;
@@ -126,6 +128,7 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       S.finish_second_time,
       S.is_split_shift,
       S.weekdays,
+      S.color,
       ES.assigned_week
     FROM employees AS E 
     RIGHT JOIN employee_schedules AS ES ON ES.id_employee = E.id
