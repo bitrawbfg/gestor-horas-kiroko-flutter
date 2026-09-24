@@ -1,5 +1,6 @@
 import 'package:gestor_horas/core/database/database_helper.dart';
 import 'package:gestor_horas/data/models/employee_selection_data.dart';
+import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/models/schedules/schedule_model.dart';
 import 'package:gestor_horas/data/models/weekdays_enum.dart';
 import 'package:gestor_horas/domain/repositories/schedule_repository.dart';
@@ -33,24 +34,23 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
     });
   }
 
-  Future<int> insertScheduleForEmployee(
-    ScheduleModel schedule,
-    List<EmployeeSelectionData> employeeAssignations,
-  ) async {
+  Future<int> insertScheduleForEmployee(ScheduleModel schedule) async {
     final database = await _databaseHelper.database;
+
+    List<EmployeeSelectionData> employeeAssignations = schedule.employeeWeekAssignments;
 
     return await database.transaction((transaction) async {
       int scheduleId = await insertSchedule(schedule, executor: transaction);
 
       for (EmployeeSelectionData assignation in employeeAssignations) {
-        // TODO: Gestionar con exceptiones si el empleado o la semana son nulos
-
-        await assignScheduleToEmployee(
-          assignation.selectedEmployee!.id!,
-          scheduleId,
-          assignation.weekdayEnum!.value,
-          executor: transaction,
-        );
+        if (assignation.selectedEmployee != null && assignation.weekdayEnum != null) {
+          await assignScheduleToEmployee(
+            assignation.selectedEmployee!.id!,
+            scheduleId,
+            assignation.weekdayEnum!.value,
+            executor: transaction,
+          );
+        }
       }
 
       return scheduleId;
@@ -58,22 +58,55 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   }
 
   @override
-  Future<void> updateSchedule(ScheduleModel schedule, int employeeId) async {
+  Future<void> updateSchedule(ScheduleModel schedule) async {
     final database = await _databaseHelper.database;
 
-    await database.update(
-      schedulesTable,
-      schedule.toMap(),
-      where: 'id = ?',
+    List<EmployeeSelectionData> employeeWeekAssignments = schedule.employeeWeekAssignments;
+
+    await database.transaction((transaction) async {
+      await transaction.update(
+        schedulesTable,
+        schedule.toMap(),
+        where: 'id = ?',
+        whereArgs: [schedule.id],
+      );
+
+      await deleteEmployeeAssignmentsFromSchedule(transaction, schedule);
+
+      for (EmployeeSelectionData employeeWeekAssignment in employeeWeekAssignments) {
+        if (employeeWeekAssignment.selectedEmployee != null &&
+            employeeWeekAssignment.weekdayEnum != null) {
+          assignScheduleToEmployee(
+            employeeWeekAssignment.selectedEmployee!.id!,
+            schedule.id!,
+            employeeWeekAssignment.weekdayEnum!.value,
+            executor: transaction,
+          );
+        }
+      }
+    });
+  }
+
+  Future<void> deleteEmployeeAssignmentsFromSchedule(
+    Transaction transaction,
+    ScheduleModel schedule,
+  ) async {
+    await transaction.delete(
+      'employee_schedules',
+      where: 'id_schedule = ?',
       whereArgs: [schedule.id],
     );
   }
 
   @override
-  Future<void> deleteSchedule(ScheduleModel schedule, int employeeId) async {
+  Future<void> deleteSchedule(ScheduleModel schedule) async {
     final database = await _databaseHelper.database;
 
-    await database.delete(schedulesTable, where: 'id = ?', whereArgs: [schedule.id]);
+    await database.transaction((transaction) async {
+      await deleteEmployeeAssignmentsFromSchedule(transaction, schedule);
+
+      await transaction.delete(schedulesTable, where: 'id = ?', whereArgs: [schedule.id]);
+    });
   }
 
   @override
@@ -93,11 +126,53 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   @override
   Future<List<ScheduleModel>> getAllSchedules() async {
     final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> schedules = await database.query(schedulesTable);
+    final List<Map<String, dynamic>> schedulesRaw = await database.rawQuery('''
+    SELECT 
+      E.id AS id_employee,
+      E.name,
+      E.has_contract,
+      E.hours_in_contract,
+      S.id AS id_schedule,
+      S.start_time,
+      S.finish_time,
+      S.start_second_time,
+      S.finish_second_time,
+      S.is_split_shift,
+      S.weekdays,
+      S.color,
+      ES.assigned_week
+    FROM employees AS E 
+    RIGHT JOIN employee_schedules AS ES ON ES.id_employee = E.id
+    RIGHT JOIN schedules AS S ON ES.id_schedule = S.id
+    ''');
 
-    return List.generate(schedules.length, (schedule) {
-      return ScheduleModel.fromMap(schedules[schedule]);
-    });
+    Map<String, ScheduleModel> schedules = {};
+
+    for (var row in schedulesRaw) {
+      String scheduleId = row['id_schedule'].toString();
+      EmployeeModel? employee = row['id_employee'] != null ? EmployeeModel.fromMap(row) : null;
+      String weekAssigned = row['assigned_week'] ?? '';
+
+      if (!schedules.containsKey(scheduleId)) {
+        schedules[scheduleId] = ScheduleModel.fromMap(row);
+      }
+
+      if (employee != null) {
+        ScheduleModel currentSchedules = schedules[scheduleId]!;
+
+        schedules[scheduleId] = currentSchedules.copyWith(
+          employeeWeekAssignments: [
+            ...currentSchedules.employeeWeekAssignments,
+            EmployeeSelectionData(
+              selectedEmployee: employee,
+              weekdayEnum: WeekdaysEnumExtension.fromValue(weekAssigned),
+            ),
+          ],
+        );
+      }
+    }
+
+    return schedules.values.toList();
   }
 
   @override

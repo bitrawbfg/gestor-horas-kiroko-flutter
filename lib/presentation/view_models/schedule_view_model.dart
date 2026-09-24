@@ -30,13 +30,18 @@ class ScheduleViewModel extends ChangeNotifier {
     await loadSchedules();
   }
 
-  Future<void> addScheduleForEmployee(ScheduleModel schedule, List<EmployeeSelectionData> employeeAssignations) async {
-    await _scheduleRepository.insertScheduleForEmployee(schedule, employeeAssignations);
+  Future<void> addScheduleForEmployee(ScheduleModel schedule) async {
+    await _scheduleRepository.insertScheduleForEmployee(schedule);
     await loadSchedules();
   }
 
-  Future<void> updateSchedule(ScheduleModel schedule, int employeeId) async {
-    await _scheduleRepository.updateSchedule(schedule, employeeId);
+  Future<void> updateSchedule(ScheduleModel schedule) async {
+    await _scheduleRepository.updateSchedule(schedule);
+    await loadSchedules();
+  }
+
+  Future<void> removeSchedule(ScheduleModel schedule) async {
+    await _scheduleRepository.deleteSchedule(schedule);
     await loadSchedules();
   }
 

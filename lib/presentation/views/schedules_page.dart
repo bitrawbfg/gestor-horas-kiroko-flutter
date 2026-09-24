@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gestor_horas/data/models/employee_selection_data.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
@@ -37,15 +40,33 @@ class _SchedulesPageState extends State<SchedulesPage> {
 
   Future<void> loadAppointments() async {
     for (ScheduleModel schedule in _schedules) {
+      bool isSplitShift = schedule.isSplitShift;
+
       Meeting appointment = Meeting(
         recurrenceRule: 'FREQ=WEEKLY;BYDAY=${schedule.weekdays.join(',').toUpperCase()}',
         from: schedule.startFirstTurnTime,
         to: schedule.finishFirstTurnTime,
         eventName: 'Turno',
         schedule: schedule,
+        background: schedule.color,
       );
 
       _appointments.add(appointment);
+
+      if (isSplitShift) {
+        ScheduleModel scheduleModel = schedule;
+
+        Meeting appointment = Meeting(
+          recurrenceRule: 'FREQ=WEEKLY;BYDAY=${schedule.weekdays.join(',').toUpperCase()}',
+          from: schedule.startSecondTurnTime!,
+          to: schedule.finishSecondTurnTime!,
+          eventName: 'Turno',
+          schedule: scheduleModel,
+          background: schedule.color,
+        );
+
+        _appointments.add(appointment);
+      }
     }
 
     dataSource = MeetingDataSource(_appointments);
@@ -59,18 +80,33 @@ class _SchedulesPageState extends State<SchedulesPage> {
     showDialog(
       context: context,
       builder: (context) {
-        EmployeeModel? selectedEmployee;
-        ShiftTimeData shiftTimeData = selectedEmployee != null
+        ShiftTimeData shiftTimeData = schedule != null
             ? ShiftTimeData(
-                startHour: selectedEmployee.schedules![0].startFirstTurnTime.hour,
-                startMinute: selectedEmployee.schedules![0].startFirstTurnTime.minute,
-                endHour: selectedEmployee.schedules![0].finishFirstTurnTime.hour,
-                endMinute: selectedEmployee.schedules![0].finishFirstTurnTime.minute,
+                startHour: schedule.startFirstTurnTime.hour,
+                startMinute: schedule.startFirstTurnTime.minute,
+                endHour: schedule.finishFirstTurnTime.hour,
+                endMinute: schedule.finishFirstTurnTime.minute,
               )
             : ShiftTimeData();
 
+        ShiftTimeData? secondShiftTimeData = schedule != null && schedule.isSplitShift
+            ? ShiftTimeData(
+                startHour: schedule.startSecondTurnTime!.hour,
+                startMinute: schedule.startSecondTurnTime!.minute,
+                endHour: schedule.finishSecondTurnTime!.hour,
+                endMinute: schedule.finishSecondTurnTime!.minute,
+              )
+            : null;
+
         List<ShiftTimeData> shiftsData = [shiftTimeData];
-        List<EmployeeSelectionData> employeesData = [EmployeeSelectionData()];
+        if (secondShiftTimeData != null) {
+          shiftsData.add(secondShiftTimeData);
+        }
+
+        List<EmployeeSelectionData> employeeWeekAssignments =
+            schedule != null && schedule.employeeWeekAssignments.isNotEmpty
+            ? schedule.employeeWeekAssignments.toList()
+            : [EmployeeSelectionData()];
 
         final ScrollController scrollController = ScrollController();
 
@@ -108,10 +144,28 @@ class _SchedulesPageState extends State<SchedulesPage> {
           }
         }
 
+        Color selectedColor = schedule?.color ?? Colors.orangeAccent;
+
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setState) {
             return AlertDialog(
-              title: Text(schedule == null ? 'Añadir un nuevo horario' : 'Editar horario'),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(schedule == null ? 'Añadir un nuevo horario' : 'Editar horario'),
+                  ?schedule == null
+                      ? null
+                      : ElevatedButton(
+                          onPressed: () {
+                            locator<ScheduleViewModel>().removeSchedule(schedule);
+
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(foregroundColor: Colors.redAccent),
+                          child: Text('Eliminar'),
+                        ),
+                ],
+              ),
               content: SizedBox(
                 width: 600,
                 height: 600,
@@ -175,23 +229,36 @@ class _SchedulesPageState extends State<SchedulesPage> {
                         Divider(height: 32),
 
                         Text('Asigna empleados', style: TextStyle(fontSize: 20)),
-                        ...employeesData.map(
+                        ...employeeWeekAssignments.map(
                           (data) => EmployeeSelectionWidget(
                             employeeSelectionData: data,
-                            onDelete: employeesData.length > 1
-                                ? () => setState(() => employeesData.remove(data))
-                                : null,
+                            onDelete: () => setState(() => employeeWeekAssignments.remove(data)),
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            if (employeesData.length < 4) {
+                            if (employeeWeekAssignments.length < 4) {
                               setState(() {
-                                employeesData.add(EmployeeSelectionData());
+                                employeeWeekAssignments.add(EmployeeSelectionData());
                               });
                             }
                           },
                           child: Icon(Icons.add),
+                        ),
+
+                        Divider(height: 32),
+                        ExpansionTile(
+                          title: Text('Selecciona un color', style: TextStyle(fontSize: 20)),
+                          children: [
+                            ColorPicker(
+                              color: selectedColor,
+                              onColorChanged: (color) {
+                                setState(() {
+                                  selectedColor = color;
+                                });
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -212,7 +279,7 @@ class _SchedulesPageState extends State<SchedulesPage> {
                     }
 
                     final bool isSplitShift = shiftsData.length > 1;
-                    final scheduleToInsert = schedule ?? ScheduleModel(
+                    final scheduleToInsert = ScheduleModel(
                       isSplitShift: isSplitShift,
                       startFirstTurnTime: DateTime(
                         now.year,
@@ -229,29 +296,34 @@ class _SchedulesPageState extends State<SchedulesPage> {
                         shiftData.endMinute,
                       ),
                       startSecondTurnTime: isSplitShift
-                          ? DateTime(shiftsData[1].startHour, shiftsData[1].startMinute)
+                          ? DateTime(
+                              now.year,
+                              now.month,
+                              now.day,
+                              shiftsData[1].startHour,
+                              shiftsData[1].startMinute,
+                            )
                           : null,
                       finishSecondTurnTime: isSplitShift
-                          ? DateTime(shiftsData[1].endHour, shiftsData[1].endMinute)
+                          ? DateTime(
+                              now.year,
+                              now.month,
+                              now.day,
+                              shiftsData[1].endHour,
+                              shiftsData[1].endMinute,
+                            )
                           : null,
                       weekdays: selectedDays,
+                      employeeWeekAssignments: employeeWeekAssignments,
+                      color: selectedColor,
                     );
 
-                    locator<ScheduleViewModel>().addScheduleForEmployee(scheduleToInsert, employeesData);
-                    /*final List<Map<String, dynamic>> employeeScheduleAssignments = [];
-                    for (EmployeeSelectionData employeeData in employeesData) {
-                      if (employeeData.weekdayEnum != null && employeeData.selectedEmployee != null) {
-                        for (String selectedDay in selectedDays) {
-                          employeeScheduleAssignments.add({
-                            'id_employee': employeeData.selectedEmployee?.id,
-                            'weekday': selectedDay,
-                            'assigned_week': employeeData.weekdayEnum?.value,
-                          });
-                        }
-                      }
+                    if (schedule == null) {
+                      locator<ScheduleViewModel>().addScheduleForEmployee(scheduleToInsert);
+                    } else {
+                      ScheduleModel updatedSchedule = scheduleToInsert.copyWith(id: schedule.id);
+                      locator<ScheduleViewModel>().updateSchedule(updatedSchedule);
                     }
-
-                    locator<ScheduleViewModel>().addScheduleWithAssignments(schedule: schedule, assignations: employeeScheduleAssignments);*/
 
                     Navigator.pop(context);
                   },
@@ -366,7 +438,8 @@ class MeetingDataSource extends CalendarDataSource<Meeting> {
 
   @override
   Color getColor(int index) {
-    return appointments![index].background ?? Colors.blue;
+    return appointments![index].background ??
+        Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
   }
 
   @override
@@ -396,7 +469,7 @@ class MeetingDataSource extends CalendarDataSource<Meeting> {
       from: appointment.startTime,
       to: appointment.endTime,
       eventName: appointment.subject,
-      background: appointment.color,
+      background: customData!.schedule.color,
       isAllDay: appointment.isAllDay,
       id: appointment.id,
       recurrenceRule: appointment.recurrenceRule,

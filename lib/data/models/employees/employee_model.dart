@@ -40,4 +40,12 @@ abstract class EmployeeModel with _$EmployeeModel {
       'hours_in_contract': hoursInContract,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EmployeeModel && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }

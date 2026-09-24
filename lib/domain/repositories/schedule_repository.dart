@@ -7,6 +7,6 @@ abstract class ScheduleRepository {
   Future<List<ScheduleModel>> getAllSchedulesByEmployee(ScheduleModel schedule);
 
   Future<int> insertSchedule(ScheduleModel schedule, {DatabaseExecutor? executor});
-  Future<void> updateSchedule(ScheduleModel schedule, int employeeId);
-  Future<void> deleteSchedule(ScheduleModel schedule, int employeeId);
+  Future<void> updateSchedule(ScheduleModel schedule);
+  Future<void> deleteSchedule(ScheduleModel schedule);
 }

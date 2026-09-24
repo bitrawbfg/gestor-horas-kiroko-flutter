@@ -24,18 +24,7 @@ $EmployeeModelCopyWith<EmployeeModel> get copyWith => _$EmployeeModelCopyWithImp
 
 
 
-@override
-bool operator ==(Object other) {
-  final _this = this as EmployeeModel;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmployeeModel&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.hasContract, _this.hasContract) || other.hasContract == _this.hasContract)&&(identical(other.hoursInContract, _this.hoursInContract) || other.hoursInContract == _this.hoursInContract)&&const DeepCollectionEquality().equals(other.schedules, _this.schedules)&&(identical(other.currentTimeTrack, _this.currentTimeTrack) || other.currentTimeTrack == _this.currentTimeTrack));
-}
 
-
-@override
-int get hashCode {
-  final _this = this as EmployeeModel;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.hasContract,_this.hoursInContract,const DeepCollectionEquality().hash(_this.schedules),_this.currentTimeTrack);
-}
 
 @override
 String toString() {
@@ -255,16 +244,7 @@ _$EmployeeModelCopyWith<_EmployeeModel> get copyWith => __$EmployeeModelCopyWith
 
 
 
-@override
-bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmployeeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hasContract, hasContract) || other.hasContract == hasContract)&&(identical(other.hoursInContract, hoursInContract) || other.hoursInContract == hoursInContract)&&const DeepCollectionEquality().equals(other.schedules, _schedules)&&(identical(other.currentTimeTrack, currentTimeTrack) || other.currentTimeTrack == currentTimeTrack));
-}
 
-
-@override
-int get hashCode {
-    return Object.hash(runtimeType,id,name,hasContract,hoursInContract,const DeepCollectionEquality().hash(_schedules),currentTimeTrack);
-}
 
 @override
 String toString() {
