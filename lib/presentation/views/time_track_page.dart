@@ -63,8 +63,8 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                                 Expanded(
                                   child: TableCalendar(
                                     focusedDay: dateViewModel.selectedDate,
-                                    firstDay: dateViewModel.minDate,
-                                    lastDay: dateViewModel.maxDate,
+                                    firstDay: dateViewModel.calendarMinSelectableData,
+                                    lastDay: dateViewModel.calendarMaxSelectableData,
                                     rangeStartDay: dateViewModel.firstDayOfWeek,
                                     rangeEndDay: dateViewModel.lastDayOfWeek,
                                     rangeSelectionMode: RangeSelectionMode.enforced,

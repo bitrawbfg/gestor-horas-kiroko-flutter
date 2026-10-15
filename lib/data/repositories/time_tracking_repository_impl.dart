@@ -1,6 +1,8 @@
 import 'package:gestor_horas/core/database/database_helper.dart';
+import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 import 'package:gestor_horas/domain/repositories/time_tracking_repository.dart';
+import 'package:intl/intl.dart';
 
 class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
@@ -69,10 +71,13 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
     DateTime startDay,
     DateTime finishDay,
   ) async {
-    final database  = await _databaseHelper.database;
+    final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> timeTrackings = await database.rawQuery(
       'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ?',
-      [(startDay.toString().split(' ')[0].toString()), (finishDay.toString().split(' ')[0].toString())],
+      [
+        (startDay.toString().split(' ')[0].toString()),
+        (finishDay.toString().split(' ')[0].toString()),
+      ],
     );
 
     List<TimeTrackModel> timeTrackingsList = timeTrackings
@@ -80,6 +85,23 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
         .toList();
 
     return timeTrackingsList;
+  }
+
+  Future<List<TimeTrackModel>> getTimeTracksByDateAndEmployee(
+    DateTime dateTime,
+    EmployeeModel employee,
+  ) async {
+    final database = await _databaseHelper.database;
+
+    final List<Map<String, dynamic>> foundTimeTrackings = await database.rawQuery(
+      'SELECT * FROM $timeTrackingTable WHERE registered_date LIKE ? AND id_employee = ?',
+      ['${DateFormat('yyyy-MM-dd').format(dateTime)}%', employee.id],
+    );
+    List<TimeTrackModel> timeTrackings = foundTimeTrackings
+        .map((timeTrack) => TimeTrackModel.fromMap(timeTrack))
+        .toList();
+
+    return timeTrackings;
   }
 
   Future<List<TimeTrackModel>> getTimeTrackingDateToDateFromEmployee(

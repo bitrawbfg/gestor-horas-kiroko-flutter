@@ -1,7 +1,13 @@
+import 'dart:io';
+
+import 'package:excel_plus/excel_plus.dart';
+import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
+import 'package:gestor_horas/configuration/excel_exporter.dart';
 import 'package:gestor_horas/configuration/service_locator.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
+import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
 import 'package:gestor_horas/presentation/views/schedules_page.dart';
@@ -20,7 +26,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[const TimeTrackPage(), const EmployeesPage(), const SchedulesPage()];
+  static final List<Widget> _widgetOptions = <Widget>[
+    const TimeTrackPage(),
+    const EmployeesPage(),
+    const SchedulesPage(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -147,6 +157,37 @@ class _MyHomePageState extends State<MyHomePage> {
                   icon: const Icon(Icons.schedule),
                 ),
               ],
+              footer: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 60),
+                    backgroundColor: Colors.orangeAccent,
+                  ),
+
+                  onPressed: () async {
+                    ExcelExporter exporter = ExcelExporter();
+                    Excel excel = await exporter.createExcelFile();
+
+                    DateViewModel dateViewModel = locator<DateViewModel>();
+
+                    final picker = SaveFilePicker()
+                      ..filterSpecification = {'Documento Excel (*.xlsx)': '*.xlsx'}
+                      ..defaultExtension = 'xlsx'
+                      ..fileName =
+                          'Hoja de Horas Mensual - Restaurante KIROKO - ${dateViewModel.getFileNameSelectedDate()}';
+
+                    final file = picker.getFile();
+                    if (file != null) {
+                      File(file.path).writeAsBytesSync(excel.save()!);
+                      print('Selected file: ${file.path}');
+                    } else {
+                      print('No file selected.');
+                    }
+                  },
+                  child: Icon(Icons.ios_share),
+                ),
+              ),
             ),
           ),
           Expanded(child: _widgetOptions[_selectedIndex]),

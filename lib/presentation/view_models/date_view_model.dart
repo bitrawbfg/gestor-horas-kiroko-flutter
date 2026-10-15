@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DateViewModel extends ChangeNotifier {
   /// This values are set in the calendar like the min. and max. year you can select
-  final minDate = DateTime(2000);
-  final maxDate = DateTime(2100);
+  final calendarMinSelectableData = DateTime(2000);
+  final calendarMaxSelectableData = DateTime(2100);
 
   DateTime selectedDate = DateTime.now();
   bool isCalendarOpen = false;
@@ -22,11 +23,6 @@ class DateViewModel extends ChangeNotifier {
   DateTime get firstDayOfWeek => weekDates[0].copyWith(hour: 00, minute: 00, second: 00);
   DateTime get lastDayOfWeek => weekDates[6].copyWith(hour: 23, minute: 59, second: 59);
 
-  void toggleCalendarView() {
-    isCalendarOpen = !isCalendarOpen;
-    notifyListeners();
-  }
-
   void setSelectedDate(DateTime selectedDateByUser) {
     selectedDate = selectedDateByUser;
     isCalendarOpen = false;
@@ -35,5 +31,11 @@ class DateViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  int getTotalDaysOfMonth() {
+    return DateUtils.getDaysInMonth(selectedDate.year, selectedDate.month);
+  }
 
+  String getFileNameSelectedDate() {
+    return '${DateFormat("MMMM", 'es_ES').format(selectedDate)}-${selectedDate.year}';
+  }
 }

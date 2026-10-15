@@ -42,6 +42,10 @@ class TimeTrackViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<TimeTrackModel>> getTimeTrackingsByDateAndEmployee(DateTime dateTime, EmployeeModel employee) async {
+    return await _repository.getTimeTracksByDateAndEmployee(dateTime, employee);
+  }
+
   Future<EmployeeModel?> addTimeStart(EmployeeModel employee) async {
     if (employee.currentTimeTrack == null) {
       TimeTrackModel employeeTimeTrack = TimeTrackModel(
@@ -128,10 +132,52 @@ class TimeTrackViewModel extends ChangeNotifier {
     return Duration(minutes: sumOfRegisteredTime);
   }
 
+  Future<Duration> getDailyDurationForEmployeeByDay(int employeeId, int weekDateValue) async {
+    DateTime firstDayOfMonth = dateViewModel.selectedDate.copyWith(day: 1);
+    DateTime lastDayOfMonth = dateViewModel.selectedDate.copyWith(
+      day: dateViewModel.getTotalDaysOfMonth(),
+    );
+
+    List<TimeTrackModel> employeeTimeTrackings = await _repository
+        .getTimeTrackingDateToDateFromEmployee(firstDayOfMonth, lastDayOfMonth, employeeId);
+
+    List<TimeTrackModel> timeTrackingsThatMatchDay = employeeTimeTrackings
+        .where((timeTrack) => timeTrack.registeredDate?.day == weekDateValue)
+        .toList();
+
+    int sumOfRegisteredTime = 0;
+    for (TimeTrackModel timeTrack in timeTrackingsThatMatchDay) {
+      if (!timeTrack.isTurnOnGoing!) {
+        sumOfRegisteredTime += timeTrack.difference!;
+      }
+    }
+
+    return Duration(minutes: sumOfRegisteredTime);
+  }
+
   Duration getTimeWorkedInWeekByEmployee(int employeeId) {
     List<TimeTrackModel> timeTrackingsList = timeTrackings
         .where((timeTrack) => timeTrack.idEmployee == employeeId)
         .toList();
+
+    int totalTime = 0;
+    for (TimeTrackModel timeTrack in timeTrackingsList) {
+      if (!timeTrack.isTurnOnGoing!) {
+        totalTime += timeTrack.difference!;
+      }
+    }
+
+    return Duration(minutes: totalTime);
+  }
+
+  Future<Duration> getTimeWorkedInMonthByEmployee(int employeeId) async {
+    DateTime firstDayOfMonth = dateViewModel.selectedDate.copyWith(day: 1);
+    DateTime lastDayOfMonth = dateViewModel.selectedDate.copyWith(
+      day: dateViewModel.getTotalDaysOfMonth(),
+    );
+
+    List<TimeTrackModel> timeTrackingsList = await _repository
+        .getTimeTrackingDateToDateFromEmployee(firstDayOfMonth, lastDayOfMonth, employeeId);
 
     int totalTime = 0;
     for (TimeTrackModel timeTrack in timeTrackingsList) {

@@ -53,6 +53,8 @@ dependencies:
   flutter_time_duration_picker: ^1.0.0
   syncfusion_flutter_calendar: ^34.2.4
   flex_color_picker: ^4.0.0
+  filepicker_windows: ^3.0.2
+  excel_plus: ^2.23.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
