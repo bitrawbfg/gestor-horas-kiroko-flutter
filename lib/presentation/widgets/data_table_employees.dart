@@ -121,13 +121,37 @@ class DataTableEmployees extends StatelessWidget {
           EmployeeModel employee = employeeViewModel.employees[index];
           Duration timeWorkedInWeek = timeTrackViewModel.getTimeWorkedInWeekByEmployee(
             employee.id!,
+            dateViewModel.firstDayOfWeek,
+            dateViewModel.lastDayOfWeek,
           );
 
           return DataRow(
             cells: [
               DataCell(Text(employee.name)),
               ...List<DataCell>.generate(7, (int index) {
-                return getDailyTimeWorkedByEmployee(index, employee.id!);
+                DateTime currentDay = dateViewModel.firstDayOfWeek.copyWith(
+                  day: dateViewModel.firstDayOfWeek.day + index,
+                );
+                var employeeId = employee.id!;
+
+                Duration duration = timeTrackViewModel.getDailyTimeWorkedByEmployee(employeeId, currentDay);
+                return DataCell(
+                  GestureDetector(
+                    onDoubleTap: () async {
+                      locator<SidePanelController>().showRightPanel();
+                      timeTrackViewModel.getTimeTrackingsBySpecificDayAndEmployee(employeeId, currentDay);
+
+                      await employeeViewModel.getEmployeesById(employeeId);
+                    },
+                    child: Center(
+                      child: Text(
+                        duration.inMinutes == 0
+                            ? '-'
+                            : '${duration.inHours.remainder(24)}h ${duration.inMinutes.remainder(60)}m',
+                      ),
+                    ),
+                  ),
+                );
               }),
               DataCell(
                 Text(
@@ -139,33 +163,6 @@ class DataTableEmployees extends StatelessWidget {
             ],
           );
         }),
-      ),
-    );
-  }
-
-  DataCell getDailyTimeWorkedByEmployee(int weekDateValue, int employeeId) {
-    TimeTrackViewModel timeTrackViewModel = locator<TimeTrackViewModel>();
-    EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
-    DateViewModel dateViewModel = locator<DateViewModel>();
-    int day = dateViewModel.weekDates[weekDateValue].day;
-
-    Duration duration = timeTrackViewModel.getDailyDurationForEmployee(weekDateValue, employeeId);
-
-    return DataCell(
-      GestureDetector(
-        onDoubleTap: () async {
-          locator<SidePanelController>().showRightPanel();
-          timeTrackViewModel.getTimeTrackingsFromEmployee(employeeId, day);
-
-          await employeeViewModel.getEmployeesById(employeeId);
-        },
-        child: Center(
-          child: Text(
-            duration.inMinutes == 0
-                ? '-'
-                : '${duration.inHours.remainder(24)}h ${duration.inMinutes.remainder(60)}m',
-          ),
-        ),
       ),
     );
   }

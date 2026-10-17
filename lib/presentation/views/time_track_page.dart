@@ -77,7 +77,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                                     ),
                                     onDaySelected: (selectedDay, focusedDay) {
                                       dateViewModel.setSelectedDate(selectedDay);
-                                      locator<TimeTrackViewModel>().loadTimeTrackings();
+                                      locator<TimeTrackViewModel>().getAllTimeTrackings();
                                     },
                                   ),
                                 ),

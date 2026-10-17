@@ -1,19 +1,22 @@
 import 'package:excel_plus/excel_plus.dart';
 import 'package:gestor_horas/configuration/service_locator.dart';
+import 'package:gestor_horas/core/work_time_calculator.dart';
 import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
-import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/schedule_view_model.dart';
-import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
 import 'package:intl/intl.dart';
 
 import '../data/models/employees/employee_model.dart';
 
 class ExcelExporter {
-  final EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
-  final DateViewModel dateViewModel = locator<DateViewModel>();
+  final List<EmployeeModel> employees;
+  final List<TimeTrackModel> timeTrackings;
+  final DateTime firstDayOfMonth;
+  final DateTime lastDayOfMonth;
+
+  ExcelExporter(this.employees, this.timeTrackings, this.firstDayOfMonth, this.lastDayOfMonth);
+
   final ScheduleViewModel scheduleViewModel = locator<ScheduleViewModel>();
-  final TimeTrackViewModel timeTrackViewModel = locator<TimeTrackViewModel>();
 
   final double defaultColumnWidth = 20;
 
@@ -31,7 +34,7 @@ class ExcelExporter {
 
     await createSheetForMonthlyHoursResume(excel);
 
-    for (EmployeeModel employee in employeeViewModel.employees) {
+    for (EmployeeModel employee in employees) {
       final employeeSheet = excel[employee.name];
 
       addTitleCellWithStyle(employeeSheet);
@@ -41,7 +44,7 @@ class ExcelExporter {
       employeeSheet.updateCell(
         CellIndex.indexByString('B3'),
         TextCellValue(
-          '${DateFormat('dd MMMM yyyy', 'es_ES').format(dateViewModel.selectedDate.copyWith(day: 1))} - ${DateFormat('dd MMMM yyyy', 'es_ES').format(dateViewModel.selectedDate.copyWith(day: dateViewModel.getTotalDaysOfMonth()))}',
+          '${DateFormat('dd MMMM yyyy', 'es_ES').format(firstDayOfMonth)} - ${DateFormat('dd MMMM yyyy', 'es_ES').format(lastDayOfMonth)}',
         ),
       );
 
@@ -90,10 +93,16 @@ class ExcelExporter {
       );
 
       int rowsToSkip = 10;
-      for (int dayOfMonth = 0; dayOfMonth < dateViewModel.getTotalDaysOfMonth(); dayOfMonth++) {
-        final DateTime currentDate = dateViewModel.selectedDate.copyWith(day: dayOfMonth + 1);
-        List<TimeTrackModel> timeTrackingsOfEmployee = await timeTrackViewModel
-            .getTimeTrackingsByDateAndEmployee(currentDate, employee);
+      for (int dayOfMonth = 0; dayOfMonth < lastDayOfMonth.day; dayOfMonth++) {
+        final DateTime currentDate = firstDayOfMonth.copyWith(day: dayOfMonth + 1);
+
+        List<TimeTrackModel> timeTrackingsOfEmployee = timeTrackings.where((timeTrack) {
+          DateTime registeredDate = timeTrack.registeredDate!;
+          return timeTrack.idEmployee == employee.id! &&
+              (registeredDate.year == currentDate.year &&
+                  registeredDate.month == currentDate.month &&
+                  registeredDate.day == currentDate.day);
+        }).toList();
 
         // Print date
         employeeSheet.updateCell(
@@ -155,33 +164,35 @@ class ExcelExporter {
     addTitleCellWithStyle(sheet);
 
     // Print days of the month
-    for (int i = 0; i < dateViewModel.getTotalDaysOfMonth(); i++) {
+    for (int i = 0; i < lastDayOfMonth.day; i++) {
       sheet.updateCell(
         cellStyle: headerCellStyleRightAlign,
         CellIndex.indexByColumnRow(columnIndex: i + 1, rowIndex: 2),
-        TextCellValue('${DateFormat("MMMM").format(dateViewModel.selectedDate)} ${i + 1}'),
+        TextCellValue('${DateFormat("MMMM").format(firstDayOfMonth)} ${i + 1}'),
       );
     }
 
     // Print Total Hours header
     sheet.updateCell(
       cellStyle: headerCellStyleRightAlign,
-      CellIndex.indexByColumnRow(columnIndex: dateViewModel.getTotalDaysOfMonth() + 2, rowIndex: 2),
+      CellIndex.indexByColumnRow(columnIndex: lastDayOfMonth.day + 2, rowIndex: 2),
       TextCellValue('Total'),
     );
 
     // Print employees info
-    for (int i = 0; i < employeeViewModel.employees.length; i++) {
-      EmployeeModel employee = employeeViewModel.employees[i];
+    for (int i = 0; i < employees.length; i++) {
+      EmployeeModel employee = employees[i];
 
       // Print employee names
       sheet.updateCell(CellIndex.indexByString('A${i + 4}'), TextCellValue(employee.name));
 
       // Print employee daily hours
-      for (int j = 0; j < dateViewModel.getTotalDaysOfMonth(); j++) {
-        Duration timeWorkedInDay = await timeTrackViewModel.getDailyDurationForEmployeeByDay(
+      for (int j = 0; j < lastDayOfMonth.day; j++) {
+        DateTime dayToShow = firstDayOfMonth.copyWith(day: j + 1);
+        Duration timeWorkedInDay = WorkTimeCalculator.getTimeWorkedInDayByEmployee(
+          timeTrackings,
+          dayToShow,
           employee.id!,
-          j + 1,
         );
 
         // Print daily hours
@@ -196,13 +207,16 @@ class ExcelExporter {
         );
 
         // Print total hours worked in month
-        Duration timeWorkedInMonth = await timeTrackViewModel.getTimeWorkedInMonthByEmployee(
+        Duration timeWorkedInMonth = await WorkTimeCalculator.getTimeWorkedInRangeByEmployee(
+          timeTrackings,
+          firstDayOfMonth,
+          lastDayOfMonth,
           employee.id!,
         );
         sheet.updateCell(
           cellStyle: CellStyle(horizontalAlign: HorizontalAlign.Right),
           CellIndex.indexByColumnRow(
-            columnIndex: dateViewModel.getTotalDaysOfMonth() + 2,
+            columnIndex: lastDayOfMonth.day + 2,
             rowIndex: i + 3,
           ),
           TextCellValue(

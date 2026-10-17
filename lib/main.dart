@@ -15,7 +15,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => locator<EmployeeViewModel>()..loadEmployees()),
-        ChangeNotifierProvider(create: (_) => locator<TimeTrackViewModel>()..loadTimeTrackings()),
+        ChangeNotifierProvider(create: (_) => locator<TimeTrackViewModel>()..getAllTimeTrackings()),
         ChangeNotifierProvider(create: (_) => locator<DateViewModel>()),
         ChangeNotifierProvider(create: (_) => locator<SidePanelViewModel>()),
         ChangeNotifierProvider(create: (_) => locator<ScheduleViewModel>()..loadSchedules()),

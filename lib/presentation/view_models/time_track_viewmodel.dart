@@ -1,16 +1,26 @@
+import 'dart:io';
+
+import 'package:excel_plus/excel_plus.dart';
+import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
 import 'package:gestor_horas/configuration/service_locator.dart';
+import 'package:gestor_horas/core/work_time_calculator.dart';
 import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
-import 'package:gestor_horas/data/repositories/time_tracking_repository_impl.dart';
+import 'package:gestor_horas/domain/repositories/employee_repository.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 
+import '../../configuration/excel_exporter.dart';
+import '../../domain/repositories/time_tracking_repository.dart';
+
 class TimeTrackViewModel extends ChangeNotifier {
-  final TimeTrackingRepositoryImpl _repository = TimeTrackingRepositoryImpl();
+  final TimeTrackingRepository _timeTrackingRepository;
+  final EmployeeRepository _employeeRepository;
+
+  TimeTrackViewModel(this._timeTrackingRepository, this._employeeRepository);
 
   DateViewModel dateViewModel = locator<DateViewModel>();
-  EmployeeViewModel employeeViewModel = locator<EmployeeViewModel>();
 
   List<TimeTrackModel> _timeTrackings = [];
   List<TimeTrackModel> _timeTrackingsFromEmployee = [];
@@ -19,9 +29,9 @@ class TimeTrackViewModel extends ChangeNotifier {
 
   List<TimeTrackModel> get timeTrackingsFromEmployee => _timeTrackingsFromEmployee;
 
-  Future<void> loadTimeTrackings({List<TimeTrackModel>? timeTrackings}) async {
+  Future<void> getAllTimeTrackings({List<TimeTrackModel>? timeTrackings}) async {
     if (timeTrackings == null) {
-      _timeTrackings = await _repository.getAllTimeTrackingFromDateToDate(
+      _timeTrackings = await _timeTrackingRepository.getAllTimeTrackingsFromDateToDate(
         dateViewModel.firstDayOfWeek,
         dateViewModel.lastDayOfWeek,
       );
@@ -32,21 +42,25 @@ class TimeTrackViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getTimeTrackingsFromEmployee(int employeeId, int day) {
-    List<TimeTrackModel> timeTrackingsThatMatch = timeTrackings
-        .where((timeTrack) => employeeId == timeTrack.idEmployee && timeTrack.difference! > 0)
-        .where((timeTrack) => timeTrack.registeredDate?.day == day)
-        .toList();
+  void getTimeTrackingsBySpecificDayAndEmployee(int employeeId, DateTime date) async {
+    List<TimeTrackModel> foundTimeTrackings = await _timeTrackingRepository
+        .getTimeTrackingsBySpecificDayAndEmployee(date, employeeId);
 
-    _timeTrackingsFromEmployee = timeTrackingsThatMatch;
+    _timeTrackingsFromEmployee = foundTimeTrackings;
     notifyListeners();
   }
 
-  Future<List<TimeTrackModel>> getTimeTrackingsByDateAndEmployee(DateTime dateTime, EmployeeModel employee) async {
-    return await _repository.getTimeTracksByDateAndEmployee(dateTime, employee);
+  Future<List<TimeTrackModel>> getTimeTrackingsByDateAndEmployee(
+    DateTime dateTime,
+    EmployeeModel employee,
+  ) async {
+    return await _timeTrackingRepository.getTimeTrackingsBySpecificDayAndEmployee(
+      dateTime,
+      employee.id!,
+    );
   }
 
-  Future<EmployeeModel?> addTimeStart(EmployeeModel employee) async {
+  Future<EmployeeModel?> addStartTimeTrackToEmployee(EmployeeModel employee) async {
     if (employee.currentTimeTrack == null) {
       TimeTrackModel employeeTimeTrack = TimeTrackModel(
         idEmployee: employee.id!,
@@ -54,7 +68,7 @@ class TimeTrackViewModel extends ChangeNotifier {
         registeredDate: DateTime.now(),
       );
 
-      int idTimeTrack = await _repository.insertTimeTrack(employeeTimeTrack);
+      int idTimeTrack = await _timeTrackingRepository.insertTimeTrack(employeeTimeTrack);
 
       return employee.copyWith(currentTimeTrack: employeeTimeTrack.copyWith(id: idTimeTrack));
     } else {
@@ -75,12 +89,12 @@ class TimeTrackViewModel extends ChangeNotifier {
       difference: differenceBetweenTimes,
     );
 
-    await _repository.updateTimeTrack(employeeTimeTrack);
+    await _timeTrackingRepository.updateTimeTrack(employeeTimeTrack);
 
-    loadTimeTrackings();
-    getTimeTrackingsFromEmployee(
+    getAllTimeTrackings();
+    getTimeTrackingsBySpecificDayAndEmployee(
       employeeTimeTrack.idEmployee,
-      employeeTimeTrack.registeredDate!.day,
+      employeeTimeTrack.registeredDate!,
     );
   }
 
@@ -98,17 +112,17 @@ class TimeTrackViewModel extends ChangeNotifier {
       difference: differenceBetweenTimes,
     );
 
-    await _repository.updateTimeTrack(employeeTimeTrack);
+    await _timeTrackingRepository.updateTimeTrack(employeeTimeTrack);
 
-    await loadTimeTrackings();
-    getTimeTrackingsFromEmployee(timeTrack.idEmployee, timeTrack.registeredDate!.day);
+    await getAllTimeTrackings();
+    getTimeTrackingsBySpecificDayAndEmployee(timeTrack.idEmployee, timeTrack.registeredDate!);
   }
 
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
-    await _repository.deleteTimeTrack(timeTrack);
+    await _timeTrackingRepository.deleteTimeTrack(timeTrack);
 
-    await loadTimeTrackings();
-    getTimeTrackingsFromEmployee(timeTrack.idEmployee, timeTrack.registeredDate!.day);
+    await getAllTimeTrackings();
+    getTimeTrackingsBySpecificDayAndEmployee(timeTrack.idEmployee, timeTrack.registeredDate!);
   }
 
   Duration getDailyDurationForEmployee(int weekDateValue, int employeeId) {
@@ -132,60 +146,42 @@ class TimeTrackViewModel extends ChangeNotifier {
     return Duration(minutes: sumOfRegisteredTime);
   }
 
-  Future<Duration> getDailyDurationForEmployeeByDay(int employeeId, int weekDateValue) async {
-    DateTime firstDayOfMonth = dateViewModel.selectedDate.copyWith(day: 1);
-    DateTime lastDayOfMonth = dateViewModel.selectedDate.copyWith(
-      day: dateViewModel.getTotalDaysOfMonth(),
-    );
-
-    List<TimeTrackModel> employeeTimeTrackings = await _repository
-        .getTimeTrackingDateToDateFromEmployee(firstDayOfMonth, lastDayOfMonth, employeeId);
-
-    List<TimeTrackModel> timeTrackingsThatMatchDay = employeeTimeTrackings
-        .where((timeTrack) => timeTrack.registeredDate?.day == weekDateValue)
-        .toList();
-
-    int sumOfRegisteredTime = 0;
-    for (TimeTrackModel timeTrack in timeTrackingsThatMatchDay) {
-      if (!timeTrack.isTurnOnGoing!) {
-        sumOfRegisteredTime += timeTrack.difference!;
-      }
-    }
-
-    return Duration(minutes: sumOfRegisteredTime);
+  Duration getDailyTimeWorkedByEmployee(int employeeId, DateTime dayToFilter) {
+    return WorkTimeCalculator.getTimeWorkedInDayByEmployee(timeTrackings, dayToFilter, employeeId);
   }
 
-  Duration getTimeWorkedInWeekByEmployee(int employeeId) {
-    List<TimeTrackModel> timeTrackingsList = timeTrackings
-        .where((timeTrack) => timeTrack.idEmployee == employeeId)
-        .toList();
-
-    int totalTime = 0;
-    for (TimeTrackModel timeTrack in timeTrackingsList) {
-      if (!timeTrack.isTurnOnGoing!) {
-        totalTime += timeTrack.difference!;
-      }
-    }
-
-    return Duration(minutes: totalTime);
+  Duration getTimeWorkedInWeekByEmployee(int employeeId, DateTime firstDay, DateTime lastDay) {
+    return WorkTimeCalculator.getTimeWorkedInRangeByEmployee(
+      timeTrackings,
+      firstDay,
+      lastDay,
+      employeeId,
+    );
   }
 
-  Future<Duration> getTimeWorkedInMonthByEmployee(int employeeId) async {
-    DateTime firstDayOfMonth = dateViewModel.selectedDate.copyWith(day: 1);
-    DateTime lastDayOfMonth = dateViewModel.selectedDate.copyWith(
-      day: dateViewModel.getTotalDaysOfMonth(),
+  Future<void> exportDataToExcel() async {
+    DateViewModel dateViewModel = locator<DateViewModel>();
+
+    ExcelExporter exporter = ExcelExporter(
+      await _employeeRepository.getEmployees(),
+      await _timeTrackingRepository.getAllTimeTracking(),
+      dateViewModel.firstDayOfMonth,
+      dateViewModel.lastDayOfMonth,
     );
+    Excel excel = await exporter.createExcelFile();
 
-    List<TimeTrackModel> timeTrackingsList = await _repository
-        .getTimeTrackingDateToDateFromEmployee(firstDayOfMonth, lastDayOfMonth, employeeId);
+    final picker = SaveFilePicker()
+      ..filterSpecification = {'Documento Excel (*.xlsx)': '*.xlsx'}
+      ..defaultExtension = 'xlsx'
+      ..fileName =
+          'Hoja de Horas Mensual - Restaurante KIROKO - ${dateViewModel.getFileNameSelectedDate()}';
 
-    int totalTime = 0;
-    for (TimeTrackModel timeTrack in timeTrackingsList) {
-      if (!timeTrack.isTurnOnGoing!) {
-        totalTime += timeTrack.difference!;
-      }
+    final file = picker.getFile();
+    if (file != null) {
+      File(file.path).writeAsBytesSync(excel.save()!);
+      print('Selected file: ${file.path}');
+    } else {
+      print('No file selected.');
     }
-
-    return Duration(minutes: totalTime);
   }
 }

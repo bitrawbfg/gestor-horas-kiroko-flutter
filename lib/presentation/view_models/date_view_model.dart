@@ -22,6 +22,8 @@ class DateViewModel extends ChangeNotifier {
 
   DateTime get firstDayOfWeek => weekDates[0].copyWith(hour: 00, minute: 00, second: 00);
   DateTime get lastDayOfWeek => weekDates[6].copyWith(hour: 23, minute: 59, second: 59);
+  DateTime get firstDayOfMonth => firstDayOfWeek.copyWith(day: 1);
+  DateTime get lastDayOfMonth => firstDayOfWeek.copyWith(day: getTotalDaysOfMonth());
 
   void setSelectedDate(DateTime selectedDateByUser) {
     selectedDate = selectedDateByUser;

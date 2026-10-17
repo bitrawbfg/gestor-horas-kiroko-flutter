@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                       onPressed: () async {
                                         EmployeeModel? employeeWithTimeStart =
-                                            await timeTrackViewModel.addTimeStart(employee);
+                                            await timeTrackViewModel.addStartTimeTrackToEmployee(employee);
                                         await employeeViewModel.updateEmployee(
                                           employeeWithTimeStart!,
                                         );
@@ -166,24 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
 
                   onPressed: () async {
-                    ExcelExporter exporter = ExcelExporter();
-                    Excel excel = await exporter.createExcelFile();
-
-                    DateViewModel dateViewModel = locator<DateViewModel>();
-
-                    final picker = SaveFilePicker()
-                      ..filterSpecification = {'Documento Excel (*.xlsx)': '*.xlsx'}
-                      ..defaultExtension = 'xlsx'
-                      ..fileName =
-                          'Hoja de Horas Mensual - Restaurante KIROKO - ${dateViewModel.getFileNameSelectedDate()}';
-
-                    final file = picker.getFile();
-                    if (file != null) {
-                      File(file.path).writeAsBytesSync(excel.save()!);
-                      print('Selected file: ${file.path}');
-                    } else {
-                      print('No file selected.');
-                    }
+                    locator<TimeTrackViewModel>().exportDataToExcel();
                   },
                   child: Icon(Icons.ios_share),
                 ),

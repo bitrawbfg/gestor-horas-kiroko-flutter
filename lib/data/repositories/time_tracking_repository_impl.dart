@@ -67,7 +67,26 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
     });
   }
 
-  Future<List<TimeTrackModel>> getAllTimeTrackingFromDateToDate(
+  @override
+  Future<List<TimeTrackModel>> getTimeTrackingsBySpecificDayAndEmployee(
+    DateTime day,
+    int employeeId,
+  ) async {
+    final database = await _databaseHelper.database;
+
+    final List<Map<String, dynamic>> foundTimeTrackings = await database.rawQuery(
+      'SELECT * FROM $timeTrackingTable WHERE registered_date LIKE ? AND id_employee = ?',
+      ['${DateFormat('yyyy-MM-dd').format(day)}%', employeeId],
+    );
+    List<TimeTrackModel> timeTrackings = foundTimeTrackings
+        .map((timeTrack) => TimeTrackModel.fromMap(timeTrack))
+        .toList();
+
+    return timeTrackings;
+  }
+
+  @override
+  Future<List<TimeTrackModel>> getAllTimeTrackingsFromDateToDate(
     DateTime startDay,
     DateTime finishDay,
   ) async {
@@ -87,24 +106,8 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
     return timeTrackingsList;
   }
 
-  Future<List<TimeTrackModel>> getTimeTracksByDateAndEmployee(
-    DateTime dateTime,
-    EmployeeModel employee,
-  ) async {
-    final database = await _databaseHelper.database;
-
-    final List<Map<String, dynamic>> foundTimeTrackings = await database.rawQuery(
-      'SELECT * FROM $timeTrackingTable WHERE registered_date LIKE ? AND id_employee = ?',
-      ['${DateFormat('yyyy-MM-dd').format(dateTime)}%', employee.id],
-    );
-    List<TimeTrackModel> timeTrackings = foundTimeTrackings
-        .map((timeTrack) => TimeTrackModel.fromMap(timeTrack))
-        .toList();
-
-    return timeTrackings;
-  }
-
-  Future<List<TimeTrackModel>> getTimeTrackingDateToDateFromEmployee(
+  @override
+  Future<List<TimeTrackModel>> getTimeTrackingsFromDateToDateByEmployee(
     DateTime startDay,
     DateTime finishDay,
     int employeeId,
@@ -112,7 +115,11 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
     final database = await _databaseHelper.database;
     final List<Map<String, dynamic>> timeTrackings = await database.rawQuery(
       'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ? AND id_employee = ?',
-      ['$startDay', '$finishDay', employeeId],
+      [
+        (startDay.toString().split(' ')[0].toString()),
+        (finishDay.toString().split(' ')[0].toString()),
+        employeeId,
+      ],
     );
 
     List<TimeTrackModel> timeTrackingsList = timeTrackings
