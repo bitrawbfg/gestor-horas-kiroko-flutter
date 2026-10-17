@@ -41,7 +41,7 @@ class TimeTrackViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getTimeTrackingsBySpecificDayAndEmployee(int employeeId, DateTime date) async {
+  Future<void> getTimeTrackingsBySpecificDayAndEmployee(int employeeId, DateTime date) async {
     List<TimeTrackModel> foundTimeTrackings = await _timeTrackingRepository
         .getTimeTrackingsBySpecificDayAndEmployee(date, employeeId);
 
@@ -90,8 +90,8 @@ class TimeTrackViewModel extends ChangeNotifier {
 
     await _timeTrackingRepository.updateTimeTrack(employeeTimeTrack);
 
-    getAllTimeTrackings();
-    getTimeTrackingsBySpecificDayAndEmployee(
+    await getAllTimeTrackings();
+    await getTimeTrackingsBySpecificDayAndEmployee(
       employeeTimeTrack.idEmployee,
       employeeTimeTrack.registeredDate!,
     );
@@ -114,35 +114,14 @@ class TimeTrackViewModel extends ChangeNotifier {
     await _timeTrackingRepository.updateTimeTrack(employeeTimeTrack);
 
     await getAllTimeTrackings();
-    getTimeTrackingsBySpecificDayAndEmployee(timeTrack.idEmployee, timeTrack.registeredDate!);
+    await getTimeTrackingsBySpecificDayAndEmployee(employeeTimeTrack.idEmployee, employeeTimeTrack.registeredDate!);
   }
 
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
     await _timeTrackingRepository.deleteTimeTrack(timeTrack);
 
     await getAllTimeTrackings();
-    getTimeTrackingsBySpecificDayAndEmployee(timeTrack.idEmployee, timeTrack.registeredDate!);
-  }
-
-  Duration getDailyDurationForEmployee(int weekDateValue, int employeeId) {
-    int day = dateViewModel.weekDates[weekDateValue].day;
-
-    List<TimeTrackModel> employeeTimeTrackings = timeTrackings
-        .where((timeTrack) => employeeId == timeTrack.idEmployee)
-        .toList();
-
-    List<TimeTrackModel> timeTrackingsThatMatchDay = employeeTimeTrackings
-        .where((timeTrack) => timeTrack.registeredDate?.day == day)
-        .toList();
-
-    int sumOfRegisteredTime = 0;
-    for (TimeTrackModel timeTrack in timeTrackingsThatMatchDay) {
-      if (!timeTrack.isTurnOnGoing!) {
-        sumOfRegisteredTime += timeTrack.difference!;
-      }
-    }
-
-    return Duration(minutes: sumOfRegisteredTime);
+    await getTimeTrackingsBySpecificDayAndEmployee(timeTrack.idEmployee, timeTrack.registeredDate!);
   }
 
   Duration getDailyTimeWorkedByEmployee(int employeeId, DateTime dayToFilter) {

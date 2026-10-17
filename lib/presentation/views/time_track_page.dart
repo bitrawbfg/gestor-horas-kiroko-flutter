@@ -27,7 +27,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
       right: Panel(size: 400, overlay: true, child: SidePanelTimeTrackingWidget()),
       controller: locator<SidePanelController>(),
       child: Consumer3<EmployeeViewModel, TimeTrackViewModel, DateViewModel>(
-        builder: (context, employeeViewModel, employeeTimeTrackViewModel, dateViewModel, child) {
+        builder: (context, employeeViewModel, timeTrackViewModel, dateViewModel, child) {
           List<EmployeeModel> employees = employeeViewModel.employees;
 
           if (selectedEmployeeId == null && employees.isNotEmpty) {
@@ -69,7 +69,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                                     ),
                                     onDaySelected: (selectedDay, focusedDay) {
                                       dateViewModel.setSelectedDate(selectedDay);
-                                      locator<TimeTrackViewModel>().getAllTimeTrackings();
+                                      timeTrackViewModel.getAllTimeTrackings();
                                     },
                                   ),
                                 ),
