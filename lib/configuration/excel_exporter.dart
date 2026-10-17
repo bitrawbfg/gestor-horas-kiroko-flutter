@@ -1,9 +1,6 @@
 import 'package:excel_plus/excel_plus.dart';
-import 'package:gestor_horas/configuration/service_locator.dart';
 import 'package:gestor_horas/core/work_time_calculator.dart';
 import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
-import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
-import 'package:gestor_horas/presentation/view_models/schedule_view_model.dart';
 import 'package:intl/intl.dart';
 
 import '../data/models/employees/employee_model.dart';
@@ -14,11 +11,10 @@ class ExcelExporter {
   final DateTime firstDayOfMonth;
   final DateTime lastDayOfMonth;
 
+  final double defaultColumnWidth = 20;
+
   ExcelExporter(this.employees, this.timeTrackings, this.firstDayOfMonth, this.lastDayOfMonth);
 
-  final ScheduleViewModel scheduleViewModel = locator<ScheduleViewModel>();
-
-  final double defaultColumnWidth = 20;
 
   final CellStyle headerCellStyleRightAlign = CellStyle(
     horizontalAlign: HorizontalAlign.Right,
@@ -87,7 +83,7 @@ class ExcelExporter {
         cellStyle: headerCellStyleRightAlign,
       );
       employeeSheet.updateCell(
-        CellIndex.indexByString('F10'),
+        CellIndex.indexByString('G10'),
         TextCellValue('HORAS EXTRAS'),
         cellStyle: headerCellStyleRightAlign,
       );
@@ -205,27 +201,27 @@ class ExcelExporter {
                 : '-',
           ),
         );
-
-        // Print total hours worked in month
-        Duration timeWorkedInMonth = await WorkTimeCalculator.getTimeWorkedInRangeByEmployee(
-          timeTrackings,
-          firstDayOfMonth,
-          lastDayOfMonth,
-          employee.id!,
-        );
-        sheet.updateCell(
-          cellStyle: CellStyle(horizontalAlign: HorizontalAlign.Right),
-          CellIndex.indexByColumnRow(
-            columnIndex: lastDayOfMonth.day + 2,
-            rowIndex: i + 3,
-          ),
-          TextCellValue(
-            timeWorkedInMonth.inMinutes != 0
-                ? '${timeWorkedInMonth.inHours.remainder(24)}h ${timeWorkedInMonth.inMinutes.remainder(60)}min'
-                : '-',
-          ),
-        );
       }
+
+      // Print total hours worked in month
+      Duration timeWorkedInMonth = WorkTimeCalculator.getTimeWorkedInRangeByEmployee(
+        timeTrackings,
+        firstDayOfMonth,
+        lastDayOfMonth,
+        employee.id!,
+      );
+      sheet.updateCell(
+        cellStyle: CellStyle(horizontalAlign: HorizontalAlign.Right),
+        CellIndex.indexByColumnRow(
+          columnIndex: lastDayOfMonth.day + 2,
+          rowIndex: i + 3,
+        ),
+        TextCellValue(
+          timeWorkedInMonth.inMinutes != 0
+              ? '${timeWorkedInMonth.inHours.remainder(24)}h ${timeWorkedInMonth.inMinutes.remainder(60)}min'
+              : '-',
+        ),
+      );
     }
 
     sheet.setColumnWidth(0, 40);

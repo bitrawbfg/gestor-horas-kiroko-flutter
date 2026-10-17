@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
@@ -21,8 +19,6 @@ class TimeTrackPage extends StatefulWidget {
 }
 
 class _TimeTrackPageState extends State<TimeTrackPage> {
-  final _sidePanelController = SidePanelController();
-
   int? selectedEmployeeId;
 
   @override
@@ -37,10 +33,6 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
           if (selectedEmployeeId == null && employees.isNotEmpty) {
             selectedEmployeeId = employees.first.id;
           }
-
-          final selectedEmployee = employees
-              .where((employee) => employee.id == selectedEmployeeId)
-              .firstOrNull;
 
           return Padding(
             padding: const EdgeInsets.all(8),

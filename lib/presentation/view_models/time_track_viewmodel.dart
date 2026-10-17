@@ -9,7 +9,6 @@ import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/domain/repositories/employee_repository.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
-import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
 
 import '../../configuration/excel_exporter.dart';
 import '../../domain/repositories/time_tracking_repository.dart';
@@ -160,11 +159,12 @@ class TimeTrackViewModel extends ChangeNotifier {
   }
 
   Future<void> exportDataToExcel() async {
-    DateViewModel dateViewModel = locator<DateViewModel>();
-
     ExcelExporter exporter = ExcelExporter(
       await _employeeRepository.getEmployees(),
-      await _timeTrackingRepository.getAllTimeTracking(),
+      await _timeTrackingRepository.getAllTimeTrackingsFromDateToDate(
+        dateViewModel.firstDayOfMonth,
+        dateViewModel.lastDayOfMonth,
+      ),
       dateViewModel.firstDayOfMonth,
       dateViewModel.lastDayOfMonth,
     );
