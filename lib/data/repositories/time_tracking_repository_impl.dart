@@ -1,5 +1,4 @@
 import 'package:gestor_horas/core/database/database_helper.dart';
-import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/data/models/time_trackings/time_track_model.dart';
 import 'package:gestor_horas/domain/repositories/time_tracking_repository.dart';
 import 'package:intl/intl.dart';

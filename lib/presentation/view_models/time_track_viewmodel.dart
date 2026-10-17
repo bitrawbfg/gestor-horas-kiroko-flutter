@@ -17,6 +17,11 @@ class TimeTrackViewModel extends ChangeNotifier {
   final TimeTrackingRepository _timeTrackingRepository;
   final EmployeeRepository _employeeRepository;
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  String? errorMessage;
+
   TimeTrackViewModel(this._timeTrackingRepository, this._employeeRepository);
 
   DateViewModel dateViewModel = locator<DateViewModel>();
@@ -29,6 +34,8 @@ class TimeTrackViewModel extends ChangeNotifier {
   List<TimeTrackModel> get timeTrackingsFromEmployee => _timeTrackingsFromEmployee;
 
   Future<void> getAllTimeTrackings({List<TimeTrackModel>? timeTrackings}) async {
+    _isLoading = true;
+
     if (timeTrackings == null) {
       _timeTrackings = await _timeTrackingRepository.getAllTimeTrackingsFromDateToDate(
         dateViewModel.firstDayOfWeek,
@@ -38,6 +45,7 @@ class TimeTrackViewModel extends ChangeNotifier {
       _timeTrackings = timeTrackings;
     }
 
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -47,16 +55,6 @@ class TimeTrackViewModel extends ChangeNotifier {
 
     _timeTrackingsFromEmployee = foundTimeTrackings;
     notifyListeners();
-  }
-
-  Future<List<TimeTrackModel>> getTimeTrackingsByDateAndEmployee(
-    DateTime dateTime,
-    EmployeeModel employee,
-  ) async {
-    return await _timeTrackingRepository.getTimeTrackingsBySpecificDayAndEmployee(
-      dateTime,
-      employee.id!,
-    );
   }
 
   Future<EmployeeModel?> addStartTimeTrackToEmployee(EmployeeModel employee) async {

@@ -16,6 +16,8 @@ class EmployeeViewModel extends ChangeNotifier {
 
   set setSelectedEmployee(EmployeeModel value) {
     _selectedEmployee = value;
+
+    notifyListeners();
   }
 
   Future<void> loadEmployees({List<EmployeeModel>? employees}) async {
