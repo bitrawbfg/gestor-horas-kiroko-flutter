@@ -54,12 +54,30 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       // Calendar widget
                       TimeTrackCalendar(
                         timeTrackViewModel: timeTrackViewModel,
                         dateViewModel: dateViewModel,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent.shade100),
+
+                        onPressed: () async {
+                          locator<TimeTrackViewModel>().exportDataToExcel();
+                        },
+                        child: SizedBox(
+                          height: 50,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.ios_share, size: 24),
+                              SizedBox(width: 10),
+                              Text('Exportar'),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -82,5 +100,3 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
     );
   }
 }
-
-
