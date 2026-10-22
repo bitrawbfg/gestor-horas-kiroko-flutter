@@ -38,14 +38,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
         DateTime lastDayOfWeek = dateViewModel.lastDayOfWeek;
 
         return SidePanel(
-          right: Panel(
-            size: 400,
-            overlay: true,
-            child: SidePanelTimeTracking(
-              timeTrackViewModel: timeTrackViewModel,
-              employeeViewModel: employeeViewModel,
-            ),
-          ),
+          right: Panel(size: 600, overlay: true, child: SidePanelTimeTracking()),
           controller: locator<SidePanelController>(),
           child: Padding(
             padding: const EdgeInsets.all(8),
@@ -62,7 +55,9 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                         dateViewModel: dateViewModel,
                       ),
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent.shade100),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orangeAccent.shade100,
+                        ),
 
                         onPressed: () async {
                           locator<TimeTrackViewModel>().exportDataToExcel();
