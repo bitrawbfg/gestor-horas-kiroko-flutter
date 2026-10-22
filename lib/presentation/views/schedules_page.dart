@@ -1,11 +1,7 @@
-import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:excel_plus/excel_plus.dart';
-import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/configuration/excel_exporter.dart';
 import 'package:gestor_horas/data/models/employee_selection_data.dart';
 import 'package:gestor_horas/data/models/schedules/schedule_model.dart';
 import 'package:gestor_horas/data/models/shift_time_data.dart';
@@ -441,7 +437,7 @@ class MeetingDataSource extends CalendarDataSource<Meeting> {
   @override
   Color getColor(int index) {
     return appointments![index].background ??
-        Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+        Color((math.Random().nextDouble() * 0xFFFFFF).toInt());
   }
 
   @override

@@ -210,6 +210,7 @@ class _SidePanelTimeTrackingState extends State<SidePanelTimeTracking> {
                                                           finishTime!,
                                                         );
 
+                                                        if (!context.mounted) return; // https://stackoverflow.com/questions/68871880/do-not-use-buildcontexts-across-async-gaps
                                                         ScaffoldMessenger.of(context).showSnackBar(
                                                           SnackBar(
                                                             content: Text('Actualizado tiempo'),

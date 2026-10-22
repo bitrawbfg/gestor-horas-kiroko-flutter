@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gestor_horas/data/models/employee_selection_data.dart';
 import 'package:gestor_horas/data/models/schedules/schedule_model.dart';
 import 'package:gestor_horas/data/repositories/schedule_repository_impl.dart';
 

@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:gestor_horas/configuration/service_locator.dart';
 import 'package:gestor_horas/data/models/employees/employee_model.dart';
 import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
-import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class EmployeesPage extends StatefulWidget {

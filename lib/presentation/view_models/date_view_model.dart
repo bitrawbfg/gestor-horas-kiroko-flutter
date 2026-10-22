@@ -7,7 +7,6 @@ class DateViewModel extends ChangeNotifier {
   final calendarMaxSelectableData = DateTime(2100);
 
   DateTime selectedDate = DateTime.now();
-  bool isCalendarOpen = false;
 
   DateTime get _mostRecentMonday => DateTime(
     selectedDate.year,
@@ -27,7 +26,6 @@ class DateViewModel extends ChangeNotifier {
 
   void setSelectedDate(DateTime selectedDateByUser) {
     selectedDate = selectedDateByUser;
-    isCalendarOpen = false;
 
     /// Closes the calendar view when a date is selected
     notifyListeners();
