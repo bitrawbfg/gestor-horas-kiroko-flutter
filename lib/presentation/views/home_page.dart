@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_side_menu/flutter_side_menu.dart';
-import 'package:gestor_horas/data/models/employees/employee_model.dart';
-import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
-import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
-import 'package:gestor_horas/presentation/views/schedules_page.dart';
-import 'package:gestor_horas/presentation/views/time_track_page.dart';
+import 'package:gestor_horas/features/employees/domain/entities/employee_entity.dart';
+import 'package:gestor_horas/features/employees/presentation/viewmodels/employee_viewmodel.dart';
+import 'package:gestor_horas/features/time-trackings/presentation/viewmodels/time_track_viewmodel.dart';
+import 'package:gestor_horas/features/schedules/presentation/pages/schedules_page.dart';
+import 'package:gestor_horas/features/time-trackings/presentation/pages/time_track_page.dart';
 import 'package:provider/provider.dart';
 
-import 'employees_page.dart';
+import '../../features/employees/presentation/pages/employees_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       crossAxisUnconstrained: true,
                       menuChildren: employeeViewModel.employees
                           .map(
-                            (EmployeeModel employee) => SizedBox(
+                            (EmployeeEntity employee) => SizedBox(
                               width: 220,
                               child: ListTile(
                                 contentPadding: EdgeInsets.fromLTRB(20, 5, 0, 5),
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           foregroundColor: Colors.blue,
                                         ),
                                         onPressed: () async {
-                                          EmployeeModel? employeeWithTimeStart =
+                                          EmployeeEntity? employeeWithTimeStart =
                                               await timeTrackViewModel.addStartTimeTrackToEmployee(
                                                 employee,
                                               );

@@ -1,8 +1,8 @@
-import 'package:gestor_horas/data/models/employees/employee_model.dart';
+import 'package:gestor_horas/features/employees/domain/entities/employee_entity.dart';
 import 'package:gestor_horas/data/models/weekdays_enum.dart';
 
 class EmployeeSelectionData {
-  EmployeeModel? selectedEmployee;
+  EmployeeEntity? selectedEmployee;
   WeekdaysEnum? weekdayEnum;
 
   EmployeeSelectionData({

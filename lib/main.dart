@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:gestor_horas/configuration/service_locator.dart';
+import 'package:gestor_horas/core/injection.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
-import 'package:gestor_horas/presentation/view_models/schedule_view_model.dart';
-import 'package:gestor_horas/presentation/view_models/time_track_viewmodel.dart';
-import 'package:gestor_horas/presentation/view_models/employee_viewmodel.dart';
-import 'package:gestor_horas/presentation/view_models/side_panel_view_model.dart';
+import 'package:gestor_horas/features/schedules/presentation/viewmodels/schedule_view_model.dart';
+import 'package:gestor_horas/features/time-trackings/presentation/viewmodels/time_track_viewmodel.dart';
+import 'package:gestor_horas/features/employees/presentation/viewmodels/employee_viewmodel.dart';
+import 'package:gestor_horas/features/time-trackings/presentation/viewmodels/side_panel_view_model.dart';
 import 'package:gestor_horas/presentation/views/home_page.dart';
 import 'package:provider/provider.dart';
 
