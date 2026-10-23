@@ -7,7 +7,7 @@ abstract class EmployeeRepository {
   Future<Either<Failure, List<EmployeeEntity>>> getEmployeesByName(String name);
   Future<Either<Failure, List<EmployeeEntity>>> getEmployees();
 
-  Future<Either<Failure, void>> insertEmployee(EmployeeEntity employee);
+  Future<Either<Failure, int>> insertEmployee(EmployeeEntity employee);
   Future<Either<Failure, void>> updateEmployee(EmployeeEntity employee);
   Future<Either<Failure, void>> deleteEmployee(EmployeeEntity employee);
 }

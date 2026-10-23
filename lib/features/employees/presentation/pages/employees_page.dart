@@ -1,5 +1,7 @@
+import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gestor_horas/core/error/failure.dart';
 import 'package:gestor_horas/core/injection.dart';
 import 'package:gestor_horas/features/employees/domain/entities/employee_entity.dart';
 import 'package:gestor_horas/features/employees/presentation/viewmodels/employee_viewmodel.dart';
@@ -29,105 +31,123 @@ class _EmployeesPageState extends State<EmployeesPage> {
       builder: (context) {
         bool hasContract = employee?.hasContract ?? false;
 
-        return AlertDialog(
-          title: Text(employee == null ? 'Añadir un nuevo empleado' : 'Editar empleado'),
-          content: SizedBox(
-            width: 600,
-            height: 100,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
+        return Consumer<EmployeeViewModel>(
+          builder: (BuildContext context, EmployeeViewModel viewModel, Widget? child) {
+            return AlertDialog(
+              title: Text(employee == null ? 'Añadir un nuevo empleado' : 'Editar empleado'),
+              content: SizedBox(
+                width: 600,
+                height: 100,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: TextFormField(
-                          autofocus: true,
-                          controller: _nameController,
-                          decoration: InputDecoration(labelText: 'Nombre'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Inserta un nombre por favor';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      SizedBox(width: 50),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _hoursInContractController,
-                          decoration: InputDecoration(labelText: 'Horas por contrato'),
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return null;
-                            }
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              autofocus: true,
+                              controller: _nameController,
+                              decoration: InputDecoration(labelText: 'Nombre'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Inserta un nombre por favor';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 50),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _hoursInContractController,
+                              decoration: InputDecoration(labelText: 'Horas por contrato'),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return null;
+                                }
 
-                            int hours = int.parse(value);
+                                int hours = int.parse(value);
 
-                            if (hours < 0 || hours > 40) {
-                              return 'Debe estar entre 1 y 40 horas semanales';
-                            }
+                                if (hours < 0 || hours > 40) {
+                                  return 'Debe estar entre 1 y 40 horas semanales';
+                                }
 
-                            return null;
-                          },
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                        ),
+                                return null;
+                              },
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  String name = _nameController.text;
-                  String hours = _hoursInContractController.text;
-                  int hoursInContract = hours.isEmpty ? 0 : int.parse(hours);
+              actions: [
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      String name = _nameController.text;
+                      String hours = _hoursInContractController.text;
+                      int hoursInContract = hours.isEmpty ? 0 : int.parse(hours);
 
-                  EmployeeEntity currentEmployee =
-                      employee?.copyWith(name: name, hoursInContract: hoursInContract) ??
-                      EmployeeEntity(name: name, hoursInContract: hoursInContract);
+                      EmployeeEntity currentEmployee =
+                          employee?.copyWith(name: name, hoursInContract: hoursInContract) ??
+                          EmployeeEntity(name: name, hoursInContract: hoursInContract);
 
-                  if (employee == null) {
-                    locator<EmployeeViewModel>().addEmployee(currentEmployee);
-                  } else {
-                    locator<EmployeeViewModel>().updateEmployee(currentEmployee);
-                  }
 
-                  Navigator.pop(context);
+                      if (employee == null) {
+                        await viewModel.addEmployee(currentEmployee);
+                      } else {
+                        await viewModel.updateEmployee(currentEmployee);
+                      }
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(employee == null ? 'Empleado añadido' : 'Empleado actualizado'),
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(foregroundColor: Colors.green),
-              child: Text(employee == null ? 'Añadir nuevo empleado' : 'Editar empleado'),
-            ),
+                      // Wait for the response of the action
+                      if (!context.mounted) return;
 
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.redAccent,
-                backgroundColor: Colors.redAccent[50],
-              ),
-              child: Text('Cancelar'),
-            ),
-          ],
+                      if (!viewModel.hasError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              employee == null ? 'Empleado añadido' : 'Empleado actualizado',
+                            ),
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Ha ocurrido un error.\n${viewModel.error!}')),
+                        );
+
+                        viewModel.clearError();
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(foregroundColor: Colors.green),
+                  child: Text(employee == null ? 'Añadir nuevo empleado' : 'Editar empleado'),
+                ),
+
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.redAccent,
+                    backgroundColor: Colors.redAccent[50],
+                  ),
+                  child: Text('Cancelar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -244,7 +264,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      locator<EmployeeViewModel>().deleteEmployee(employee);
+                                      viewModel.deleteEmployee(employee);
                                     },
                                     icon: Icon(Icons.delete),
                                   ),

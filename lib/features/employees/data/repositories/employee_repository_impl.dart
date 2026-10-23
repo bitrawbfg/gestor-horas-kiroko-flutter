@@ -4,8 +4,11 @@ import 'package:gestor_horas/features/employees/data/datasources/employee_local_
 import 'package:gestor_horas/features/employees/data/models/employee_model.dart';
 import 'package:gestor_horas/features/employees/domain/entities/employee_entity.dart';
 import 'package:gestor_horas/features/employees/domain/repositories/employee_repository.dart';
+import 'package:logger/logger.dart';
+import 'package:sqflite/sqflite.dart';
 
 class EmployeeRepositoryImpl implements EmployeeRepository {
+  final logger = Logger();
   final EmployeeLocalDataSource localDataSource;
 
   EmployeeRepositoryImpl({required this.localDataSource});
@@ -13,11 +16,25 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   @override
   Future<Either<Failure, int>> insertEmployee(EmployeeEntity employee) async {
     try {
-      int insertedEmployeeId = await localDataSource.insertEmployee(EmployeeModel.fromEntity(employee));
+      int insertedEmployeeId = await localDataSource.insertEmployee(
+        EmployeeModel.fromEntity(employee),
+      );
 
       return Right(insertedEmployeeId);
-    } catch (exception) {
-      return Left(UnexpectedFailure(exception.toString()));
+    } on DatabaseException catch (exception, stackTrace) {
+      String errorMessage = '';
+
+      if (exception.getResultCode() == 5) {
+        errorMessage = 'La base de datos está bloqueada';
+      }
+
+      logger.e(errorMessage, error: exception, stackTrace: stackTrace);
+
+      return Left(DatabaseLockedFailure(errorMessage));
+    } catch (exception, stackTrace) {
+      logger.e('Ha ocurrido un error inesperado. ', error: exception, stackTrace: stackTrace);
+
+      return Left(UnexpectedFailure('Ha ocurrido un error inesperado: $exception'));
     }
   }
 
@@ -42,7 +59,6 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       return Left(UnexpectedFailure(exception.toString()));
     }
   }
-
 
   @override
   Future<Either<Failure, List<EmployeeEntity>>> getEmployees() async {

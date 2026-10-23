@@ -30,7 +30,7 @@ class EmployeeViewModel extends BaseViewModel {
     if (employees == null) {
       Either<Failure, List<EmployeeEntity>> employees = await _employeesRepository.getEmployees();
 
-      employees.fold((failure) => print(failure.message), (employees) => _employees = employees);
+      employees.fold((failure) => setError(failure.message), (employees) => _employees = employees);
 
       for (EmployeeEntity employee in _employees) {
         int index = _employees.indexOf(employee);
@@ -85,8 +85,14 @@ class EmployeeViewModel extends BaseViewModel {
   }
 
   Future<void> addEmployee(EmployeeEntity employee) async {
-    await _employeesRepository.insertEmployee(employee);
-    await loadEmployees();
+    Either<Failure, int> result = await _employeesRepository.insertEmployee(employee);
+
+    result.fold((failure) {
+      setError(failure.message);
+      notifyListeners();
+    }, (employeeId) async {
+      await loadEmployees();
+    });
   }
 
   Future<void> updateEmployee(EmployeeEntity employee) async {
