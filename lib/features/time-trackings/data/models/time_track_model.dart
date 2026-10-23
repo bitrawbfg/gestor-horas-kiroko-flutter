@@ -35,7 +35,14 @@ abstract class TimeTrackModel with _$TimeTrackModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      'id': id,
+      'id_employee': idEmployee,
+      'start_time': startTime?.toIso8601String(),
+      'finish_time': finishTime?.toIso8601String(),
+      'registered_date': registeredDate?.toIso8601String(),
+      'difference': difference,
+    };
   }
 
   TimeTrackEntity toEntity() => TimeTrackEntity(
