@@ -5,7 +5,6 @@ import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
 import 'package:gestor_horas/features/schedules/presentation/viewmodels/schedule_view_model.dart';
 import 'package:gestor_horas/features/time-trackings/presentation/viewmodels/time_track_viewmodel.dart';
 import 'package:gestor_horas/features/employees/presentation/viewmodels/employee_viewmodel.dart';
-import 'package:gestor_horas/features/time-trackings/presentation/viewmodels/side_panel_view_model.dart';
 import 'package:gestor_horas/presentation/views/home_page.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +16,6 @@ void main() {
         ChangeNotifierProvider(create: (_) => locator<EmployeeViewModel>()..loadEmployees()),
         ChangeNotifierProvider(create: (_) => locator<TimeTrackViewModel>()..getAllTimeTrackings()),
         ChangeNotifierProvider(create: (_) => locator<DateViewModel>()),
-        ChangeNotifierProvider(create: (_) => locator<SidePanelViewModel>()),
         ChangeNotifierProvider(create: (_) => locator<ScheduleViewModel>()..loadSchedules()),
       ],
       child: const MyApp(),

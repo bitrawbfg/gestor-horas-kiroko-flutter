@@ -11,8 +11,6 @@ import 'package:get_it/get_it.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
 import 'package:side_panel/side_panel.dart';
 
-import '../features/time-trackings/presentation/viewmodels/side_panel_view_model.dart';
-
 final locator = GetIt.instance;
 
 void setupLocator() {
@@ -28,10 +26,9 @@ void setupLocator() {
       timeTrackRepository: timeTrackingRepository,
     ),
   );
-  locator.registerLazySingleton<SidePanelViewModel>(() => SidePanelViewModel());
   locator.registerLazySingleton<SidePanelController>(() => SidePanelController());
   locator.registerLazySingleton<ScheduleViewModel>(() => ScheduleViewModel());
   locator.registerLazySingleton<TimeTrackViewModel>(
-    () => TimeTrackViewModel(timeTrackingRepository, employeeRepository),
+    () => TimeTrackViewModel(timeTrackingRepository),
   );
 }
