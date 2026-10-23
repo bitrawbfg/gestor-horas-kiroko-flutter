@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:gestor_horas/core/injection.dart';
 import 'package:gestor_horas/core/usecases/work_time_calculator.dart';
 import 'package:gestor_horas/features/time-trackings/data/models/time_track_model.dart';
@@ -10,9 +11,8 @@ import '../../domain/repositories/time_tracking_repository.dart';
 
 class TimeTrackViewModel extends BaseViewModel {
   final TimeTrackingRepository _timeTrackingRepository;
-  final EmployeeRepository _employeeRepository;
 
-  TimeTrackViewModel(this._timeTrackingRepository, this._employeeRepository);
+  TimeTrackViewModel(this._timeTrackingRepository);
 
   DateViewModel dateViewModel = locator<DateViewModel>();
 
@@ -65,24 +65,62 @@ class TimeTrackViewModel extends BaseViewModel {
   }
 
   Future<void> addTimeFinish(EmployeeEntity employee) async {
+    DateTime startTime = employee.currentTimeTrack!.startTime!;
     DateTime finishTime = DateTime.now();
-    int differenceBetweenTimes = finishTime
-        .difference(employee.currentTimeTrack!.startTime!)
-        .inMinutes;
 
-    TimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
-      finishTime: finishTime,
-      registeredDate: finishTime.copyWith(hour: 23, minute: 59, second: 59),
-      difference: differenceBetweenTimes,
-    );
+    if ((DateUtils.isSameDay(employee.currentTimeTrack!.startTime!, finishTime))) {
+      int differenceBetweenTimes = finishTime.difference(startTime).inMinutes;
 
-    await _timeTrackingRepository.updateTimeTrack(employeeTimeTrack);
+      TimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
+        finishTime: finishTime,
+        registeredDate: finishTime.copyWith(hour: 23, minute: 59, second: 59),
+        difference: differenceBetweenTimes,
+      );
+
+      await _timeTrackingRepository.updateTimeTrack(employeeTimeTrack);
+    } else {
+      // Finish the current day at 23:59:59
+      DateTime finishFirstDay = finishTime.copyWith(
+        day: startTime.day,
+        month: startTime.month,
+        year: startTime.year,
+        hour: 23,
+        minute: 59,
+        second: 59,
+      );
+      int firstDifferenceBetweenTimes = finishFirstDay.difference(startTime).inMinutes;
+      TimeTrackModel employeeTimeTrack = employee.currentTimeTrack!.copyWith(
+        finishTime: startTime.copyWith(hour: 23, minute: 59, second: 59),
+        registeredDate: finishFirstDay,
+        difference: firstDifferenceBetweenTimes,
+      );
+      await _timeTrackingRepository.updateTimeTrack(employeeTimeTrack);
+
+      // Add a new entry for the next day starting at 00:00:00
+      DateTime startSecondDay = DateUtils.addDaysToDate(
+        startTime.copyWith(hour: 00, minute: 00, second: 00),
+        1,
+      );
+      DateTime finishSecondDay = startSecondDay.copyWith(
+        hour: finishTime.hour,
+        minute: finishTime.minute,
+        second: finishTime.second,
+      );
+      int secondDifferenceBetweenTimes = finishSecondDay.difference(startSecondDay).inMinutes;
+
+      if (secondDifferenceBetweenTimes > 0) {
+        TimeTrackModel secondTimeTrackStart = employee.currentTimeTrack!.copyWith(
+          id: null,
+          startTime: startSecondDay,
+          finishTime: finishSecondDay,
+          registeredDate: startSecondDay.copyWith(hour: 23, minute: 59, second: 59),
+          difference: secondDifferenceBetweenTimes,
+        );
+        await _timeTrackingRepository.insertTimeTrack(secondTimeTrackStart);
+      }
+    }
 
     await getAllTimeTrackings();
-    await getTimeTrackingsBySpecificDayAndEmployee(
-      employeeTimeTrack.idEmployee,
-      employeeTimeTrack.registeredDate!,
-    );
   }
 
   Future<void> editTimeTrack(
@@ -102,14 +140,16 @@ class TimeTrackViewModel extends BaseViewModel {
     await _timeTrackingRepository.updateTimeTrack(employeeTimeTrack);
 
     await getAllTimeTrackings();
-    await getTimeTrackingsBySpecificDayAndEmployee(employeeTimeTrack.idEmployee, employeeTimeTrack.registeredDate!);
+    await getTimeTrackingsBySpecificDayAndEmployee(
+      employeeTimeTrack.idEmployee,
+      employeeTimeTrack.registeredDate!,
+    );
   }
 
   Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
     await _timeTrackingRepository.deleteTimeTrack(timeTrack);
 
     await getAllTimeTrackings();
-    await getTimeTrackingsBySpecificDayAndEmployee(timeTrack.idEmployee, timeTrack.registeredDate!);
   }
 
   Duration getDailyTimeWorkedByEmployee(int employeeId, DateTime dayToFilter) {
