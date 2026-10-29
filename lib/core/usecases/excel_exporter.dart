@@ -16,7 +16,6 @@ class ExcelExporter {
 
   ExcelExporter(this.employees, this.timeTrackings, this.firstDayOfMonth, this.lastDayOfMonth);
 
-
   final CellStyle headerCellStyleRightAlign = CellStyle(
     horizontalAlign: HorizontalAlign.Right,
     fontColorHex: ExcelColor.grey,
@@ -90,12 +89,13 @@ class ExcelExporter {
       );
 
       int previousWeekNumber = firstDayOfMonth.weekNumber % 4;
+      int currentWeekNumber = 1;
       bool showWeek = true;
 
       int rowPosition = 10;
       for (int dayOfMonth = 0; dayOfMonth < lastDayOfMonth.day; dayOfMonth++) {
         final DateTime currentDate = firstDayOfMonth.copyWith(day: dayOfMonth + 1);
-        
+
         int actualWeekNumber = currentDate.weekNumber % 4;
         int rowWeekNumber = dayOfMonth + rowPosition;
 
@@ -108,10 +108,11 @@ class ExcelExporter {
           employeeSheet.updateCell(
             cellStyle: CellStyle(bold: true),
             CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowWeekNumber),
-            TextCellValue(actualWeekNumber != 0 ? 'Semana $actualWeekNumber' : 'Semana 4'),
+            TextCellValue('Semana $currentWeekNumber'),
           );
 
           rowPosition += 1;
+          currentWeekNumber++;
           rowWeekNumber = dayOfMonth + rowPosition;
           print(actualWeekNumber != 0 ? 'Semana $actualWeekNumber' : 'Semana 4');
           showWeek = false;
@@ -162,6 +163,25 @@ class ExcelExporter {
               timeTrackingsOfEmployee.isEmpty
                   ? ''
                   : DateFormat.Hm('es_ES').format(lastEntryOfTheDay),
+            ),
+          );
+
+          Duration totalTimeWorkedInDay = Duration();
+          if (timeTrackingsOfEmployee.length > 1) {
+            for (TimeTrackModel timeTrack in timeTrackingsOfEmployee) {
+              totalTimeWorkedInDay += Duration(minutes: timeTrack.difference!);
+            }
+          } else {
+            totalTimeWorkedInDay = Duration(minutes: timeTrackingsOfEmployee.first.difference!);
+          }
+
+          // Print total time of day
+          employeeSheet.updateCell(
+            CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: rowWeekNumber),
+            TextCellValue(
+              totalTimeWorkedInDay.inMinutes == 0
+                  ? ''
+                  : '${totalTimeWorkedInDay.inHours.remainder(24)}h ${totalTimeWorkedInDay.inMinutes.remainder(60)}m',
             ),
           );
         }
@@ -239,10 +259,7 @@ class ExcelExporter {
       );
       sheet.updateCell(
         cellStyle: CellStyle(horizontalAlign: HorizontalAlign.Right),
-        CellIndex.indexByColumnRow(
-          columnIndex: lastDayOfMonth.day + 2,
-          rowIndex: i + 3,
-        ),
+        CellIndex.indexByColumnRow(columnIndex: lastDayOfMonth.day + 2, rowIndex: i + 3),
         TextCellValue(
           timeWorkedInMonth.inMinutes != 0
               ? '${timeWorkedInMonth.inHours.remainder(24)}h ${timeWorkedInMonth.inMinutes.remainder(60)}min'
