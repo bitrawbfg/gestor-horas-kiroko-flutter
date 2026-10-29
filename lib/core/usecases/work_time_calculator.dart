@@ -42,6 +42,12 @@ class WorkTimeCalculator {
     return _calculateTotalWorkedTime(timeTrackingsInRange);
   }
 
+  static int getNumberOfWeekByDay(DateTime day) {
+    int rawNumberOfWeek = day.weekday % 4;
+
+    return rawNumberOfWeek == 0 ? 4 : rawNumberOfWeek;
+  }
+
   static Duration _calculateTotalWorkedTime(List<TimeTrackModel> timeTrackingsInDay) {
     int sumOfTime = 0;
     for (TimeTrackModel timeTrack in timeTrackingsInDay) {

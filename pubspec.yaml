@@ -60,6 +60,7 @@ dependencies:
   injectable: ^3.0.0
   mocktail: ^1.0.5
   logger: ^2.8.0
+  week_number: ^1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

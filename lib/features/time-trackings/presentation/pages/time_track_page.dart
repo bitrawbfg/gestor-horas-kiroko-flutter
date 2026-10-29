@@ -60,7 +60,7 @@ class _TimeTrackPageState extends State<TimeTrackPage> {
                         ),
 
                         onPressed: () async {
-                          // locator<TimeTrackViewModel>().exportDataToExcel();
+                          locator<TimeTrackViewModel>().exportDataToExcel();
                         },
                         child: SizedBox(
                           height: 50,

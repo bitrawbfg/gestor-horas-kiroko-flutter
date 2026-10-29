@@ -2,6 +2,7 @@ import 'package:excel_plus/excel_plus.dart';
 import 'package:gestor_horas/core/usecases/work_time_calculator.dart';
 import 'package:gestor_horas/features/time-trackings/data/models/time_track_model.dart';
 import 'package:intl/intl.dart';
+import 'package:week_number/iso.dart';
 
 import '../../features/employees/domain/entities/employee_entity.dart';
 
@@ -88,9 +89,35 @@ class ExcelExporter {
         cellStyle: headerCellStyleRightAlign,
       );
 
-      int rowsToSkip = 10;
+      int previousWeekNumber = firstDayOfMonth.weekNumber % 4;
+      bool showWeek = true;
+
+      int rowPosition = 10;
       for (int dayOfMonth = 0; dayOfMonth < lastDayOfMonth.day; dayOfMonth++) {
         final DateTime currentDate = firstDayOfMonth.copyWith(day: dayOfMonth + 1);
+        
+        int actualWeekNumber = currentDate.weekNumber % 4;
+        int rowWeekNumber = dayOfMonth + rowPosition;
+
+        if (actualWeekNumber != previousWeekNumber) {
+          previousWeekNumber = actualWeekNumber;
+          showWeek = true;
+        }
+
+        if (showWeek) {
+          employeeSheet.updateCell(
+            cellStyle: CellStyle(bold: true),
+            CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowWeekNumber),
+            TextCellValue(actualWeekNumber != 0 ? 'Semana $actualWeekNumber' : 'Semana 4'),
+          );
+
+          rowPosition += 1;
+          rowWeekNumber = dayOfMonth + rowPosition;
+          print(actualWeekNumber != 0 ? 'Semana $actualWeekNumber' : 'Semana 4');
+          showWeek = false;
+        }
+
+        print('    Día $currentDate');
 
         List<TimeTrackModel> timeTrackingsOfEmployee = timeTrackings.where((timeTrack) {
           DateTime registeredDate = timeTrack.registeredDate!;
@@ -102,13 +129,13 @@ class ExcelExporter {
 
         // Print date
         employeeSheet.updateCell(
-          CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: dayOfMonth + rowsToSkip),
-          TextCellValue(DateFormat.yMd().format(currentDate)),
+          CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowWeekNumber),
+          TextCellValue(DateFormat('dd/MM/yyyy').format(currentDate)),
         );
 
         // Print day of the week
         employeeSheet.updateCell(
-          CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: dayOfMonth + rowsToSkip),
+          CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowWeekNumber),
           TextCellValue(DateFormat.EEEE('es_ES').format(currentDate)),
         );
 
@@ -120,7 +147,7 @@ class ExcelExporter {
 
           // Print first time track time of the day
           employeeSheet.updateCell(
-            CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: dayOfMonth + rowsToSkip),
+            CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: rowWeekNumber),
             TextCellValue(
               timeTrackingsOfEmployee.isEmpty
                   ? ''
@@ -130,7 +157,7 @@ class ExcelExporter {
 
           // Print last time track time of the day
           employeeSheet.updateCell(
-            CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: dayOfMonth + rowsToSkip),
+            CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: rowWeekNumber),
             TextCellValue(
               timeTrackingsOfEmployee.isEmpty
                   ? ''

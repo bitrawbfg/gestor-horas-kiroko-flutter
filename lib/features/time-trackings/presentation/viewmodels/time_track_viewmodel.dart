@@ -1,9 +1,14 @@
+import 'dart:io';
+
+import 'package:excel_plus/excel_plus.dart';
+import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:flutter/material.dart';
 import 'package:gestor_horas/core/injection.dart';
+import 'package:gestor_horas/core/usecases/excel_exporter.dart';
 import 'package:gestor_horas/core/usecases/work_time_calculator.dart';
+import 'package:gestor_horas/features/employees/presentation/viewmodels/employee_viewmodel.dart';
 import 'package:gestor_horas/features/time-trackings/data/models/time_track_model.dart';
 import 'package:gestor_horas/features/employees/domain/entities/employee_entity.dart';
-import 'package:gestor_horas/features/employees/domain/repositories/employee_repository.dart';
 import 'package:gestor_horas/presentation/view_models/base_viewmodel.dart';
 import 'package:gestor_horas/presentation/view_models/date_view_model.dart';
 
@@ -165,9 +170,9 @@ class TimeTrackViewModel extends BaseViewModel {
     );
   }
 
-  /*Future<void> exportDataToExcel() async {
+  Future<void> exportDataToExcel() async {
     ExcelExporter exporter = ExcelExporter(
-      await _employeeRepository.getEmployees(),
+      locator<EmployeeViewModel>().employees,
       await _timeTrackingRepository.getAllTimeTrackingsFromDateToDate(
         dateViewModel.firstDayOfMonth,
         dateViewModel.lastDayOfMonth,
@@ -190,5 +195,5 @@ class TimeTrackViewModel extends BaseViewModel {
     } else {
       print('No file selected.');
     }
-  }*/
+  }
 }
