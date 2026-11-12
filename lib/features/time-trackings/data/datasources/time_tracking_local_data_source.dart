@@ -63,22 +63,20 @@ class TimeTrackingLocalDataSource {
   ) async {
     final database = await _databaseHelper.database;
 
-    int changesMade = 0;
-
     await database.transaction((transaction) async {
-      changesMade = await transaction.update(
+      int changesMade = await transaction.update(
         timeTrackTableName,
         TimeTrackModel.fromEntity(firstTimeTrack).toJson(),
-        where: 'id_employee = ?',
-        whereArgs: [employeeId],
+        where: 'id = ?',
+        whereArgs: [firstTimeTrack.id],
       );
 
-      transaction.insert(timeTrackTableName, TimeTrackModel.fromEntity(secondTimeTrack).toJson());
-    });
+      if (changesMade == 0) {
+        throw NoObjectsModifiedException('El registro de tiempo no se ha podido modificar.');
+      }
 
-    if (changesMade == 0) {
-      throw NoObjectsModifiedException('El registro de tiempo no se ha podido modificar.');
-    }
+      await transaction.insert(timeTrackTableName, TimeTrackModel.fromEntity(secondTimeTrack).toJson());
+    });
   }
 
   Future<int> insertTimeTrack(TimeTrackEntity timeTrack) async {
