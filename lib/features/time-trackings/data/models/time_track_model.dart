@@ -10,27 +10,19 @@ abstract class TimeTrackModel with _$TimeTrackModel {
   const factory TimeTrackModel({
     int? id,
     required int idEmployee,
-    DateTime? startTime,
+    required DateTime startTime,
     DateTime? finishTime,
-    DateTime? registeredDate,
-    int? difference,
-    @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   }) = _TimeTrackModel;
 
   factory TimeTrackModel.fromJson(Map<String, dynamic> map) {
-    final startTime = map['start_time'] as String?;
+    final startTime = map['start_time'] as String;
     final finishTime = map['finish_time'] as String?;
-    final registeredDate = map['registered_date'] as String?;
 
     return TimeTrackModel(
       id: map['id'],
       idEmployee: map['id_employee'],
-      startTime: startTime == null ? null : DateTime.tryParse(startTime),
+      startTime: DateTime.parse(startTime),
       finishTime: finishTime == null ? null : DateTime.tryParse(finishTime),
-      registeredDate: registeredDate == null ? null : DateTime.tryParse(registeredDate),
-      difference: map['difference'],
-      isTurnOnGoing:
-          startTime != null && startTime.isNotEmpty && (finishTime == null || finishTime.isEmpty),
     );
   }
 
@@ -38,10 +30,8 @@ abstract class TimeTrackModel with _$TimeTrackModel {
     return {
       'id': id,
       'id_employee': idEmployee,
-      'start_time': startTime?.toIso8601String(),
+      'start_time': startTime.toIso8601String(),
       'finish_time': finishTime?.toIso8601String(),
-      'registered_date': registeredDate?.toIso8601String(),
-      'difference': difference,
     };
   }
 
@@ -50,9 +40,6 @@ abstract class TimeTrackModel with _$TimeTrackModel {
     idEmployee: idEmployee,
     startTime: startTime,
     finishTime: finishTime,
-    registeredDate: registeredDate,
-    difference: difference,
-    isTurnOnGoing: isTurnOnGoing,
   );
 
   factory TimeTrackModel.fromEntity(TimeTrackEntity timeTrackEntity) => TimeTrackModel(
@@ -60,8 +47,5 @@ abstract class TimeTrackModel with _$TimeTrackModel {
     idEmployee: timeTrackEntity.idEmployee,
     startTime: timeTrackEntity.startTime,
     finishTime: timeTrackEntity.finishTime,
-    registeredDate: timeTrackEntity.registeredDate,
-    difference: timeTrackEntity.difference,
-    isTurnOnGoing: timeTrackEntity.isTurnOnGoing,
   );
 }

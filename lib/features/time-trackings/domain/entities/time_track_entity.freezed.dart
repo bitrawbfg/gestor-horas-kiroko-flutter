@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TimeTrackEntity {
 
- int? get id; int get idEmployee; DateTime? get startTime; DateTime? get finishTime; DateTime? get registeredDate; int? get difference;@JsonKey(includeToJson: false, includeFromJson: false) bool? get isTurnOnGoing;
+ int? get id; int get idEmployee; DateTime get startTime; DateTime? get finishTime;
 /// Create a copy of TimeTrackEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $TimeTrackEntityCopyWith<TimeTrackEntity> get copyWith => _$TimeTrackEntityCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as TimeTrackEntity;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimeTrackEntity&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.idEmployee, _this.idEmployee) || other.idEmployee == _this.idEmployee)&&(identical(other.startTime, _this.startTime) || other.startTime == _this.startTime)&&(identical(other.finishTime, _this.finishTime) || other.finishTime == _this.finishTime)&&(identical(other.registeredDate, _this.registeredDate) || other.registeredDate == _this.registeredDate)&&(identical(other.difference, _this.difference) || other.difference == _this.difference)&&(identical(other.isTurnOnGoing, _this.isTurnOnGoing) || other.isTurnOnGoing == _this.isTurnOnGoing));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimeTrackEntity&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.idEmployee, _this.idEmployee) || other.idEmployee == _this.idEmployee)&&(identical(other.startTime, _this.startTime) || other.startTime == _this.startTime)&&(identical(other.finishTime, _this.finishTime) || other.finishTime == _this.finishTime));
 }
 
 
 @override
 int get hashCode {
   final _this = this as TimeTrackEntity;
-  return Object.hash(runtimeType,_this.id,_this.idEmployee,_this.startTime,_this.finishTime,_this.registeredDate,_this.difference,_this.isTurnOnGoing);
+  return Object.hash(runtimeType,_this.id,_this.idEmployee,_this.startTime,_this.finishTime);
 }
 
 @override
 String toString() {
   final _this = this as TimeTrackEntity;
-  return 'TimeTrackEntity(id: ${_this.id}, idEmployee: ${_this.idEmployee}, startTime: ${_this.startTime}, finishTime: ${_this.finishTime}, registeredDate: ${_this.registeredDate}, difference: ${_this.difference}, isTurnOnGoing: ${_this.isTurnOnGoing})';
+  return 'TimeTrackEntity(id: ${_this.id}, idEmployee: ${_this.idEmployee}, startTime: ${_this.startTime}, finishTime: ${_this.finishTime})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $TimeTrackEntityCopyWith<$Res>  {
   factory $TimeTrackEntityCopyWith(TimeTrackEntity value, $Res Function(TimeTrackEntity) _then) = _$TimeTrackEntityCopyWithImpl;
 @useResult
 $Res call({
- int? id, int idEmployee, DateTime? startTime, DateTime? finishTime, DateTime? registeredDate, int? difference,@JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing
+ int? id, int idEmployee, DateTime startTime, DateTime? finishTime
 });
 
 
@@ -68,16 +68,13 @@ class _$TimeTrackEntityCopyWithImpl<$Res>
 
 /// Create a copy of TimeTrackEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? idEmployee = null,Object? startTime = freezed,Object? finishTime = freezed,Object? registeredDate = freezed,Object? difference = freezed,Object? isTurnOnGoing = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? idEmployee = null,Object? startTime = null,Object? finishTime = freezed,}) {
   return _then(TimeTrackEntity(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,idEmployee: null == idEmployee ? _self.idEmployee : idEmployee // ignore: cast_nullable_to_non_nullable
-as int,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,finishTime: freezed == finishTime ? _self.finishTime : finishTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,registeredDate: freezed == registeredDate ? _self.registeredDate : registeredDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,difference: freezed == difference ? _self.difference : difference // ignore: cast_nullable_to_non_nullable
-as int?,isTurnOnGoing: freezed == isTurnOnGoing ? _self.isTurnOnGoing : isTurnOnGoing // ignore: cast_nullable_to_non_nullable
-as bool?,
+as int,startTime: null == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
+as DateTime,finishTime: freezed == finishTime ? _self.finishTime : finishTime // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -162,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  int idEmployee,  DateTime? startTime,  DateTime? finishTime,  DateTime? registeredDate,  int? difference, @JsonKey(includeToJson: false, includeFromJson: false)  bool? isTurnOnGoing)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  int idEmployee,  DateTime startTime,  DateTime? finishTime)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TimeTrackEntity() when $default != null:
-return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime,_that.registeredDate,_that.difference,_that.isTurnOnGoing);case _:
+return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime);case _:
   return orElse();
 
 }
@@ -183,10 +180,10 @@ return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  int idEmployee,  DateTime? startTime,  DateTime? finishTime,  DateTime? registeredDate,  int? difference, @JsonKey(includeToJson: false, includeFromJson: false)  bool? isTurnOnGoing)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  int idEmployee,  DateTime startTime,  DateTime? finishTime)  $default,) {final _that = this;
 switch (_that) {
 case _TimeTrackEntity():
-return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime,_that.registeredDate,_that.difference,_that.isTurnOnGoing);case _:
+return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +200,10 @@ return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  int idEmployee,  DateTime? startTime,  DateTime? finishTime,  DateTime? registeredDate,  int? difference, @JsonKey(includeToJson: false, includeFromJson: false)  bool? isTurnOnGoing)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  int idEmployee,  DateTime startTime,  DateTime? finishTime)?  $default,) {final _that = this;
 switch (_that) {
 case _TimeTrackEntity() when $default != null:
-return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime,_that.registeredDate,_that.difference,_that.isTurnOnGoing);case _:
+return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime);case _:
   return null;
 
 }
@@ -218,16 +215,13 @@ return $default(_that.id,_that.idEmployee,_that.startTime,_that.finishTime,_that
 
 
 class _TimeTrackEntity extends TimeTrackEntity {
-  const _TimeTrackEntity({this.id, required this.idEmployee, this.startTime, this.finishTime, this.registeredDate, this.difference, @JsonKey(includeToJson: false, includeFromJson: false) this.isTurnOnGoing}): super._();
+  const _TimeTrackEntity({this.id, required this.idEmployee, required this.startTime, this.finishTime}): super._();
   
 
 @override final  int? id;
 @override final  int idEmployee;
-@override final  DateTime? startTime;
+@override final  DateTime startTime;
 @override final  DateTime? finishTime;
-@override final  DateTime? registeredDate;
-@override final  int? difference;
-@override@JsonKey(includeToJson: false, includeFromJson: false) final  bool? isTurnOnGoing;
 
 /// Create a copy of TimeTrackEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -239,18 +233,18 @@ _$TimeTrackEntityCopyWith<_TimeTrackEntity> get copyWith => __$TimeTrackEntityCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimeTrackEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.idEmployee, idEmployee) || other.idEmployee == idEmployee)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.finishTime, finishTime) || other.finishTime == finishTime)&&(identical(other.registeredDate, registeredDate) || other.registeredDate == registeredDate)&&(identical(other.difference, difference) || other.difference == difference)&&(identical(other.isTurnOnGoing, isTurnOnGoing) || other.isTurnOnGoing == isTurnOnGoing));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimeTrackEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.idEmployee, idEmployee) || other.idEmployee == idEmployee)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.finishTime, finishTime) || other.finishTime == finishTime));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,idEmployee,startTime,finishTime,registeredDate,difference,isTurnOnGoing);
+    return Object.hash(runtimeType,id,idEmployee,startTime,finishTime);
 }
 
 @override
 String toString() {
-    return 'TimeTrackEntity(id: $id, idEmployee: $idEmployee, startTime: $startTime, finishTime: $finishTime, registeredDate: $registeredDate, difference: $difference, isTurnOnGoing: $isTurnOnGoing)';
+    return 'TimeTrackEntity(id: $id, idEmployee: $idEmployee, startTime: $startTime, finishTime: $finishTime)';
 }
 
 
@@ -261,7 +255,7 @@ abstract mixin class _$TimeTrackEntityCopyWith<$Res> implements $TimeTrackEntity
   factory _$TimeTrackEntityCopyWith(_TimeTrackEntity value, $Res Function(_TimeTrackEntity) _then) = __$TimeTrackEntityCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, int idEmployee, DateTime? startTime, DateTime? finishTime, DateTime? registeredDate, int? difference,@JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing
+ int? id, int idEmployee, DateTime startTime, DateTime? finishTime
 });
 
 
@@ -278,16 +272,13 @@ class __$TimeTrackEntityCopyWithImpl<$Res>
 
 /// Create a copy of TimeTrackEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? idEmployee = null,Object? startTime = freezed,Object? finishTime = freezed,Object? registeredDate = freezed,Object? difference = freezed,Object? isTurnOnGoing = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? idEmployee = null,Object? startTime = null,Object? finishTime = freezed,}) {
   return _then(_TimeTrackEntity(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,idEmployee: null == idEmployee ? _self.idEmployee : idEmployee // ignore: cast_nullable_to_non_nullable
-as int,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,finishTime: freezed == finishTime ? _self.finishTime : finishTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,registeredDate: freezed == registeredDate ? _self.registeredDate : registeredDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,difference: freezed == difference ? _self.difference : difference // ignore: cast_nullable_to_non_nullable
-as int?,isTurnOnGoing: freezed == isTurnOnGoing ? _self.isTurnOnGoing : isTurnOnGoing // ignore: cast_nullable_to_non_nullable
-as bool?,
+as int,startTime: null == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
+as DateTime,finishTime: freezed == finishTime ? _self.finishTime : finishTime // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

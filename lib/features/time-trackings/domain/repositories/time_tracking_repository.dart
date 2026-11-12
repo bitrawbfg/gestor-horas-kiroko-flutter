@@ -1,24 +1,16 @@
-import 'package:gestor_horas/features/time-trackings/data/models/time_track_model.dart';
+import 'package:dartz/dartz.dart';
+import 'package:gestor_horas/core/error/failure.dart';
+import 'package:gestor_horas/features/time-trackings/domain/entities/time_track_entity.dart';
 
 abstract class TimeTrackingRepository {
-  Future<int> insertTimeTrack(TimeTrackModel timeTrack);
-  Future<void> updateTimeTrack(TimeTrackModel timeTrack);
-  Future<void> deleteTimeTrack(TimeTrackModel timeTrack);
+  Future<Either<Failure, int>> insertTimeTrack(TimeTrackEntity timeTrack);
+  Future<Either<Failure, void>> updateTimeTrack(TimeTrackEntity timeTrack);
+  Future<Either<Failure, void>> deleteTimeTrack(TimeTrackEntity timeTrack);
 
-  Future<TimeTrackModel> getTimeTrackingById(int id); // NOT USED
-  Future<List<TimeTrackModel>> getAllTimeTracking();
-  Future<List<TimeTrackModel>> getAllTimeTrackingsFromDateToDate(
-    DateTime firstDayOfWeek,
-    DateTime lastDayOfWeek,
-  );
-  Future<List<TimeTrackModel>> getTimeTrackingsFromDateToDateByEmployee(
-    DateTime firstDayOfMonth,
-    DateTime lastDayOfMonth,
-    int employeeId
-  );
-  Future<List<TimeTrackModel>> getTimeTrackingsBySpecificDayAndEmployee(
-    DateTime day,
-    int employeeId,
-  );
-  Future<TimeTrackModel?> getLastTimeTrackingByEmployeeId(int employeeId);
+  Future<Either<Failure, void>> startTracking(int employeeId);
+  Future<Either<Failure, void>> stopTracking(int employeeId);
+
+  Future<Either<Failure, TimeTrackEntity>> getOpenTracking(int employeeId);
+  Future<Either<Failure, List<TimeTrackEntity>>> getOpenTrackings();
+  Future<Either<Failure, List<TimeTrackEntity>>> getTimeTrackingsByDateRange(DateTime startAt, DateTime endAt);
 }

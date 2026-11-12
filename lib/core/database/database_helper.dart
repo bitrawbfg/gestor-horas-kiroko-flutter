@@ -34,19 +34,16 @@ class DatabaseHelper {
     CREATE TABLE IF NOT EXISTS employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       name TEXT NOT NULL,
-      has_contract BOOLEAN NOT NULL DEFAULT 0,
       hours_in_contract INTEGER NOT NULL DEFAULT 0
     )
     ''');
 
     await db.execute('''
-    CREATE TABLE IF NOT EXISTS employee_time_tracking (
+    CREATE TABLE IF NOT EXISTS time_trackings (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       id_employee INTEGER NOT NULL,
       start_time DATETIME,
       finish_time DATETIME,
-      registered_date DATE,
-      difference INTEGER DEFAULT 0,
       FOREIGN KEY(id_employee) REFERENCES employees(id)
     ) 
     ''');
@@ -58,7 +55,6 @@ class DatabaseHelper {
       finish_time DATETIME NOT NULL,
       start_second_time DATETIME,
       finish_second_time DATETIME,
-      is_split_shift STRING,
       weekdays STRING NOT NULL,
       color STRING NOT NULL
     )''');

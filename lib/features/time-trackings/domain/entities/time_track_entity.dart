@@ -9,10 +9,7 @@ abstract class TimeTrackEntity with _$TimeTrackEntity {
   const factory TimeTrackEntity({
     int? id,
     required int idEmployee,
-    DateTime? startTime,
+    required DateTime startTime,
     DateTime? finishTime,
-    DateTime? registeredDate,
-    int? difference,
-    @JsonKey(includeToJson: false, includeFromJson: false) bool? isTurnOnGoing,
   }) = _TimeTrackEntity;
 }

@@ -1,131 +1,242 @@
-import 'package:gestor_horas/core/database/database_helper.dart';
+import 'package:dartz/dartz.dart';
+import 'package:gestor_horas/core/error/exceptions.dart';
+import 'package:gestor_horas/core/error/failure.dart';
+import 'package:gestor_horas/features/time-trackings/data/datasources/time_tracking_local_data_source.dart';
 import 'package:gestor_horas/features/time-trackings/data/models/time_track_model.dart';
+import 'package:gestor_horas/features/time-trackings/domain/entities/time_track_entity.dart';
 import 'package:gestor_horas/features/time-trackings/domain/repositories/time_tracking_repository.dart';
-import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import 'package:sqflite/sqflite.dart';
 
 class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
-  static const String timeTrackingTable = 'employee_time_tracking';
-  static const String registeredDateField = 'registered_date';
+  final logger = Logger();
+  final TimeTrackingLocalDataSource localDataSource;
+
+  TimeTrackingRepositoryImpl({required this.localDataSource});
 
   @override
-  Future<int> insertTimeTrack(TimeTrackModel timeTrack) async {
-    final database = await _databaseHelper.database;
+  Future<Either<Failure, void>> startTracking(int employeeId) async {
+    try {
+      TimeTrackEntity startTimeTrack = TimeTrackEntity(
+        idEmployee: employeeId,
+        startTime: DateTime.now(),
+      );
 
-    int id = await database.insert(timeTrackingTable, timeTrack.toJson());
-    return id;
+      await localDataSource.insertTimeTrack(startTimeTrack);
+
+      return Right(null);
+    } on DatabaseException catch (exception, stackTrace) {
+      return handleDatabaseException(exception, stackTrace);
+    } catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        'Ha ocurrido un error inesperado',
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedFailure(message),
+      );
+    }
   }
 
   @override
-  Future<void> updateTimeTrack(TimeTrackModel timeTrack) async {
-    final database = await _databaseHelper.database;
+  Future<Either<Failure, void>> stopTracking(int employeeId) async {
+    try {
+      TimeTrackModel openTimeTrack = await localDataSource.getOpenTracking(employeeId);
 
-    await database.update(
-      timeTrackingTable,
-      timeTrack.toJson(),
-      where: 'id = ?',
-      whereArgs: [timeTrack.id],
-    );
+      await localDataSource.updateTimeTrack(
+        openTimeTrack.toEntity().copyWith(finishTime: DateTime.now()),
+      );
+
+      return Right(null);
+    } on DatabaseException catch (exception, stackTrace) {
+      return handleDatabaseException(exception, stackTrace);
+    } on UnexpectedOpenTimeTrackValueException catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        exception.message,
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedOpenTimeTrackValueFailure(message),
+      );
+    } on ObjectNotFoundByIdException catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        exception.message,
+        exception,
+        stackTrace,
+        failure: (message) => NoObjectsFoundFailure(message),
+      );
+    } catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        'Ha ocurrido un error inesperado',
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedFailure(message),
+      );
+    }
   }
 
   @override
-  Future<void> deleteTimeTrack(TimeTrackModel timeTrack) async {
-    final database = await _databaseHelper.database;
+  Future<Either<Failure, int>> insertTimeTrack(TimeTrackEntity timeTrack) async {
+    try {
+      int insertedTimeTrackId = await localDataSource.insertTimeTrack(timeTrack);
 
-    await database.delete(timeTrackingTable, where: 'id = ?', whereArgs: [timeTrack.id]);
+      return Right(insertedTimeTrackId);
+    } on DatabaseException catch (exception, stackTrace) {
+      return handleDatabaseException(exception, stackTrace);
+    } catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        'Ha ocurrido un error inesperado',
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedFailure(message),
+      );
+    }
   }
 
   @override
-  Future<TimeTrackModel?> getLastTimeTrackingByEmployeeId(int employeeId) async {
-    final database = await _databaseHelper.database;
+  Future<Either<Failure, void>> updateTimeTrack(TimeTrackEntity timeTrack) async {
+    try {
+      await localDataSource.updateTimeTrack(timeTrack);
 
-    final List<Map<String, dynamic>> timeTrackingsMap = await database.rawQuery(
-      'SELECT * FROM $timeTrackingTable WHERE ROWID IN (SELECT max(ROWID) FROM $timeTrackingTable WHERE id_employee = ? AND finish_time IS NULL AND start_time IS NOT NULL);',
-      [employeeId],
-    );
-
-    if (timeTrackingsMap.isEmpty) return null;
-
-    return TimeTrackModel.fromJson(timeTrackingsMap.first);
+      return Right(null);
+    } on DatabaseException catch (exception, stackTrace) {
+      return handleDatabaseException(exception, stackTrace);
+    } on NoObjectsModifiedException catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        exception.message,
+        exception,
+        stackTrace,
+        failure: (message) => NoObjectsModifiedFailure(message),
+      );
+    } catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        'Ha ocurrido un error inesperado',
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedFailure(message),
+      );
+    }
   }
 
   @override
-  Future<TimeTrackModel> getTimeTrackingById(int id) async {
-    await _databaseHelper.database;
+  Future<Either<Failure, void>> deleteTimeTrack(TimeTrackEntity timeTrack) async {
+    try {
+      await localDataSource.updateTimeTrack(timeTrack);
 
-    // TODO: implement getEmployeeById
-    throw UnimplementedError();
+      return Right(null);
+    } on DatabaseException catch (exception, stackTrace) {
+      return handleDatabaseException(exception, stackTrace);
+    } on NoObjectsModifiedException catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        exception.message,
+        exception,
+        stackTrace,
+        failure: (message) => NoObjectsModifiedFailure(message),
+      );
+    } catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        'Ha ocurrido un error inesperado',
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedFailure(message),
+      );
+    }
   }
 
   @override
-  Future<List<TimeTrackModel>> getAllTimeTracking() async {
-    final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> employees = await database.query(timeTrackingTable);
-
-    return List.generate(employees.length, (employee) {
-      return TimeTrackModel.fromJson(employees[employee]);
-    });
-  }
-
-  @override
-  Future<List<TimeTrackModel>> getTimeTrackingsBySpecificDayAndEmployee(
-    DateTime day,
-    int employeeId,
+  Future<Either<Failure, List<TimeTrackEntity>>> getTimeTrackingsByDateRange(
+    DateTime startAt,
+    DateTime endAt,
   ) async {
-    final database = await _databaseHelper.database;
+    try {
+      List<TimeTrackModel> timeTrackResult = await localDataSource.getTimeTrackingsByDateRange(
+        startAt,
+        endAt,
+      );
 
-    final List<Map<String, dynamic>> foundTimeTrackings = await database.rawQuery(
-      'SELECT * FROM $timeTrackingTable WHERE registered_date LIKE ? AND id_employee = ?',
-      ['${DateFormat('yyyy-MM-dd').format(day)}%', employeeId],
-    );
-    List<TimeTrackModel> timeTrackings = foundTimeTrackings
-        .map((timeTrack) => TimeTrackModel.fromJson(timeTrack))
-        .toList();
-
-    return timeTrackings;
+      return Right(timeTrackResult.map((timeTrack) => timeTrack.toEntity()).toList());
+    } on DatabaseException catch (exception, stackTrace) {
+      return handleDatabaseException(exception, stackTrace);
+    } catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        'Ha ocurrido un error inesperado',
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedFailure(message),
+      );
+    }
   }
 
   @override
-  Future<List<TimeTrackModel>> getAllTimeTrackingsFromDateToDate(
-    DateTime startDay,
-    DateTime finishDay,
-  ) async {
-    final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> timeTrackings = await database.rawQuery(
-      'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ?',
-      [
-        (startDay.toString().split(' ')[0].toString()),
-        (finishDay.toString().split(' ')[0].toString()),
-      ],
-    );
+  Future<Either<Failure, List<TimeTrackEntity>>> getOpenTrackings() async {
+    try {
+      List<TimeTrackModel> timeTrackResult = await localDataSource.getOpenTrackings();
 
-    List<TimeTrackModel> timeTrackingsList = timeTrackings
-        .map((timeTrack) => TimeTrackModel.fromJson(timeTrack))
-        .toList();
-
-    return timeTrackingsList;
+      return Right(timeTrackResult.map((timeTrack) => timeTrack.toEntity()).toList());
+    } on DatabaseException catch (exception, stackTrace) {
+      return handleDatabaseException(exception, stackTrace);
+    } catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        'Ha ocurrido un error inesperado',
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedFailure(message),
+      );
+    }
   }
 
   @override
-  Future<List<TimeTrackModel>> getTimeTrackingsFromDateToDateByEmployee(
-    DateTime startDay,
-    DateTime finishDay,
-    int employeeId,
-  ) async {
-    final database = await _databaseHelper.database;
-    final List<Map<String, dynamic>> timeTrackings = await database.rawQuery(
-      'SELECT * FROM $timeTrackingTable WHERE DATE(registered_date) >= ? AND DATE(registered_date) <= ? AND id_employee = ?',
-      [
-        (startDay.toString().split(' ')[0].toString()),
-        (finishDay.toString().split(' ')[0].toString()),
-        employeeId,
-      ],
-    );
+  Future<Either<Failure, TimeTrackEntity>> getOpenTracking(int employeeId) async {
+    try {
+      TimeTrackModel timeTrackResult = await localDataSource.getOpenTracking(employeeId);
 
-    List<TimeTrackModel> timeTrackingsList = timeTrackings
-        .map((timeTrack) => TimeTrackModel.fromJson(timeTrack))
-        .toList();
-
-    return timeTrackingsList;
+      return Right(timeTrackResult.toEntity());
+    } on ObjectNotFoundByIdException catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        exception.message,
+        exception,
+        stackTrace,
+        failure: (message) => NoObjectsFoundFailure(message),
+      );
+    } on UnexpectedOpenTimeTrackValueException catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        exception.message,
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedOpenTimeTrackValueFailure(message),
+      );
+    } on DatabaseException catch (exception, stackTrace) {
+      return handleDatabaseException(exception, stackTrace);
+    } catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        'Ha ocurrido un error inesperado',
+        exception,
+        stackTrace,
+        failure: (message) => UnexpectedFailure(message),
+      );
+    }
   }
+
+  //#region Exception Handling
+  Left<Failure, T> handleExceptionWithMessage<T>(
+    String message,
+    Object exception,
+    StackTrace stackTrace, {
+    required Failure Function(String message) failure,
+  }) {
+    logger.e(message, error: exception, stackTrace: stackTrace);
+
+    return Left<Failure, T>(failure('$message: $exception'));
+  }
+
+  Left<Failure, T> handleDatabaseException<T>(DatabaseException exception, StackTrace stackTrace) {
+    String errorMessage = '';
+
+    if (exception.getResultCode() == 5) {
+      errorMessage = 'La base de datos está bloqueada';
+    }
+
+    logger.e(errorMessage, error: exception, stackTrace: stackTrace);
+
+    return Left<Failure, T>(DatabaseLockedFailure(errorMessage));
+  }
+  //#endregion
 }
