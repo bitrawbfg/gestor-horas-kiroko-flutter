@@ -15,8 +15,8 @@ class TimeTrackingLocalDataSource {
 
     final List<Map<String, dynamic>> queryResults = await database.query(
       timeTrackTableName,
-      where: 'date(start_time) >= ? AND date(finish_time) <= ?',
-      whereArgs: [DateFormat('yyyy-MM-dd').format(startAt), endAt],
+      where: 'date(start_time) >= ? AND (date(finish_time) <= ? OR finish_time ISNULL)',
+      whereArgs: [startAt, endAt],
     );
 
     return queryResults.map((timeTrack) => TimeTrackModel.fromJson(timeTrack)).toList();
@@ -38,7 +38,7 @@ class TimeTrackingLocalDataSource {
 
     final List<Map<String, dynamic>> queryResults = await database.query(
       timeTrackTableName,
-      where: 'id_employee',
+      where: 'id_employee = ?',
       whereArgs: [employeeId],
     );
 

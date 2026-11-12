@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:gestor_horas/core/error/exceptions.dart';
 import 'package:gestor_horas/core/error/failure.dart';
 import 'package:gestor_horas/features/time-trackings/data/datasources/time_tracking_local_data_source.dart';
@@ -42,9 +43,32 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
     try {
       TimeTrackModel openTimeTrack = await localDataSource.getOpenTracking(employeeId);
 
-      await localDataSource.updateTimeTrack(
-        openTimeTrack.toEntity().copyWith(finishTime: DateTime.now()),
-      );
+      DateTime finishTime = DateTime.now();
+
+      if (!DateUtils.isSameDay(openTimeTrack.startTime, finishTime)) {
+        DateTime finishFirstDay = openTimeTrack.startTime.copyWith(
+          hour: 23,
+          minute: 59,
+          second: 59,
+        );
+
+        await localDataSource.updateTimeTrack(
+          openTimeTrack.toEntity().copyWith(finishTime: finishFirstDay),
+        );
+
+        DateTime secondTimeTrackStart = finishTime.copyWith(hour: 00, minute: 00, second: 00);
+        TimeTrackEntity secondTimeTrack = TimeTrackEntity(
+          idEmployee: employeeId,
+          startTime: secondTimeTrackStart,
+          finishTime: finishTime,
+        );
+
+        await localDataSource.insertTimeTrack(secondTimeTrack);
+      } else {
+        await localDataSource.updateTimeTrack(
+          openTimeTrack.toEntity().copyWith(finishTime: finishTime),
+        );
+      }
 
       return Right(null);
     } on DatabaseException catch (exception, stackTrace) {
@@ -119,7 +143,7 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
   @override
   Future<Either<Failure, void>> deleteTimeTrack(TimeTrackEntity timeTrack) async {
     try {
-      await localDataSource.updateTimeTrack(timeTrack);
+      await localDataSource.deleteTimeTrack(timeTrack);
 
       return Right(null);
     } on DatabaseException catch (exception, stackTrace) {
@@ -228,15 +252,9 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
   }
 
   Left<Failure, T> handleDatabaseException<T>(DatabaseException exception, StackTrace stackTrace) {
-    String errorMessage = '';
+    logger.e(exception.toString(), error: exception, stackTrace: stackTrace);
 
-    if (exception.getResultCode() == 5) {
-      errorMessage = 'La base de datos está bloqueada';
-    }
-
-    logger.e(errorMessage, error: exception, stackTrace: stackTrace);
-
-    return Left<Failure, T>(DatabaseLockedFailure(errorMessage));
+    return Left<Failure, T>(DatabaseLockedFailure(exception.toString()));
   }
   //#endregion
 }

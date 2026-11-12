@@ -1,9 +1,3 @@
-class DatabaseLockedException implements Exception {
-  final String message;
-
-  DatabaseLockedException(this.message);
-}
-
 class ObjectNotFoundByIdException implements Exception {
   final String message;
 
