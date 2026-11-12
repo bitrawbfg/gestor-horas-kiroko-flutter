@@ -2,7 +2,6 @@ import 'package:gestor_horas/core/database/database_helper.dart';
 import 'package:gestor_horas/core/error/exceptions.dart';
 import 'package:gestor_horas/features/time-trackings/data/models/time_track_model.dart';
 import 'package:gestor_horas/features/time-trackings/domain/entities/time_track_entity.dart';
-import 'package:intl/intl.dart';
 
 class TimeTrackingLocalDataSource {
   static const String timeTrackTableName = 'time_trackings';
@@ -38,7 +37,7 @@ class TimeTrackingLocalDataSource {
 
     final List<Map<String, dynamic>> queryResults = await database.query(
       timeTrackTableName,
-      where: 'id_employee = ?',
+      where: 'id_employee = ? AND finish_time ISNULL',
       whereArgs: [employeeId],
     );
 
@@ -55,6 +54,31 @@ class TimeTrackingLocalDataSource {
     }
 
     return TimeTrackModel.fromJson(queryResults.single);
+  }
+
+  Future<void> stopTimeTrack(
+    TimeTrackEntity firstTimeTrack,
+    TimeTrackEntity secondTimeTrack,
+    int employeeId,
+  ) async {
+    final database = await _databaseHelper.database;
+
+    int changesMade = 0;
+
+    await database.transaction((transaction) async {
+      changesMade = await transaction.update(
+        timeTrackTableName,
+        TimeTrackModel.fromEntity(firstTimeTrack).toJson(),
+        where: 'id_employee = ?',
+        whereArgs: [employeeId],
+      );
+
+      transaction.insert(timeTrackTableName, TimeTrackModel.fromEntity(secondTimeTrack).toJson());
+    });
+
+    if (changesMade == 0) {
+      throw NoObjectsModifiedException('El registro de tiempo no se ha podido modificar.');
+    }
   }
 
   Future<int> insertTimeTrack(TimeTrackEntity timeTrack) async {

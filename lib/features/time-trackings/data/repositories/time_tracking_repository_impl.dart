@@ -52,10 +52,6 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
           second: 59,
         );
 
-        await localDataSource.updateTimeTrack(
-          openTimeTrack.toEntity().copyWith(finishTime: finishFirstDay),
-        );
-
         DateTime secondTimeTrackStart = finishTime.copyWith(hour: 00, minute: 00, second: 00);
         TimeTrackEntity secondTimeTrack = TimeTrackEntity(
           idEmployee: employeeId,
@@ -63,7 +59,11 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
           finishTime: finishTime,
         );
 
-        await localDataSource.insertTimeTrack(secondTimeTrack);
+        await localDataSource.stopTimeTrack(
+          openTimeTrack.toEntity().copyWith(finishTime: finishFirstDay),
+          secondTimeTrack,
+          employeeId,
+        );
       } else {
         await localDataSource.updateTimeTrack(
           openTimeTrack.toEntity().copyWith(finishTime: finishTime),
