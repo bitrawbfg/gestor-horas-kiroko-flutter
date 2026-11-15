@@ -1,7 +1,8 @@
+import 'package:gestor_horas/core/database/database_provider.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-class DatabaseHelper {
+class DatabaseHelper implements DatabaseProvider {
   static final DatabaseHelper _instance = DatabaseHelper._init();
   static Database? _database;
 
@@ -9,6 +10,7 @@ class DatabaseHelper {
 
   factory DatabaseHelper() => _instance;
 
+  @override
   Future<Database> get database async {
     if (_database != null) return _database!;
 
@@ -29,8 +31,8 @@ class DatabaseHelper {
     );
   }
 
-  Future _createDB(Database db, int version) async {
-    await db.execute('''
+  Future _createDB(Database database, int version) async {
+    await database.execute('''
     CREATE TABLE IF NOT EXISTS employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       name TEXT NOT NULL,
@@ -38,7 +40,7 @@ class DatabaseHelper {
     )
     ''');
 
-    await db.execute('''
+    await database.execute('''
     CREATE TABLE IF NOT EXISTS time_trackings (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       id_employee INTEGER NOT NULL,
@@ -48,7 +50,7 @@ class DatabaseHelper {
     ) 
     ''');
 
-    await db.execute('''
+    await database.execute('''
     CREATE TABLE IF NOT EXISTS schedules (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       start_time DATETIME NOT NULL,
@@ -59,7 +61,7 @@ class DatabaseHelper {
       color STRING NOT NULL
     )''');
 
-    await db.execute('''
+    await database.execute('''
     CREATE TABLE IF NOT EXISTS employee_schedules (
       id_employee INTEGER NOT NULL,
       id_schedule INTEGER NOT NULL,

@@ -1,28 +1,29 @@
-import 'package:gestor_horas/core/database/database_helper.dart';
+import 'package:flutter/material.dart';
+import 'package:gestor_horas/core/database/database_provider.dart';
 import 'package:gestor_horas/core/error/exceptions.dart';
 import 'package:gestor_horas/features/time-trackings/data/models/time_track_model.dart';
 import 'package:gestor_horas/features/time-trackings/domain/entities/time_track_entity.dart';
 
 class TimeTrackingLocalDataSource {
   static const String timeTrackTableName = 'time_trackings';
-  final DatabaseHelper _databaseHelper;
+  final DatabaseProvider _databaseProvider;
 
-  TimeTrackingLocalDataSource({required this._databaseHelper});
+  TimeTrackingLocalDataSource({required this._databaseProvider});
 
   Future<List<TimeTrackModel>> getTimeTrackingsByDateRange(DateTime startAt, DateTime endAt) async {
-    final database = await _databaseHelper.database;
+    final database = await _databaseProvider.database;
 
     final List<Map<String, dynamic>> queryResults = await database.query(
       timeTrackTableName,
-      where: 'date(start_time) >= ? AND (date(finish_time) <= ? OR finish_time ISNULL)',
-      whereArgs: [startAt, endAt],
+      where: 'date(start_time) >= ? AND date(start_time) < ?',
+      whereArgs: [startAt, DateUtils.addDaysToDate(endAt, 1)],
     );
 
     return queryResults.map((timeTrack) => TimeTrackModel.fromJson(timeTrack)).toList();
   }
 
   Future<List<TimeTrackModel>> getOpenTrackings() async {
-    final database = await _databaseHelper.database;
+    final database = await _databaseProvider.database;
 
     final List<Map<String, dynamic>> queryResults = await database.query(
       timeTrackTableName,
@@ -33,7 +34,7 @@ class TimeTrackingLocalDataSource {
   }
 
   Future<TimeTrackModel> getOpenTracking(int employeeId) async {
-    final database = await _databaseHelper.database;
+    final database = await _databaseProvider.database;
 
     final List<Map<String, dynamic>> queryResults = await database.query(
       timeTrackTableName,
@@ -61,7 +62,7 @@ class TimeTrackingLocalDataSource {
     TimeTrackEntity secondTimeTrack,
     int employeeId,
   ) async {
-    final database = await _databaseHelper.database;
+    final database = await _databaseProvider.database;
 
     await database.transaction((transaction) async {
       int changesMade = await transaction.update(
@@ -80,7 +81,7 @@ class TimeTrackingLocalDataSource {
   }
 
   Future<int> insertTimeTrack(TimeTrackEntity timeTrack) async {
-    final database = await _databaseHelper.database;
+    final database = await _databaseProvider.database;
 
     return await database.transaction(
       (transaction) =>
@@ -89,7 +90,7 @@ class TimeTrackingLocalDataSource {
   }
 
   Future<void> updateTimeTrack(TimeTrackEntity timeTrack) async {
-    final database = await _databaseHelper.database;
+    final database = await _databaseProvider.database;
 
     int changesMade = await database.transaction(
       (transaction) => transaction.update(
@@ -106,7 +107,7 @@ class TimeTrackingLocalDataSource {
   }
 
   Future<void> deleteTimeTrack(TimeTrackEntity timeTrack) async {
-    final database = await _databaseHelper.database;
+    final database = await _databaseProvider.database;
 
     int changesMade = await database.transaction(
       (transaction) =>

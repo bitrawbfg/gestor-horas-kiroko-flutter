@@ -1,6 +1,7 @@
 import 'package:gestor_horas/core/database/database_helper.dart';
 import 'package:gestor_horas/features/employees/data/datasources/employee_local_data_source.dart';
 import 'package:gestor_horas/features/employees/data/repositories/employee_repository_impl.dart';
+import 'package:gestor_horas/features/time-trackings/data/datasources/time_tracking_local_data_source.dart';
 import 'package:gestor_horas/features/time-trackings/data/repositories/time_tracking_repository_impl.dart';
 import 'package:gestor_horas/features/employees/domain/repositories/employee_repository.dart';
 import 'package:gestor_horas/features/time-trackings/domain/repositories/time_tracking_repository.dart';
@@ -14,9 +15,13 @@ import 'package:side_panel/side_panel.dart';
 final locator = GetIt.instance;
 
 void setupLocator() {
-  TimeTrackingRepository timeTrackingRepository = TimeTrackingRepositoryImpl();
+  DatabaseHelper databaseHelper = DatabaseHelper();
+
+  TimeTrackingRepository timeTrackingRepository = TimeTrackingRepositoryImpl(
+    localDataSource: TimeTrackingLocalDataSource(databaseProvider: databaseHelper),
+  );
   EmployeeRepository employeeRepository = EmployeeRepositoryImpl(
-    localDataSource: EmployeeLocalDataSource(databaseHelper: DatabaseHelper()),
+    localDataSource: EmployeeLocalDataSource(databaseProvider: DatabaseHelper()),
   );
 
   locator.registerLazySingleton<DateViewModel>(() => DateViewModel());
