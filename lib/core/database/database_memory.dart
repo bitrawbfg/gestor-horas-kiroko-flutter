@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:gestor_horas/core/database/database_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -11,6 +13,7 @@ class DatabaseMemory implements DatabaseProvider {
     if (_database != null) return _database!;
 
     _database = await _initDB();
+    await _populateDB(_database!);
     return _database!;
   }
 
@@ -73,5 +76,30 @@ class DatabaseMemory implements DatabaseProvider {
     });
   }
 
-  Future _updateDB(Database db, int version, int newVersion) async {}
+  Future _updateDB(Database database, int version, int newVersion) async {}
+
+  Future<void> _populateDB(Database db) async {
+    File file = File('lib/assets/sql/insert_data_test.sql');
+    List<String> lines = await file.readAsLines();
+    List<String> sentences = List.empty(growable: true);
+    String test = '';
+
+    await db.transaction((transaction) async {
+      for (final line in lines) {
+        final sql = line.trim();
+
+        if (sql.isEmpty || sql.startsWith('--')) continue;
+
+        test += ' $line';
+        if (line.contains(';')) {
+          sentences.add(test);
+          test = '';
+        }
+      }
+
+      for (final sentence in sentences) {
+        await transaction.execute(sentence);
+      }
+    });
+  }
 }

@@ -12,11 +12,12 @@ class TimeTrackingLocalDataSource {
 
   Future<List<TimeTrackModel>> getTimeTrackingsByDateRange(DateTime startAt, DateTime endAt) async {
     final database = await _databaseProvider.database;
+    DateTime endAtModified = DateUtils.addDaysToDate(endAt, 1);
 
     final List<Map<String, dynamic>> queryResults = await database.query(
       timeTrackTableName,
       where: 'date(start_time) >= ? AND date(start_time) < ?',
-      whereArgs: [startAt, DateUtils.addDaysToDate(endAt, 1)],
+      whereArgs: [startAt.toString(), endAtModified.toString()],
     );
 
     return queryResults.map((timeTrack) => TimeTrackModel.fromJson(timeTrack)).toList();

@@ -1,4 +1,4 @@
-BEGIN TRANSACTION;
+--BEGIN TRANSACTION;
 
 -- Limpiar datos anteriores.
 -- Se eliminan primero las tablas dependientes.
@@ -158,6 +158,13 @@ INSERT INTO time_trackings (
 -- Marcos comenzó a trabajar el jueves 12.
 -- Todavía no ha pulsado Stop.
 
-(29, 2, '2026-11-12T17:00:00', NULL);
+(29, 2, '2026-11-12T17:00:00', NULL),
 
-COMMIT;
+-- FICHAJE ABIERTO
+-- Sara comenzó a trabajar el jueves 12.
+-- Contiene dos registros abiertos no válidos.
+
+(30, 3, '2026-11-12T18:00:00', NULL),
+(31, 3, '2026-11-12T19:00:00', NULL);
+
+--COMMIT;
