@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:gestor_horas/core/database/database_provider.dart';
 import 'package:gestor_horas/core/error/exceptions.dart';
 import 'package:gestor_horas/features/time-trackings/data/models/time_track_model.dart';
 import 'package:gestor_horas/features/time-trackings/domain/entities/time_track_entity.dart';
+import 'package:intl/intl.dart';
 
 class TimeTrackingLocalDataSource {
   static const String timeTrackTableName = 'time_trackings';
@@ -12,12 +12,11 @@ class TimeTrackingLocalDataSource {
 
   Future<List<TimeTrackModel>> getTimeTrackingsByDateRange(DateTime startAt, DateTime endAt) async {
     final database = await _databaseProvider.database;
-    DateTime endAtModified = DateUtils.addDaysToDate(endAt, 1);
 
     final List<Map<String, dynamic>> queryResults = await database.query(
       timeTrackTableName,
-      where: 'date(start_time) >= ? AND date(start_time) < ?',
-      whereArgs: [startAt.toString(), endAtModified.toString()],
+      where: 'date(start_time) >= ? AND date(start_time) <= ?',
+      whereArgs: [DateFormat('yyyy-MM-dd').format(startAt), DateFormat('yyyy-MM-dd').format(endAt)],
     );
 
     return queryResults.map((timeTrack) => TimeTrackModel.fromJson(timeTrack)).toList();
@@ -58,26 +57,29 @@ class TimeTrackingLocalDataSource {
     return TimeTrackModel.fromJson(queryResults.single);
   }
 
-  Future<void> stopTimeTrack(
-    TimeTrackEntity firstTimeTrack,
-    TimeTrackEntity secondTimeTrack,
-    int employeeId,
-  ) async {
+  Future<int> stopTimeTrack(TimeTrackEntity firstTimeTrack, TimeTrackEntity secondTimeTrack) async {
     final database = await _databaseProvider.database;
 
-    await database.transaction((transaction) async {
+    return await database.transaction((transaction) async {
+      if (firstTimeTrack.id == null) {
+        throw ObjectNotFoundByIdException('El registro de tiempo no existe');
+      }
+
       int changesMade = await transaction.update(
         timeTrackTableName,
         TimeTrackModel.fromEntity(firstTimeTrack).toJson(),
-        where: 'id = ?',
-        whereArgs: [firstTimeTrack.id],
+        where: 'id = ? AND id_employee = ?',
+        whereArgs: [firstTimeTrack.id, firstTimeTrack.idEmployee],
       );
 
-      if (changesMade == 0) {
+      if (changesMade != 1) {
         throw NoObjectsModifiedException('El registro de tiempo no se ha podido modificar.');
       }
 
-      await transaction.insert(timeTrackTableName, TimeTrackModel.fromEntity(secondTimeTrack).toJson());
+      return await transaction.insert(
+        timeTrackTableName,
+        TimeTrackModel.fromEntity(secondTimeTrack).toJson(),
+      );
     });
   }
 
@@ -102,7 +104,7 @@ class TimeTrackingLocalDataSource {
       ),
     );
 
-    if (changesMade == 0) {
+    if (changesMade != 1) {
       throw NoObjectsModifiedException('El registro de tiempo no se ha podido modificar.');
     }
   }
@@ -115,7 +117,7 @@ class TimeTrackingLocalDataSource {
           transaction.delete(timeTrackTableName, where: 'id = ?', whereArgs: [timeTrack.id]),
     );
 
-    if (changesMade == 0) {
+    if (changesMade != 1) {
       throw NoObjectsModifiedException('El registro de tiempo no se ha podido eliminar.');
     }
   }
