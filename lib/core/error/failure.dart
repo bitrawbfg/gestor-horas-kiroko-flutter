@@ -4,8 +4,8 @@ sealed class Failure {
   const Failure(this.message);
 }
 
-class DatabaseLockedFailure extends Failure {
-  const DatabaseLockedFailure(super.message);
+class DatabaseFailure extends Failure {
+  const DatabaseFailure(super.message);
 }
 
 class NoObjectsFoundFailure extends Failure {

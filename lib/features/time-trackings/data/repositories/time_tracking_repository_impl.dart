@@ -12,16 +12,15 @@ import 'package:sqflite/sqflite.dart';
 class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
   final logger = Logger();
   final TimeTrackingLocalDataSource localDataSource;
+  final DateTime Function() now;
 
-  TimeTrackingRepositoryImpl({required this.localDataSource});
+  TimeTrackingRepositoryImpl({required this.localDataSource, DateTime Function()? now})
+    : now = now ?? DateTime.now;
 
   @override
   Future<Either<Failure, void>> startTracking(int employeeId) async {
     try {
-      TimeTrackEntity startTimeTrack = TimeTrackEntity(
-        idEmployee: employeeId,
-        startTime: DateTime.now(),
-      );
+      TimeTrackEntity startTimeTrack = TimeTrackEntity(idEmployee: employeeId, startTime: now());
 
       await localDataSource.insertTimeTrack(startTimeTrack);
 
@@ -43,26 +42,23 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
     try {
       TimeTrackModel openTimeTrack = await localDataSource.getOpenTracking(employeeId);
 
-      DateTime finishTime = DateTime.now();
+      DateTime finishTime = now();
 
       if (!DateUtils.isSameDay(openTimeTrack.startTime, finishTime)) {
-        DateTime finishFirstDay = openTimeTrack.startTime.copyWith(
-          hour: 23,
-          minute: 59,
-          second: 59,
+        DateTime finishFirstDay = DateUtils.addDaysToDate(
+          DateUtils.dateOnly(openTimeTrack.startTime),
+          1,
         );
 
-        DateTime secondTimeTrackStart = finishTime.copyWith(hour: 00, minute: 00, second: 00);
         TimeTrackEntity secondTimeTrack = TimeTrackEntity(
           idEmployee: employeeId,
-          startTime: secondTimeTrackStart,
+          startTime: finishFirstDay,
           finishTime: finishTime,
         );
 
         await localDataSource.stopTimeTrack(
           openTimeTrack.toEntity().copyWith(finishTime: finishFirstDay),
           secondTimeTrack,
-          employeeId,
         );
       } else {
         await localDataSource.updateTimeTrack(
@@ -73,6 +69,13 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
       return Right(null);
     } on DatabaseException catch (exception, stackTrace) {
       return handleDatabaseException(exception, stackTrace);
+    } on NoObjectsModifiedException catch (exception, stackTrace) {
+      return handleExceptionWithMessage(
+        exception.message,
+        exception,
+        stackTrace,
+        failure: (message) => NoObjectsModifiedFailure(message),
+      );
     } on UnexpectedOpenTimeTrackValueException catch (exception, stackTrace) {
       return handleExceptionWithMessage(
         exception.message,
@@ -248,13 +251,13 @@ class TimeTrackingRepositoryImpl implements TimeTrackingRepository {
   }) {
     logger.e(message, error: exception, stackTrace: stackTrace);
 
-    return Left<Failure, T>(failure('$message: $exception'));
+    return Left<Failure, T>(failure(message));
   }
 
   Left<Failure, T> handleDatabaseException<T>(DatabaseException exception, StackTrace stackTrace) {
     logger.e(exception.toString(), error: exception, stackTrace: stackTrace);
 
-    return Left<Failure, T>(DatabaseLockedFailure(exception.toString()));
+    return Left<Failure, T>(DatabaseFailure(exception.toString()));
   }
   //#endregion
 }
